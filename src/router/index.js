@@ -1,11 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../views/Public/Home.vue'
+import Register from '../views/Auth/Register.vue'
+import Login from '../views/Auth/Login.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/views/Public/Home.vue')
-  },
+  { path: '/', name: 'register', component: Register },
+  { path: '/login', component: Login },
+  { path: '/register', component: Register },
   {
     path: '/candidate',
     children: [
@@ -31,6 +32,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
-});
+})
 
-export default router;
+export default router

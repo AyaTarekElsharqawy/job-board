@@ -14,10 +14,16 @@ const routes = [
     path: '/',
     component: Home
   },
-  {
-    path: '/job-details',
-    name: 'job-details',
-    component: JobDetails
+  // {
+  //   path: '/job-details',
+  //   name: 'job-details',
+  //   component: JobDetails
+  // }
+  , {
+    path: '/jobs/:id',
+    name: 'JobDetails',
+    component: JobDetails,
+    props: true
   }
 
 ]

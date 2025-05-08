@@ -2,11 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Public/Home.vue'
 import Register from '../views/Auth/Register.vue'
 import Login from '../views/Auth/Login.vue'
+import JobDetails from '../views/jobs/JopDetails.vue'
 
 const routes = [
-  { path: '/', name: 'register', component: Register },
-  { path: '/login', component: Login },
-  { path: '/register', component: Register },
+  { path: '/', name: 'Home', component: Home },
+  { path: '/login', name: 'Login', component: Login },
+  { path: '/register', name: 'Register', component: Register },
+
+  {
+    path: '/job-details/:id',
+    name: 'JobDetails',
+    component: JobDetails
+  },
+
   {
     path: '/candidate',
     children: [
@@ -26,16 +34,15 @@ const routes = [
         component: () => import('@/views/Candidate/CandidateProfile.vue')
       },
       {
-        path: '/candidate/resume',
+        path: 'resume',
         name: 'CandidateResume',
         component: () => import('@/views/Candidate/MyResume.vue')
       },
       {
-        path: '/candidate/my-applications',
+        path: 'my-applications',
         name: 'MyApplications',
-        component: () => import('@/views/candidate/MyApplications.vue') 
+        component: () => import('@/views/Candidate/MyApplications.vue')
       }
-      
     ]
   }
 ];
@@ -46,3 +53,4 @@ const router = createRouter({
 })
 
 export default router
+

@@ -11,22 +11,22 @@
           <p class="ml-2 text-sm">Find your dream job</p>
         </div>
         <nav class="flex items-center space-x-6">
-          <a href="#" class="hover:text-green-400">Home</a>
-          <a href="#" class="hover:text-green-400">Browse Job</a>
+          <router-link to="/" class="hover:text-green-400">Home</router-link>
+          <router-link to="/browse-jobs" class="hover:text-green-400">Browse Job</router-link>
           <div class="relative group">
             <a href="#" class="hover:text-green-400 flex items-center">Pages <span class="ml-1">▼</span></a>
           </div>
           <div class="relative group">
             <a href="#" class="hover:text-green-400 flex items-center">Blog <span class="ml-1">▼</span></a>
           </div>
-          <a href="#" class="hover:text-green-400">Contact</a>
-          <a href="#" class="hover:text-green-400">Log in</a>
-          <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Post A Job</button>
+          <router-link to="/contact" class="hover:text-green-400">Contact</router-link>
+          <router-link to="/login" class="hover:text-green-400">Log in</router-link>
+          <router-link to="/post-job" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Post A Job</router-link>
         </nav>
       </div>
     </header>
 
-    <!-- Main Dashboard Content -->
+    <!-- Main Search Content -->
     <main class="container mx-auto px-4 py-8">
       <!-- Search Form -->
       <div class="bg-white p-6 rounded shadow mb-8">
@@ -56,6 +56,33 @@
               <option value="software">Software & Web</option>
               <option value="telemarketing">Telemarketing</option>
               <option value="garments">Garments / Textile</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="experience" class="block text-sm font-medium text-gray-700">Experience Level</label>
+            <select v-model="searchData.experience" id="experience" class="mt-1 p-2 w-full border rounded">
+              <option value="">Any</option>
+              <option value="entry">Entry Level</option>
+              <option value="mid">Mid Level</option>
+              <option value="senior">Senior Level</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="salary" class="block text-sm font-medium text-gray-700">Salary Range</label>
+            <select v-model="searchData.salary" id="salary" class="mt-1 p-2 w-full border rounded">
+              <option value="">Any</option>
+              <option value="0-2000">0 - 2000</option>
+              <option value="2000-4000">2000 - 4000</option>
+              <option value="4000+">4000+</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="datePosted" class="block text-sm font-medium text-gray-700">Date Posted</label>
+            <select v-model="searchData.datePosted" id="datePosted" class="mt-1 p-2 w-full border rounded">
+              <option value="">Any</option>
+              <option value="1">Last 24 hours</option>
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
             </select>
           </div>
           <div class="flex items-end">
@@ -124,7 +151,7 @@
 import { useJobStore } from '@/stores/job';
 
 export default {
-  name: 'CandidateDashboard',
+  name: 'CandidateSearch',
   data() {
     return {
       searchData: {

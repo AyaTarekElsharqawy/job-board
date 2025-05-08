@@ -24,7 +24,18 @@ const routes = [
         path: 'profile',
         name: 'CandidateProfile',
         component: () => import('@/views/Candidate/CandidateProfile.vue')
+      },
+      {
+        path: '/candidate/resume',
+        name: 'CandidateResume',
+        component: () => import('@/views/Candidate/MyResume.vue')
+      },
+      {
+        path: '/candidate/my-applications',
+        name: 'MyApplications',
+        component: () => import('@/views/candidate/MyApplications.vue') 
       }
+      
     ]
   }
 ];

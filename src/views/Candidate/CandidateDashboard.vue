@@ -23,8 +23,8 @@
             <div class="dashboard-sidebar">
               <div class="user-image">
                 <img :src="candidate.profile_picture || 'https://i.ibb.co/0jQ7J3T/candidate-avatar.jpg'" alt="User Image" class="w-24 h-24 rounded-full object-cover mx-auto">
-                <h3 class="name text-center mt-2">John Doe</h3>
-                <p class="email text-center text-gray-600">johndoe@example.com</p>
+                <h3 class="name text-center mt-2">{{ candidate.name }}</h3>
+                <p class="email text-center text-gray-600">{{ candidate.email }}</p>
               </div>
               
               <div class="dashboard-menu mt-4">
@@ -49,7 +49,7 @@
             <div class="main-content">
               <!-- Statistics Widgets -->
               <div class="row dashboard-widgets gap-4">
-                <div class="col-lg-4 col-md-6 col-12">
+                <div class="col-lg-12 col-md-12 col-12">
                   <div class="single-widget">
                     <div class="content">
                       <div class="icon">
@@ -62,40 +62,12 @@
                     </div>
                   </div>
                 </div>
-                
-                <div class="col-lg-4 col-md-6 col-12">
-                  <div class="single-widget">
-                    <div class="content">
-                      <div class="icon">
-                        <i class="lni lni-bookmark"></i>
-                      </div>
-                      <div class="info">
-                        <h3 class="counter">{{ stats.shortlistedJobs }}</h3>
-                        <p>Shortlisted</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 col-12">
-                  <div class="single-widget">
-                    <div class="content">
-                      <div class="icon">
-                        <i class="lni lni-envelope"></i>
-                      </div>
-                      <div class="info">
-                        <h3 class="counter">{{ stats.messages }}</h3>
-                        <p>Messages</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <!-- Recent Applications -->
               <div class="dashboard-block">
                 <h3 class="block-title">Recently Applied Jobs</h3>
-                <div class="applications-table">
+                <div class="applications-table" v-if="recentApplications.length > 0">
                   <table class="table">
                     <thead>
                       <tr>
@@ -122,7 +94,7 @@
                           <router-link :to="'/jobs/' + application.job_id" class="btn-view">
                             <i class="lni lni-eye"></i> View
                           </router-link>
-                          <button @click="cancelApplication(application.id)" class="btn-cancel">
+                          <button @click="cancelApplication(application.id)" class="btn-cancel" v-if="application.status.toLowerCase() === 'pending'">
                             <i class="lni lni-close"></i> Cancel
                           </button>
                         </td>
@@ -130,6 +102,7 @@
                     </tbody>
                   </table>
                 </div>
+                <div v-else class="text-center text-gray-500 py-4">No recent applications found.</div>
               </div>
 
               <!-- Notifications -->
@@ -157,6 +130,7 @@
 
 <script>
 import { useCandidateStore } from '@/stores/candidateStore';
+import { useApplicationStore } from '@/stores/applicationStore';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -164,6 +138,7 @@ export default {
   name: 'CandidateDashboard',
   setup() {
     const candidateStore = useCandidateStore();
+    const applicationStore = useApplicationStore();
     const router = useRouter();
 
     const loading = computed(() => candidateStore.loading);
@@ -174,27 +149,29 @@ export default {
       profile_picture: "https://i.ibb.co/0jQ7J3T/candidate-avatar.jpg",
       applications: candidateStore.candidates[0]?.applications || []
     }));
-    const recentApplications = computed(() => candidate.value.applications);
-    const notifications = ref([
-      { message: "Your application for Senior UI/UX Designer has been viewed", icon: "lni lni-eye", time: new Date(Date.now() - 3600000) },
-      { message: "New job matches your profile: Full Stack Developer", icon: "lni lni-briefcase", time: new Date(Date.now() - 86400000) }
-    ]);
-
-    const stats = computed(() => ({
-      appliedJobs: recentApplications.value.length,
-      shortlistedJobs: 5,
-      messages: 3
-    }));
+    const recentApplications = computed(() => {
+      const apps = [...candidate.value.applications];
+      return apps.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+    });
+    const notifications = ref([]);
+    const stats = ref({ appliedJobs: 0 });
 
     const menuItems = ref([
       { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
       { path: '/candidate/profile', icon: 'lni lni-user', title: 'Profile' },
       { path: '/candidate/resume', icon: 'lni lni-file', title: 'My Resume' },
-      { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' }, 
+      { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' },
     ]);
 
-    onMounted(() => {
-      candidateStore.fetchCandidates();
+    onMounted(async () => {
+      try {
+        await candidateStore.fetchCandidates();
+        const fetchedStats = await candidateStore.fetchStats();
+        stats.value = { ...stats.value, ...fetchedStats, appliedJobs: candidate.value.applications.length };
+        notifications.value = await candidateStore.fetchNotifications();
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      }
     });
 
     const formatDate = (date) => {
@@ -212,8 +189,15 @@ export default {
       return `${Math.floor(diff / day)} days ago`;
     };
 
-    const cancelApplication = (id) => {
-      console.log('Cancelled application for ID:', id);
+    const cancelApplication = async (id) => {
+      if (confirm('Are you sure you want to cancel this application?')) {
+        try {
+          await applicationStore.deleteApplication(id);
+          candidate.value.applications = candidate.value.applications.filter(app => app.id !== id);
+        } catch (err) {
+          console.error('Failed to cancel application:', err);
+        }
+      }
     };
 
     const logout = () => {
@@ -377,6 +361,7 @@ body {
   padding: 20px;
   border: 1px solid var(--border-color);
   transition: all 0.3s;
+  text-align: center;
 }
 
 .single-widget:hover {
@@ -386,7 +371,10 @@ body {
 
 .single-widget .content {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  text-decoration: none;
+  color: inherit;
 }
 
 .single-widget .icon {
@@ -396,7 +384,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 15px;
+  margin-bottom: 10px;
   font-size: 24px;
   color: #fff;
   background: var(--primary-color);
@@ -629,12 +617,10 @@ body {
   color: var(--light-text);
 }
 
-/* تأثيرات إضافية */
 .counter {
   transition: all 0.5s ease-out;
 }
 
-/* تصميم متجاوب */
 @media (max-width: 768px) {
   .dashboard-sidebar {
     margin-bottom: 20px;

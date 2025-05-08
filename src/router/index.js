@@ -1,20 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Public/Home.vue'
-import Register from '../views/Auth/Register.vue'
-import Login from '../views/Auth/Login.vue'
-import JobDetails from '../views/jobs/JopDetails.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import Home from '../views/Public/Home.vue';
+import Register from '../views/Auth/Register.vue';
+import Login from '../views/Auth/Login.vue';
+import JobDetails from '@/components/jobs/JobDetails.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
-
   {
     path: '/job-details/:id',
     name: 'JobDetails',
     component: JobDetails
   },
-
   {
     path: '/candidate',
     children: [
@@ -22,6 +20,16 @@ const routes = [
         path: 'dashboard',
         name: 'CandidateDashboard',
         component: () => import('@/views/Candidate/CandidateDashboard.vue')
+      },
+      {
+        path: 'job-details/:id',
+        name: 'JobDetails',
+        component: JobDetails
+      },
+      {
+        path: 'job/:id/apply',
+        name: 'JobApply',
+        component: () => import('@/views/Candidate/JobApplyForm.vue')
       },
       {
         path: 'search',
@@ -42,7 +50,7 @@ const routes = [
         path: 'my-applications',
         name: 'MyApplications',
         component: () => import('@/views/Candidate/MyApplications.vue')
-      }
+      },
     ]
   }
 ];
@@ -50,7 +58,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
-})
+});
 
-export default router
-
+export default router;

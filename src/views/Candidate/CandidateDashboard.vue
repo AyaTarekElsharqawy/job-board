@@ -7,7 +7,6 @@
           <div class="col-12">
             <nav class="navbar navbar-expand-lg">
               <router-link class="navbar-brand" to="/">
-                <img src="https://i.ibb.co/0jQ7J3T/job-board-logo.png" alt="JobBoard Logo">
               </router-link>
             </nav>
           </div>
@@ -191,11 +190,7 @@ export default {
       { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
       { path: '/candidate/profile', icon: 'lni lni-user', title: 'Profile' },
       { path: '/candidate/resume', icon: 'lni lni-file', title: 'My Resume' },
-      { path: '/candidate/applied-jobs', icon: 'lni lni-briefcase', title: 'Applied Jobs' },
-      { path: '/candidate/shortlist-jobs', icon: 'lni lni-bookmark', title: 'Shortlisted Jobs' },
-      { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Applications' }, // 👈 أضفنا دي
-      { path: '/candidate/alert-jobs', icon: 'lni lni-alarm', title: 'Job Alerts' },
-      { path: '/candidate/cv-manager', icon: 'lni lni-files', title: 'CV Manager' },
+      { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' }, 
     ]);
 
     onMounted(() => {
@@ -258,7 +253,6 @@ export default {
   --bg-color: #f5f7fa;
 }
 
-/* تحسينات عامة */
 body {
   background-color: var(--bg-color);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -282,7 +276,6 @@ body {
   transform: scale(1.05);
 }
 
-/* تحسينات منطقة لوحة التحكم */
 .dashboard {
   padding: 30px 0;
   background-color: var(--bg-color);
@@ -336,7 +329,6 @@ body {
   font-size: 14px;
 }
 
-/* تحسين قائمة التنقل */
 .dashboard-menu ul {
   list-style: none;
   padding: 0;
@@ -377,7 +369,6 @@ body {
   font-size: 16px;
 }
 
-/* تحسينات الودجات الإحصائية */
 .single-widget {
   background: #fff;
   border-radius: 8px;
@@ -430,7 +421,6 @@ body {
   font-size: 14px;
 }
 
-/* تحسينات الجداول */
 .dashboard-block {
   background: #fff;
   border-radius: 8px;
@@ -503,7 +493,6 @@ body {
   text-decoration: underline;
 }
 
-/* تحسينات حالات الطلبات */
 .status-pending {
   color: var(--warning-color);
   background: rgba(255, 152, 0, 0.1);
@@ -544,7 +533,6 @@ body {
   font-weight: 500;
 }
 
-/* تحسينات أزرار الإجراءات */
 .action .btn-view,
 .action .btn-cancel {
   padding: 6px 12px;

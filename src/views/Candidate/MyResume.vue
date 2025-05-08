@@ -1,10 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-10 px-4">
     <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
-      <!-- Header Section -->
-      <div class="bg-blue-900 text-white p-6">
-        <h2 class="text-2xl font-bold">My Resume</h2>
-      </div>
+ 
 
       <!-- Current Resume Section -->
       <div class="p-6 border-b border-gray-200">

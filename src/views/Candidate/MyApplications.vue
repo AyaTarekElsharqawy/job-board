@@ -1,20 +1,18 @@
 <template>
-  <div class="my-applications">
+  <div class="applications-page">
     <h2>My Applications</h2>
-
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else-if="initialLoad && applications.length === 0" class="no-applications">
+    <div v-if="loading">Loading applications...</div>
+    <div v-if="error" class="text-red-500">{{ error }}</div>
+    <div v-else-if="applications.length === 0" class="text-center text-gray-500">
       No applications found.
     </div>
-    <div v-else class="applications-list">
-      <JobCard
-        v-for="app in applications"
-        :key="app.id"
-        :job="app.job"
-        :status="app.status"
-        fromApplicationsPage
-        @delete="handleDelete(app.id)"
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <JobsCard
+        v-for="application in applications"
+        :key="application.id"
+        :job="application.job"
+        :status="application.status"
+        :fromApplicationsPage="true"
       />
     </div>
   </div>
@@ -23,63 +21,28 @@
 <script setup>
 import { onMounted, nextTick, ref } from 'vue'
 import { useApplicationStore } from '@/stores/applicationStore'
-import JobCard from './JobCard.vue'
+import JobsCard from './JobsCard.vue' // تعديل الاستيراد هنا
 
-const candidateId = 1
-const appStore = useApplicationStore()
-const initialLoad = ref(true)
+const applicationStore = useApplicationStore()
+const applications = ref([])
+const loading = ref(false)
+const error = ref(null)
 
 onMounted(async () => {
-  await appStore.fetchByCandidate(candidateId)
-  initialLoad.value = false
-  await nextTick()
+  loading.value = true
+  try {
+    await applicationStore.fetchApplications()
+    applications.value = applicationStore.applications
+  } catch (err) {
+    error.value = 'Failed to load applications'
+  } finally {
+    loading.value = false
+  }
 })
-
-const { applications, loading, error } = appStore
-
-const handleDelete = async (id) => {
-  await appStore.deleteApplication(id)
-}
 </script>
 
 <style scoped>
-.my-applications {
+.applications-page {
   padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-h2 {
-  font-size: 1.75rem;
-  margin-bottom: 1.5rem;
-  color: #333;
-  text-align: center;
-}
-
-.loading {
-  text-align: center;
-  color: #666;
-  padding: 2rem;
-  font-size: 1.2rem;
-}
-
-.error {
-  text-align: center;
-  color: #e74c3c;
-  padding: 2rem;
-  font-size: 1.2rem;
-}
-
-.no-applications {
-  text-align: center;
-  color: #666;
-  padding: 2rem;
-  font-size: 1.2rem;
-}
-
-.applications-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 </style>

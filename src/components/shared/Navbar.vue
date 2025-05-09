@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar">
+   <nav class="navbar">
     <RouterLink to="/" class="logo-link">
       <img src="@/assets/ll.png" alt="Job Board Logo" class="logo">
     </RouterLink>

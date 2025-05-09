@@ -5,11 +5,12 @@
       <!-- Logo -->
       <div class="text-center mb-4">
         <img
-          src="https://raw.githubusercontent.com/abanoub1234/kkkk/refs/heads/main/logo%20(2).png"
+          height="80px"
+          src="https://raw.githubusercontent.com/abanoub1234/kkkk/refs/heads/main/JobBoardLogo.png"
           alt="jobDev Logo"
           class="logo-img mb-2"
         />
-        <h2 class="fw-bold text-primary">Welcome to jobPoint</h2>
+        <h3 class="fw-bold text-primary">Welcome to job Board</h3>
       </div>
 
       <!-- Bootstrap Alert -->
@@ -29,7 +30,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -77,28 +77,45 @@ export default {
     }
   }
 };
-
 </script>
 
-
-<style scoped>
+<style>
 @import 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
 @import 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css';
 
-.login-page {
-  background: linear-gradient(135deg, #f0f2f5, #e8ebf0);
+/* Body Background */
+body {
+  margin: 0;
+  padding: 0;
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* Login page container with background */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensures the login form is vertically centered */
+  background: url('https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-business-simple-exhibition-board-jobs-image_22339.jpg') no-repeat center center fixed;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Auth box styling */
 .auth-box {
   width: 100%;
   max-width: 420px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.9); /* Slight transparency to make the background visible */
+  border-radius: 15px;
 }
 
+/* Logo styling */
 .logo-img {
-  height: 120px;
+  height: 80px;
 }
 
+/* Focused input field styling */
 input.form-control:focus,
 select.form-select:focus {
   border-color: #0d6efd;
@@ -106,6 +123,7 @@ select.form-select:focus {
   transition: all 0.3s ease;
 }
 
+/* Button styling */
 button {
   font-weight: 600;
   letter-spacing: 0.5px;

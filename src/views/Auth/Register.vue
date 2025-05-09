@@ -5,7 +5,7 @@
       <!-- Logo Inside Card -->
       <div class="d-flex justify-content-center mb-3">
         <img
-          src="https://raw.githubusercontent.com/abanoub1234/kkkk/refs/heads/main/logo%20(2).png"
+          src="https://raw.githubusercontent.com/abanoub1234/kkkk/refs/heads/main/JobBoardLogo.png"
           alt="jobDev Logo"
           class="img-fluid"
           style="max-width: 250px;"
@@ -119,12 +119,13 @@ const newUser = {
 /* Form styling */
 .auth-box {
   width: 100%;
-  max-width: 420px;
+  max-width: 550px;
 }
 
 /* Logo styling */
 .img-fluid {
   max-width: 150px;
+  height: 80px;
 }
 
 /* Input focus styling */
@@ -134,6 +135,12 @@ select.form-select:focus {
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
   transition: all 0.3s ease;
 }
+.register-page {
+  background: url('https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-business-simple-exhibition-board-jobs-image_22339.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 
 /* Button lettering */
 button {

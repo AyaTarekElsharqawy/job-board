@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Compact Hero Section -->
+   
     <Transition name="fade-slide" appear>
       <div class="compact-hero">
         <div class="hero-content">
@@ -12,14 +12,14 @@
       </div>
     </Transition>
     
-    <!-- Search Filters -->
+
     <Transition name="fade-up" appear>
       <div class="search-container">
         <JobFilters @filterChanged="applyFilter" />
       </div>
     </Transition>
 
-    <!-- Job Listings -->
+   
     <div class="job-listings">
       <Transition name="fade" appear>
         <div class="listings-header">
@@ -171,12 +171,14 @@ const goToPage = (page) => {
 </script>
 
 <style scoped>
-/* Compact Hero Section */
+
 .compact-hero {
   background: #047fec;
   color: white;
   padding: 2.5rem 1rem;
   margin-bottom: 1.5rem;
+
+  height: 250px;
 }
 
 .compact-hero h1 {
@@ -191,7 +193,7 @@ const goToPage = (page) => {
   opacity: 0.9;
 }
 
-/* Search Container */
+
 .search-container {
   max-width: 1000px;
   margin: 0 auto 2rem;
@@ -201,7 +203,7 @@ const goToPage = (page) => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Job Listings */
+
 .job-listings {
   max-width: 1200px;
   margin: 0 auto;
@@ -228,7 +230,6 @@ const goToPage = (page) => {
   font-size: 0.9rem;
 }
 
-/* Job List */
 .job-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -236,7 +237,7 @@ const goToPage = (page) => {
   margin-bottom: 2rem;
 }
 
-/* No Results */
+
 .no-results {
   text-align: center;
   padding: 3rem;
@@ -264,7 +265,6 @@ const goToPage = (page) => {
   background: #0366c4;
 }
 
-/* Pagination */
 .pagination-controls {
   display: flex;
   justify-content: center;

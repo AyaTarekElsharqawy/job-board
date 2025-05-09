@@ -39,14 +39,36 @@ export const useApplicationStore = defineStore('application', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await axios.get(`${apiUrl}?candidate_id=${candidateId}`)
-      applications.value = res.data
+      applications.value = [
+        {
+          id: 1,
+          status: 'Pending',
+          job: {
+            id: 10,
+            title: 'Frontend Developer',
+            location: 'Cairo',
+            type: 'Full-Time',
+            deadline: '2025-06-30'
+          }
+        },
+        {
+          id: 2,
+          status: 'Accepted',
+          job: {
+            id: 11,
+            title: 'Backend Developer',
+            location: 'Alexandria',
+            type: 'Part-Time',
+            deadline: '2025-07-10'
+          }
+        }]
     } catch (err) {
-        error.value = 'Failed to load candidate applications'
+      error.value = 'Mock load failed'
     } finally {
       loading.value = false
     }
   }
+  
 
   const createApplication = async (applicationData: any) => {
     try {

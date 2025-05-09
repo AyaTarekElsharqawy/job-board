@@ -3,7 +3,7 @@
     <div class="logo">Job Board</div>
     <div class="nav-links">
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/jobs">Browse Job</RouterLink>
+      <RouterLink to="/browse-jobs">Browse Job</RouterLink>
       
       <div class="dropdown">
         <button class="dropbtn">Pages</button>

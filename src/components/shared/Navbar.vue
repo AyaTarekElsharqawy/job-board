@@ -12,7 +12,7 @@
         </div>
       </div>
       
-      <RouterLink to="/contact">Contact</RouterLink>
+     
       <div class="auth-buttons">
         <RouterLink to="/login" class="login-btn">Log in</RouterLink>
         <RouterLink to="/employer/jobform" class="post-job-btn">Post A Job</RouterLink>

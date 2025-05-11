@@ -115,7 +115,7 @@ const routes = [
     ]
   },
   {
-  path: '/admin/login',
+   path: '/admin/login',
   name: 'AdminLogin',
   component: AdminLogin,
 },

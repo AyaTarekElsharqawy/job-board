@@ -1,12 +1,13 @@
 <template>
   <div>
-    <empProfile/>
+    <add/>
   </div>
 </template>
 
 <script setup>
 import Navbar from './components/shared/Navbar.vue'
 import empProfile from './views/Employer/EmployerProfile.vue'
+import add from './views/Candidate/AddCandidate.vue'
 
 import Footer from './components/shared/Footer.vue'
 import { useRoute } from 'vue-router'

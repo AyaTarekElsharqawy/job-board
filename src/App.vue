@@ -1,13 +1,13 @@
 <template>
   <div>
-    <Navbar v-if="showNavbarAndFooter" />
-    <router-view />
-    <Footer v-if="showNavbarAndFooter" />
+    <empProfile/>
   </div>
 </template>
 
 <script setup>
 import Navbar from './components/shared/Navbar.vue'
+import empProfile from './views/Employer/EmployerProfile.vue'
+
 import Footer from './components/shared/Footer.vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'

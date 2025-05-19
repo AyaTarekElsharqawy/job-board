@@ -14,7 +14,7 @@ import AdminApplications from '../views/Admin/AdminApplications.vue';
 import AdminAnalytics from '../views/Admin/AdminAnalytics.vue';
 import AdminFilters from '../views/Admin/AdminFilters.vue';
 import AdminPayments from '../views/Admin/AdminPayments.vue';
-
+// import add from './views/Candidate/AddCandidate.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -31,7 +31,6 @@ const routes = [
     name: 'BrowseJobs',
     component: () => import('@/views/jobs/BrowsJobs.vue')
   }
-  
   // {
   //   path: '/job-details',
   //   name: 'job-details',
@@ -102,11 +101,11 @@ const routes = [
         name: 'CandidateProfile',
         component: () => import('@/views/Candidate/CandidateProfile.vue')
       },
-      {
-        path: 'resume',
-        name: 'CandidateResume',
-        component: () => import('@/views/Candidate/MyResume.vue')
-      },
+      // {
+      //   path: 'add',
+      //   name: 'add',
+      //   component: () => import('@/views/Candidate/CandidateProfile.vue')// abanouuub---------------------
+      // },
       {
         path: 'my-applications',
         name: 'MyApplications',

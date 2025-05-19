@@ -237,7 +237,6 @@ export default {
     const menuItems = ref([
       { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
       { path: '/candidate/profile', icon: 'lni lni-user', title: 'Profile' },
-      { path: '/candidate/resume', icon: 'lni lni-file', title: 'My Resume' },
       { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' },
     ]);
 

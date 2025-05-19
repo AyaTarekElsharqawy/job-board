@@ -1,7 +1,5 @@
 <template>
   <div class="bg-gray-100 font-sans min-h-screen">
-  
-
     <!-- Candidate Dashboard Section -->
     <section class="dashboard">
       <div class="container">
@@ -35,78 +33,12 @@
           <!-- Main Content -->
           <div class="col-lg-9 col-md-8 col-12">
             <div class="main-content">
-              <!-- Statistics Widgets -->
-              <div class="row dashboard-widgets gap-4">
-                <div class="col-lg-12 col-md-12 col-12">
-                  <div class="single-widget">
-                    <div class="content">
-                      <div class="icon">
-                        <i class="lni lni-briefcase"></i>
-                      </div>
-                      <div class="info">
-                        <h3 class="counter">{{ stats.appliedJobs }}</h3>
-                        <p>Applied Jobs</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Recent Applications -->
+              <!-- Custom Sentence -->
               <div class="dashboard-block">
-                <h3 class="block-title">Recently Applied Jobs</h3>
-                <div class="applications-table" v-if="recentApplications.length > 0">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>Job Title</th>
-                        <th>Company</th>
-                        <th>Applied Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(application, index) in recentApplications" :key="index">
-                        <td class="job">
-                          <router-link :to="'/jobs/' + application.job_id" class="text-blue-500 hover:underline">{{ application.job_title }}</router-link>
-                        </td>
-                        <td class="company">{{ application.company }}</td>
-                        <td class="date">{{ formatDate(application.created_at) }}</td>
-                        <td>
-                          <span :class="'status-' + application.status.toLowerCase()">
-                            {{ application.status }}
-                          </span>
-                        </td>
-                        <td class="action">
-                          <router-link :to="'/jobs/' + application.job_id" class="btn-view">
-                            <i class="lni lni-eye"></i> View
-                          </router-link>
-                          <button @click="cancelApplication(application.id)" class="btn-cancel" v-if="application.status.toLowerCase() === 'pending'">
-                            <i class="lni lni-close"></i> Cancel
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div v-else class="text-center text-gray-500 py-4">No recent applications found.</div>
-              </div>
-
-              <!-- Notifications -->
-              <div class="dashboard-block" v-if="notifications.length > 0">
-                <h3 class="block-title">Notifications</h3>
-                <ul class="notification-list">
-                  <li v-for="(notification, index) in notifications" :key="index">
-                    <div class="notification-icon">
-                      <i :class="notification.icon"></i>
-                    </div>
-                    <div class="notification-content">
-                      <p>{{ notification.message }}</p>
-                      <span class="notification-time">{{ formatTime(notification.time) }}</span>
-                    </div>
-                  </li>
-                </ul>
+                <h3 class="block-title">Welcome to Your Dashboard</h3>
+                <p class="text-gray-700 text-lg">
+                  Explore new opportunities and manage your career journey with ease!
+                </p>
               </div>
             </div>
           </div>
@@ -118,15 +50,13 @@
 
 <script>
 import { useCandidateStore } from '@/stores/candidateStore';
-import { useApplicationStore } from '@/stores/applicationStore';
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
   name: 'CandidateDashboard',
   setup() {
     const candidateStore = useCandidateStore();
-    const applicationStore = useApplicationStore();
     const router = useRouter();
 
     const loading = computed(() => candidateStore.loading);
@@ -137,56 +67,12 @@ export default {
       profile_picture: "https://i.ibb.co/0jQ7J3T/candidate-avatar.jpg",
       applications: candidateStore.candidates[0]?.applications || []
     }));
-    const recentApplications = computed(() => {
-      const apps = [...candidate.value.applications];
-      return apps.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
-    });
-    const notifications = ref([]);
-    const stats = ref({ appliedJobs: 0 });
 
     const menuItems = ref([
       { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
       { path: '/candidate/profile', icon: 'lni lni-user', title: 'Profile' },
-      { path: '/candidate/resume', icon: 'lni lni-file', title: 'My Resume' },
       { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' },
     ]);
-
-    onMounted(async () => {
-      try {
-        await candidateStore.fetchCandidates();
-        const fetchedStats = await candidateStore.fetchStats();
-        stats.value = { ...stats.value, ...fetchedStats, appliedJobs: candidate.value.applications.length };
-        notifications.value = await candidateStore.fetchNotifications();
-      } catch (err) {
-        console.error('Failed to load dashboard data:', err);
-      }
-    });
-
-    const formatDate = (date) => {
-      return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    };
-
-    const formatTime = (date) => {
-      const now = new Date();
-      const diff = now - date;
-      const minute = 60000;
-      const hour = 3600000;
-      const day = 86400000;
-      if (diff < hour) return `${Math.floor(diff / minute)} minutes ago`;
-      if (diff < day) return `${Math.floor(diff / hour)} hours ago`;
-      return `${Math.floor(diff / day)} days ago`;
-    };
-
-    const cancelApplication = async (id) => {
-      if (confirm('Are you sure you want to cancel this application?')) {
-        try {
-          await applicationStore.deleteApplication(id);
-          candidate.value.applications = candidate.value.applications.filter(app => app.id !== id);
-        } catch (err) {
-          console.error('Failed to cancel application:', err);
-        }
-      }
-    };
 
     const logout = () => {
       router.push('/login');
@@ -196,13 +82,7 @@ export default {
       loading,
       error,
       candidate,
-      recentApplications,
-      notifications,
-      stats,
       menuItems,
-      formatDate,
-      formatTime,
-      cancelApplication,
       logout
     };
   }

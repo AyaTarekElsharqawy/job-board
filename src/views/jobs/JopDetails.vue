@@ -68,7 +68,9 @@
     <div class="application-modal">
       <button class="close-button" @click="closeForm">&times;</button>
       
-      <h2 class="mb-4">Apply for {{ job.title }}</h2>
+      
+<JobComments />
+<h2 class="mb-4">Apply for {{ job.title }}</h2>
       
       <form 
         @submit.prevent="submitApplication" 

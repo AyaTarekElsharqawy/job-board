@@ -7,8 +7,8 @@
     </div>
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div v-for="application in applications" :key="application.id" class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200">
-        <h3 class="text-xl font-semibold text-blue-800 mb-2">{{ application.job.title }}</h3>
-        <p class="text-gray-600 text-sm mb-1">Type: {{ application.job.type }}</p>
+        <h3 class="text-xl font-semibold text-blue-800 mb-2">{{ application.cover_letter }}</h3>
+        <p class="text-gray-600 text-sm mb-1">Type: {{ application.job.work_type }}</p>
         <p class="text-sm mb-1">
           Status:
           <span :class="{
@@ -29,6 +29,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApplicationStore } from '@/stores/applicationStore'

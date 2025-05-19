@@ -25,7 +25,7 @@
           </ul>
         </div>
       </div>
-
+<JobComments />
       <button class="apply-btn" @click="showForm = true">Apply Now</button>
       
       <!-- Application Form Modal -->
@@ -61,6 +61,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import JobComments from '@/views/jobs/JobComments.vue'
 
 const route = useRoute()
 const job = ref(null)

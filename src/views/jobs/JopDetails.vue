@@ -64,78 +64,96 @@
     </div>
 
     <Transition name="fade" appear>
-      <div v-if="showForm" class="modal-overlay" @click.self="closeForm">
-        <div class="application-modal">
-          <button class="close-button" @click="closeForm">&times;</button>
-          
-          <h2>Apply for {{ job.title }}</h2>
-          
-          <form @submit.prevent="submitApplication" class="application-form">
-            <div class="form-group">
-              <label for="name">Full Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                v-model="application.name" 
-                required 
-                placeholder="Your full name"
-              >
-            </div>
+  <div v-if="showForm" class="modal-overlay" @click.self="closeForm">
+    <div class="application-modal">
+      <button class="close-button" @click="closeForm">&times;</button>
+      
+      <h2 class="mb-4">Apply for {{ job.title }}</h2>
+      
+      <form 
+        @submit.prevent="submitApplication" 
+        class="application-form needs-validation" 
+        novalidate
+        ref="applicationForm"
+      >
+        
 
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input 
-                type="email" 
-                id="email" 
-                v-model="application.email" 
-                required 
-                placeholder="Your email address"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input 
-                type="tel" 
-                id="phone" 
-                v-model="application.phone" 
-                required 
-                placeholder="Your phone number"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="resume">Resume (PDF/DOC)</label>
-              <input 
-                type="file" 
-                id="resume" 
-                @change="handleFileUpload" 
-                accept=".pdf,.doc,.docx" 
-                required
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="cover-letter">Cover Letter</label>
-              <textarea 
-                id="cover-letter" 
-                v-model="application.coverLetter" 
-                rows="5" 
-                placeholder="Why are you a good fit for this position?"
-              ></textarea>
-            </div>
-
-            <button type="submit" class="submit-button" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
-            </button>
-
-            <div v-if="submitMessage" :class="['message', submitSuccess ? 'success' : 'error']">
-              {{ submitMessage }}
-            </div>
-          </form>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            v-model="application.email" 
+            required
+            placeholder="Your email address"
+          >
+          <div class="invalid-feedback">
+            Please provide a valid email.
+          </div>
         </div>
-      </div>
-    </Transition>
+
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone Number</label>
+          <input 
+            type="tel" 
+            class="form-control" 
+            id="phone" 
+            v-model="application.phone" 
+            required
+            placeholder="Your phone number"
+            pattern="[0-9]{10,15}"
+          >
+          <div class="invalid-feedback">
+            Please provide a valid phone number (10-15 digits).
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="resume" class="form-label">Resume (PDF/DOC)</label>
+          <input 
+            type="file" 
+            class="form-control" 
+            id="resume" 
+            @change="handleFileUpload" 
+            accept=".pdf,.doc,.docx" 
+            required
+          >
+          <div class="invalid-feedback">
+            Please upload your resume.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="cover-letter" class="form-label">Cover Letter</label>
+          <textarea 
+            class="form-control" 
+            id="cover-letter" 
+            v-model="application.coverLetter" 
+            rows="5" 
+            placeholder="Why are you a good fit for this position?"
+          ></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary w-100"
+          :disabled="isSubmitting"
+        >
+          {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
+        </button>
+
+        <div 
+          v-if="submitMessage" 
+          class="alert mt-3" 
+          :class="submitSuccess ? 'alert-success' : 'alert-danger'"
+        >
+          {{ submitMessage }}
+        </div>
+      </form>
+    </div>
+  </div>
+</Transition>
   </div>
 </template>
 

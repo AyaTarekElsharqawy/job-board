@@ -7,12 +7,12 @@
           <div class="card shadow-sm h-100">
             <div class="card-body">
               <h5 class="card-title">{{ job.title }}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">{{ job.location }} | {{ job.type }}</h6>
-              <p class="card-text">{{ job.description }}</p>
+              <h6 class="card-subtitle mb-2 text-muted">{{ job.location }} | {{ job.work_type }}</h6>
+              <p class="card-text"> <strong>Job Description: </strong> {{ job.description }}</p>
               <ul class="list-unstyled">
                 <li><strong>Salary:</strong> {{ job.salary }}</li>
                 <li><strong>Technologies:</strong> {{ job.technologies }}</li>
-                <li><strong>Category:</strong> {{ job.category }}</li>
+                <li><strong>Category:</strong> {{ job.category.name }}</li>
               </ul>
               <button class="btn btn-outline-primary">View Details</button>
             </div>
@@ -28,32 +28,32 @@
   
   <script setup>
   import { ref, onMounted } from 'vue'
-  
+  import axios from 'axios';
   // Simulated data — replace with API call if needed
   const jobs = ref([])
   
   onMounted(() => {
-    // Mock data for now
-    jobs.value = [
-      {
-        title: 'Frontend Developer',
-        salary: '$70,000',
-        description: 'Build and maintain user interfaces using Vue.js.',
-        location: 'Remote',
-        type: 'Full-time',
-        technologies: 'Vue.js, JavaScript, HTML, CSS',
-        category: 'Web Development'
-      },
-      {
-        title: 'Backend Developer',
-        salary: '$85,000',
-        description: 'Develop RESTful APIs and handle database integration.',
-        location: 'New York',
-        type: 'Full-time',
-        technologies: 'Node.js, Express, MongoDB',
-        category: 'Web Development'
+    const user = localStorage.getItem('user');
+    axios.get('http://localhost:8000/api/employers/jobs/4',{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
-    ]
+    })
+    .then(response => {
+      console.log(response)
+      if(response.message == "You don't have any jobs yet."){
+        jobs.value = ["You don't have any jobs yet."];
+      }else {
+        jobs.value = response.data.data;
+        
+      }
+      
+    })
+    .catch(error => {
+      console.error(error)
+    });
+
+
   })
   </script>
   

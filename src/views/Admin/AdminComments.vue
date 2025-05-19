@@ -1,34 +1,12 @@
-
-  <template>
+<!-- src/views/Admin/AdminComments.vue -->
+<template>
   <div class="admin-dashboard">
+    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
+    <font-awesome-icon :icon="['fas', 'credit-card']" />
+
     <!-- Navbar -->
     <nav class="main-navbar">
-      <div class="navbar-brand">
-        <router-link to="/dashboard" class="logo-link">
-          <img src="../../assets/logo.png" alt="Logo" class="logo">
-        </router-link>
-      </div>
-      
-      <div class="navbar-menu">
-        <router-link 
-          v-for="item in navItems" 
-          :key="item.path" 
-          :to="item.path"
-          class="nav-link"
-          active-class="active"
-        >
-          <FontAwesomeIcon :icon="['fas', item.icon]" class="nav-icon" />
-          <span class="nav-text">{{ item.title }}</span>
-        </router-link>
-      </div>
-      
-      <div class="navbar-user">
-        <span class="welcome-msg">Welcome, Admin</span>
-        <button @click="logout" class="logout-btn">
-          <FontAwesomeIcon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
-          <span class="logout-text">Logout</span>
-        </button>
-      </div>
+      <!-- … (كما في القالب الأصلي) … -->
     </nav>
 
     <!-- Main Content -->
@@ -53,16 +31,24 @@
           </thead>
           <tbody>
             <tr v-for="comment in comments" :key="comment.id">
-              <td>{{ comment.user?.name }}</td>
-              <td>{{ comment.job?.title }}</td>
-              <td class="comment-text">{{ comment.comment_text }}</td>
-              <td>{{ new Date(comment.created_at).toLocaleString() }}</td>
+              <td>{{ comment.user?.name || '—' }}</td>
+              <td>{{ comment.job?.title || '—' }}</td>
+              <td class="comment-text">{{ comment.comment_text || '—' }}</td>
+              <td>
+                {{ comment.created_at 
+                    ? new Date(comment.created_at).toLocaleString() 
+                    : '—' 
+                }}
+              </td>
               <td>
                 <button @click="deleteComment(comment.id)" class="delete-btn">
                   <FontAwesomeIcon :icon="['fas', 'trash-alt']" />
                   Delete
                 </button>
               </td>
+            </tr>
+            <tr v-if="comments.length === 0">
+              <td colspan="5" style="text-align: center;">No comments found.</td>
             </tr>
           </tbody>
         </table>
@@ -74,57 +60,52 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from '../../../axios';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref, onMounted } from 'vue'
+import axios from '../../../axios'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-const comments = ref([]);
-const message = ref('');
-
-const navItems = [
- { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-    { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-    { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-    { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-      { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-    { path: '/admin/filters', title: 'Users', icon: 'users' }
-];
+const comments = ref([])
+const message = ref('')
 
 const fetchComments = async () => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
+    // استدعاء المسار الجديد: /api/admin/comments
     const res = await axios.get('/api/admin/comments', {
       headers: { Authorization: `Bearer ${token}` }
-    });
-    comments.value = res.data;
+    })
+    comments.value = res.data.data || []
   } catch (e) {
-    console.error('Fetch failed', e);
+    console.error('Fetch failed', e)
+    comments.value = []
   }
-};
+}
 
 const deleteComment = async (id) => {
-  const token = localStorage.getItem('token');
   try {
+    const token = localStorage.getItem('token')
+    // المسار الأصلي في الـ backend: /api/admin/comments/{id}
     await axios.delete(`/api/admin/comments/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
-    });
-    message.value = 'Comment deleted successfully';
-    fetchComments();
+    })
+    message.value = 'Comment deleted successfully'
+    await fetchComments()
   } catch (e) {
-    console.error('Delete failed', e);
-    message.value = 'Error deleting comment';
+    console.error('Delete failed', e)
+    message.value = 'Error deleting comment'
   }
-};
+}
 
 const logout = () => {
-  localStorage.removeItem('token');
-  window.location.href = '/login';
-};
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
 
 onMounted(() => {
-  fetchComments();
-});
+  fetchComments()
+})
 </script>
+
 
 <style scoped>
 /* Navbar Styles - Same as previous */

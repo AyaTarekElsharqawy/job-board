@@ -1,34 +1,12 @@
-
+<!-- src/views/Admin/AdminApplications.vue -->
 <template>
   <div class="admin-dashboard">
+    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
+    <font-awesome-icon :icon="['fas', 'credit-card']" />
+
     <!-- Navbar -->
     <nav class="main-navbar">
-      <div class="navbar-brand">
-        <router-link to="/dashboard" class="logo-link">
-          <img src="../../assets/logo.png" alt="Logo" class="logo">
-        </router-link>
-      </div>
-      
-      <div class="navbar-menu">
-        <router-link 
-          v-for="item in navItems" 
-          :key="item.path" 
-          :to="item.path"
-          class="nav-link"
-          active-class="active"
-        >
-          <FontAwesomeIcon :icon="['fas', item.icon]" class="nav-icon" />
-          <span class="nav-text">{{ item.title }}</span>
-        </router-link>
-      </div>
-      
-      <div class="navbar-user">
-        <span class="welcome-msg">Welcome, Admin</span>
-        <button @click="logout" class="logout-btn">
-          <FontAwesomeIcon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
-          <span class="logout-text">Logout</span>
-        </button>
-      </div>
+      <!-- … (كما في القالب الأصلي) … -->
     </nav>
 
     <!-- Main Content -->
@@ -54,12 +32,12 @@
           </thead>
           <tbody>
             <tr v-for="app in applications" :key="app.id">
-              <td>{{ app.job?.title }}</td>
-              <td>{{ app.candidate?.user?.name }}</td>
-              <td>{{ app.contact_email }}</td>
-              <td>{{ app.contact_phone }}</td>
+              <td>{{ app.job?.title || '—' }}</td>
+              <td>{{ app.candidate?.user?.name || '—' }}</td>
+              <td>{{ app.contact_email || '—' }}</td>
+              <td>{{ app.contact_phone || '—' }}</td>
               <td>
-                <span :class="['status-badge', app.status.toLowerCase()]">
+                <span :class="['status-badge', (app.status || '').toLowerCase()]">
                   {{ app.status }}
                 </span>
               </td>
@@ -82,6 +60,9 @@
                 </button>
               </td>
             </tr>
+            <tr v-if="applications.length === 0">
+              <td colspan="6" style="text-align: center;">No applications found.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -92,59 +73,53 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from '../../../axios';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref, onMounted } from 'vue'
+import axios from '../../../axios'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-const applications = ref([]);
-const message = ref('');
-
-const navItems = [
-{ path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-    { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-    { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-    { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-      { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-    { path: '/admin/filters', title: 'Users', icon: 'users' }
-];
+const applications = ref([])
+const message = ref('')
 
 const fetchApplications = async () => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
+    // المسار الذي أضفناه في الـ backend: /api/admin/applications
     const res = await axios.get('/api/admin/applications', {
       headers: { Authorization: `Bearer ${token}` }
-    });
-    applications.value = res.data;
+    })
+    applications.value = res.data.data || []
   } catch (e) {
-    console.error('Fetch error', e);
-    message.value = 'Error fetching applications';
+    console.error('Fetch error', e)
+    message.value = 'Error fetching applications'
+    applications.value = []
   }
-};
+}
 
 const updateStatus = async (id, status) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
+    // المسار الذي أضفناه في الـ backend: /api/admin/applications/{id}/status
     const res = await axios.patch(
-      `/api/admin/applications/${id}/status`, 
-      { status }, 
+      `/api/admin/applications/${id}/status`,
+      { status },
       { headers: { Authorization: `Bearer ${token}` } }
-    );
-    message.value = res.data.message;
-    fetchApplications();
+    )
+    message.value = res.data.message || 'Status updated'
+    await fetchApplications()
   } catch (e) {
-    console.error('Update error', e);
-    message.value = 'Error updating application status';
+    console.error('Update error', e)
+    message.value = 'Error updating application status'
   }
-};
+}
 
 const logout = () => {
-  localStorage.removeItem('token');
-  window.location.href = '/login';
-};
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
 
 onMounted(() => {
-  fetchApplications();
-});
+  fetchApplications()
+})
 </script>
 
 <style scoped>

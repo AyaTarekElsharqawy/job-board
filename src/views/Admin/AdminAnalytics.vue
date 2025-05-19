@@ -1,7 +1,11 @@
-
-
-  <template>
+<template>
   <div class="admin-dashboard">
+   
+
+
+    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
+    <font-awesome-icon :icon="['fas', 'credit-card']" />
+
     <!-- Navbar -->
     <nav class="main-navbar">
       <div class="navbar-brand">
@@ -18,21 +22,19 @@
           class="nav-link"
           active-class="active"
         >
-          <FontAwesomeIcon :icon="['fas', item.icon]" class="nav-icon" />
+          <font-awesome-icon :icon="['fas', item.icon]" class="nav-icon" />
           <span class="nav-text">{{ item.title }}</span>
         </router-link>
       </div>
       
       <div class="navbar-user">
-        <span class="welcome-msg">Welcome, Admin</span>
+        <span class="welcome-msg">Welcome, {{ user?.name || '—' }}</span>
         <button @click="logout" class="logout-btn">
-          <FontAwesomeIcon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
+          <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
           <span class="logout-text">Logout</span>
         </button>
       </div>
     </nav>
-
-    <!-- Main Content -->
     <div class="analytics-container">
       <div class="header-section">
         <h2 class="page-title">
@@ -53,10 +55,13 @@
           </thead>
           <tbody>
             <tr v-for="item in analytics" :key="item.id">
-              <td>{{ item.job?.title }}</td>
-              <td class="count-cell">{{ item.views_count }}</td>
-              <td class="count-cell">{{ item.applications_count }}</td>
-              <td>{{ new Date(item.updated_at).toLocaleString() }}</td>
+              <td>{{ item.job?.title || '—' }}</td>
+              <td class="count-cell">{{ item.views_count || 0 }}</td>
+              <td class="count-cell">{{ item.applications_count || 0 }}</td>
+              <td>{{ item.updated_at ? new Date(item.updated_at).toLocaleString() : '—' }}</td>
+            </tr>
+            <tr v-if="analytics.length === 0">
+              <td colspan="4" style="text-align: center;">No analytics data found.</td>
             </tr>
           </tbody>
         </table>
@@ -66,42 +71,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from '../../../axios';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref, onMounted } from 'vue'
+import axios from '../../../axios'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-const analytics = ref([]);
-
-const navItems = [
- { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-    { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-    { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-    { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-      { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-    { path: '/admin/filters', title: 'Users', icon: 'users' }
-];
+const analytics = ref([])
 
 const fetchAnalytics = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const res = await axios.get('/api/admin/analytics', {
+    const token = localStorage.getItem('token')
+    // استدعاء المسار الصحيح: /api/admin/stats وليس /api/admin/analytics
+    const res = await axios.get('/api/admin/stats', {
       headers: { Authorization: `Bearer ${token}` }
-    });
-    analytics.value = res.data;
+    })
+    // تفترض أن الـ Controller يعيد هيكل { data: [...] }
+    analytics.value = res.data.data || []
   } catch (e) {
-    console.error('Analytics fetch failed', e);
+    console.error('Analytics fetch failed', e)
+    analytics.value = []
   }
-};
+}
 
 const logout = () => {
-  localStorage.removeItem('token');
-  window.location.href = '/login';
-};
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
 
 onMounted(() => {
-  fetchAnalytics();
-});
+  fetchAnalytics()
+})
 </script>
+
+
 
 <style scoped>
 /* Navbar Styles - Same as previous */

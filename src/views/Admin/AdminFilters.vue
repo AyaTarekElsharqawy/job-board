@@ -1,35 +1,12 @@
-
-
-  <template>
+<!-- src/views/Admin/AdminFilters.vue -->
+<template>
   <div class="admin-dashboard">
+    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
+    <font-awesome-icon :icon="['fas', 'credit-card']" />
+
     <!-- Navbar -->
     <nav class="main-navbar">
-      <div class="navbar-brand">
-        <router-link to="/dashboard" class="logo-link">
-          <img src="../../assets/logo.png" alt="Logo" class="logo">
-        </router-link>
-      </div>
-      
-      <div class="navbar-menu">
-        <router-link 
-          v-for="item in navItems" 
-          :key="item.path" 
-          :to="item.path"
-          class="nav-link"
-          active-class="active"
-        >
-          <FontAwesomeIcon :icon="['fas', item.icon]" class="nav-icon" />
-          <span class="nav-text">{{ item.title }}</span>
-        </router-link>
-      </div>
-      
-      <div class="navbar-user">
-        <span class="welcome-msg">Welcome, Admin</span>
-        <button @click="logout" class="logout-btn">
-          <FontAwesomeIcon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
-          <span class="logout-text">Logout</span>
-        </button>
-      </div>
+      <!-- … (كما في القالب الأصلي) … -->
     </nav>
 
     <!-- Main Content -->
@@ -53,17 +30,26 @@
           </thead>
           <tbody>
             <tr v-for="filter in filters" :key="filter.id">
-              <td>{{ filter.user?.name }}</td>
+              <td>{{ filter.user?.name || '—' }}</td>
               <td class="filter-details">
+                <!-- نفترض أن الفلاتر مخزنة كـ JSON -->
                 <pre>{{ JSON.stringify(JSON.parse(filter.filters_json), null, 2) }}</pre>
               </td>
-              <td>{{ new Date(filter.created_at).toLocaleString() }}</td>
+              <td>
+                {{ filter.created_at 
+                    ? new Date(filter.created_at).toLocaleString() 
+                    : '—' 
+                }}
+              </td>
               <td>
                 <button @click="deleteFilter(filter.id)" class="delete-btn">
                   <FontAwesomeIcon :icon="['fas', 'trash-alt']" />
                   Delete
                 </button>
               </td>
+            </tr>
+            <tr v-if="filters.length === 0">
+              <td colspan="4" style="text-align: center;">No filters found.</td>
             </tr>
           </tbody>
         </table>
@@ -75,54 +61,47 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from '../../../axios';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref, onMounted } from 'vue'
+import axios from '../../../axios'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-const filters = ref([]);
-const message = ref('');
-
-const navItems = [
- { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-    { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-    { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-    { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-      { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-    { path: '/admin/filters', title: 'Users', icon: 'users' }
-];
+const filters = ref([])
+const message = ref('')
 
 const fetchFilters = async () => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
+    // المسار الجديد: /api/admin/filters
     const res = await axios.get('/api/admin/filters', {
       headers: { Authorization: `Bearer ${token}` }
-    });
-    filters.value = res.data;
+    })
+    filters.value = res.data.data || []
   } catch (e) {
-    console.error('Fetch failed', e);
+    console.error('Fetch failed', e)
+    filters.value = []
   }
-};
+}
 
 const deleteFilter = async (id) => {
-  const token = localStorage.getItem('token');
   try {
+    const token = localStorage.getItem('token')
     await axios.delete(`/api/admin/filters/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
-    });
-    message.value = 'Filter deleted successfully';
-    fetchFilters();
+    })
+    message.value = 'Filter deleted successfully'
+    await fetchFilters()
   } catch (e) {
-    console.error('Delete failed', e);
-    message.value = 'An error occurred during deletion';
+    console.error('Delete failed', e)
+    message.value = 'An error occurred during deletion'
   }
-};
+}
 
 const logout = () => {
-  localStorage.removeItem('token');
-  window.location.href = '/login';
-};
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
 
-onMounted(fetchFilters);
+onMounted(fetchFilters)
 </script>
 
 <style scoped>

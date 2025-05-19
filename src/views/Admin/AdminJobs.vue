@@ -1,162 +1,166 @@
+<template>
+  <div class="admin-dashboard">
+    <!-- نعرض الأيقونات المسجّلة فقط -->
+    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
+    <font-awesome-icon :icon="['fas', 'credit-card']" />
 
-  <template>
-    <div class="admin-dashboard">
-      <!-- Navbar -->
-      <nav class="main-navbar">
-        <div class="navbar-brand">
-          <router-link to="/dashboard" class="logo-link">
-            <img src="../../assets/logo.png" alt="Logo" class="logo">
-          </router-link>
-        </div>
-        
-        <div class="navbar-menu">
-          <router-link 
-            v-for="item in navItems" 
-            :key="item.path" 
-            :to="item.path"
-            class="nav-link"
-            active-class="active"
-          >
-            <FontAwesomeIcon :icon="['fas', item.icon]" class="nav-icon" />
-            <span class="nav-text">{{ item.title }}</span>
-          </router-link>
-        </div>
-        
-        <div class="navbar-user">
-          <span class="welcome-msg">Welcome, {{ user?.name }}</span>
-          <button @click="logout" class="logout-btn">
-            <FontAwesomeIcon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
-            <span class="logout-text">Logout</span>
-          </button>
-        </div>
-      </nav>
-  
-      <!-- Main Content -->
-      <div class="jobs-container">
-        <div class="header-section">
-          <h2 class="page-title">
-            <span class="icon">💼</span>
-            Job Management
-          </h2>
-        </div>
-  
-        <div class="table-wrapper">
-          <table class="jobs-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Company</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="job in jobs" :key="job.id">
-                <td>{{ job.title }}</td>
-                <td>{{ job.employer?.company_name || 'N/A' }}</td>
-                <td>
-                  <span :class="['status-badge', job.status.toLowerCase()]">
-                    {{ job.status }}
-                  </span>
-                </td>
-                <td class="actions">
-                  <button 
-                    @click="updateStatus(job.id, 'approved')" 
-                    :disabled="job.status === 'approved'"
-                    class="action-btn approve"
-                  >
-                    <FontAwesomeIcon :icon="['fas', 'check']" />
-                    Approve
-                  </button>
-                  <button 
-                    @click="updateStatus(job.id, 'rejected')" 
-                    :disabled="job.status === 'rejected'"
-                    class="action-btn reject"
-                  >
-                    <FontAwesomeIcon :icon="['fas', 'times']" />
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-  
-        <div v-if="message" class="message" :class="{ 'error': message.includes('Error') }">
-          {{ message }}
-        </div>
+    <!-- Navbar -->
+    <nav class="main-navbar">
+      <div class="navbar-brand">
+        <router-link to="/dashboard" class="logo-link">
+          <img src="../../assets/logo.png" alt="Logo" class="logo">
+        </router-link>
+      </div>
+      
+      <div class="navbar-menu">
+        <router-link 
+          v-for="item in navItems" 
+          :key="item.path" 
+          :to="item.path"
+          class="nav-link"
+          active-class="active"
+        >
+          <font-awesome-icon :icon="['fas', item.icon]" class="nav-icon" />
+          <span class="nav-text">{{ item.title }}</span>
+        </router-link>
+      </div>
+      
+      <div class="navbar-user">
+        <span class="welcome-msg">Welcome, {{ user?.name || '—' }}</span>
+        <button @click="logout" class="logout-btn">
+          <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
+          <span class="logout-text">Logout</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="jobs-container">
+      <div class="header-section">
+        <h2 class="page-title">
+          <span class="icon">💼</span>
+          Job Management
+        </h2>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="jobs-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Company</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="job in jobs" :key="job.id">
+              <td>{{ job.title }}</td>
+              <td>{{ job.employer?.company_name || 'N/A' }}</td>
+              <td>
+                <span 
+                  :class="[
+                    'status-badge', 
+                    (job.status || '').toLowerCase()
+                  ]"
+                >
+                  {{ job.status || '—' }}
+                </span>
+              </td>
+              <td class="actions">
+                <button 
+                  @click="updateStatus(job.id, 'approved')" 
+                  :disabled="job.status?.toLowerCase() === 'approved'"
+                  class="action-btn approve"
+                >
+                  <font-awesome-icon :icon="['fas', 'check']" />
+                  Approve
+                </button>
+                <button 
+                  @click="updateStatus(job.id, 'rejected')" 
+                  :disabled="job.status?.toLowerCase() === 'rejected'"
+                  class="action-btn reject"
+                >
+                  <font-awesome-icon :icon="['fas', 'times']" />
+                  Reject
+                </button>
+              </td>
+            </tr>
+            <tr v-if="jobs.length === 0">
+              <td colspan="4" class="no-jobs">No jobs to display.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-if="message" class="message" :class="{ error: message.includes('Error') }">
+        {{ message }}
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from '../../../axios';
-  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-  
-  const jobs = ref([]);
-  const message = ref('');
-  const user = ref({});
-  const navItems = [
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import api from '../../../axios'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+const jobs = ref([])
+const message = ref('')
+const user = ref({})
+
+const navItems = [
   { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-    { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-    { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-    { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-      { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-    { path: '/admin/filters', title: 'Users', icon: 'users' }
-  ];
-  
-  const fetchJobs = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('/api/admin/jobs', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      jobs.value = res.data;
-    } catch (e) {
-      console.error('Fetch error:', e);
-      message.value = 'Error fetching jobs';
-    }
-  };
-  
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('/api/admin/user', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      user.value = res.data;
-    } catch (e) {
-      console.error('Failed to fetch user data', e);
-    }
-  };
-  
-  const updateStatus = async (id, status) => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.patch(
-        `/api/admin/jobs/${id}/status`, 
-        { status }, 
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      message.value = res.data.message;
-      await fetchJobs();
-    } catch (e) {
-      console.error('Update error:', e.response?.data || e.message);
-      message.value = 'Error updating status';
-    }
-  };
-  
-  const logout = () => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  };
-  
-  onMounted(() => {
-    fetchJobs();
-    fetchUserData();
-  });
-  </script>
+  { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
+  { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
+  { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
+  { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
+  { path: '/admin/filters', title: 'Users', icon: 'users' }
+]
+
+const fetchJobs = async () => {
+  try {
+    const res = await api.get('/api/admin/jobs')
+    jobs.value = res.data.data || []
+  } catch (e) {
+    console.error('Fetch error:', e)
+    message.value = 'Error fetching jobs'
+    jobs.value = []
+  }
+}
+
+const fetchUserData = async () => {
+  try {
+    const res = await api.get('/api/user')
+    user.value = res.data.user || res.data || {}
+  } catch (e) {
+    console.error('Failed to fetch user data', e)
+    user.value = {}
+  }
+}
+
+const updateStatus = async (id, status) => {
+  try {
+    const endpoint = status === 'approved' ? 'approve' : 'reject'
+    const res = await api.put(`/api/admin/jobs/${id}/${endpoint}`)
+    message.value = res.data.message || 'Status updated'
+    await fetchJobs()
+  } catch (e) {
+    console.error('Update error:', e.response?.data || e.message)
+    message.value = 'Error updating status'
+  }
+}
+
+const logout = () => {
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
+
+onMounted(() => {
+  fetchJobs()
+  fetchUserData()
+})
+</script>
   
   <style scoped>
   /* Reuse the navbar styles from payments page */

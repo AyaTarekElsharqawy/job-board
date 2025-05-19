@@ -1,51 +1,54 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Public/Home.vue'
-import Register from '../views/Auth/Register.vue'
-import Login from '../views/Auth/Login.vue'
+
+/* استيراد مكوّنات عامّة */
+import Home       from '@/views/Public/Home.vue'
+import Register   from '@/views/Auth/Register.vue'
+import Login      from '@/views/Auth/Login.vue'
+import JobDetails from '@/views/jobs/JopDetails.vue'
+import BrowseJobs from '@/views/jobs/BrowsJobs.vue'
+
+/* استيراد مكوّنات أصحاب العمل (Employer) */
 import EmployerDashboard from '@/views/Employer/EmployerDashboard.vue'
-import JobForm from '@/views/Employer/JobForm.vue'
-import EmployerHome from '@/views/Employer/EmployerHome.vue'
-import JobDetails from '../views/jobs/JopDetails.vue'
-import AdminLogin from '../views/Admin/Login_test.vue';
-import AdminJobs from '../views/Admin/AdminJobs.vue';
-import Dashboard from '../views/Admin/Dashboard.vue';  
-import AdminComments from '../views/Admin/AdminComments.vue';
-import AdminApplications from '../views/Admin/AdminApplications.vue';
-import AdminAnalytics from '../views/Admin/AdminAnalytics.vue';
-import AdminFilters from '../views/Admin/AdminFilters.vue';
-import AdminPayments from '../views/Admin/AdminPayments.vue';
+import EmployerHome      from '@/views/Employer/EmployerHome.vue'
+import JobForm           from '@/views/Employer/JobForm.vue'
+import JobList           from '@/views/Employer/JobList.vue'
+import ApplicationList   from '@/views/Employer/ApplicationList.vue'
 
+/* استيراد مكوّنات الإدارة (Admin) */
+import AdminJobs         from '@/views/Admin/AdminJobs.vue'
+import AdminApplications from '@/views/Admin/AdminApplications.vue'
+import AdminComments     from '@/views/Admin/AdminComments.vue'
+import AdminAnalytics    from '@/views/Admin/AdminAnalytics.vue'
+import AdminFilters      from '@/views/Admin/AdminFilters.vue'
+import AdminPayments     from '@/views/Admin/AdminPayments.vue'
+import AdminDashboard    from '@/views/Admin/Dashboard.vue'
 
+// ————————— تعريف المسارات —————————
 const routes = [
-  { path: '/', component: Home },
-  { path: '/login', component: Login, name: 'login' },
-  { path: '/register', component: Register, name: 'register' },
+  // الصفحة الرئيسة
+  { path: '/', name: 'Home', component: Home },
+
+  // تسجيل دخول وتسجيل جديد
+  { path: '/login',    name: 'login',    component: Login },
+  { path: '/register', name: 'register', component: Register },
+
+  // تفاصيل وظيفة
   {
     path: '/job-details/:id',
     name: 'JobDetails',
-    component: JobDetails
+    component: JobDetails,
+    props: true
   },
 
+  // تصفح الوظائف
   {
     path: '/browse-jobs',
     name: 'BrowseJobs',
-    component: () => import('@/views/jobs/BrowsJobs.vue')
-  }
-  
-  // {
-  //   path: '/job-details',
-  //   name: 'job-details',
-  //   component: JobDetails
-  // }
-  , {
-    path: '/jobs/:id',
-    name: 'JobDetails',
-    component: JobDetails,
-    props: true
-  }
+    component: BrowseJobs
+  },
 
-,
-  
+  // لوحة أصحاب العمل مع مسارات فرعيّة
   {
     path: '/employer',
     name: 'EmployerDashboard',
@@ -64,113 +67,75 @@ const routes = [
       {
         path: 'joblist',
         name: 'JobList',
-        component: () => import('@/views/Employer/JobList.vue')
+        component: JobList
       },
       {
         path: 'applications',
-        name: 'Applications',
-        component: () => import('@/views/Employer/ApplicationList.vue')
+        name: 'EmployerApplications',
+        component: ApplicationList
       }
-            
     ]
   },
+
+  // مسارات الإدارة
   {
-    path: '/candidate',
-    children: [
-      {
-        path: 'dashboard',
-        name: 'CandidateDashboard',
-        component: () => import('@/views/Candidate/CandidateDashboard.vue')
-      },
-      // {
-      //   path: 'job-details/:id',
-      //   name: 'JobDetails',
-      //   component: JobDetails
-      // },
-      {
-        path: 'job/:id/apply',
-        name: 'JobApply',
-        component: () => import('@/views/Candidate/JobApplyForm.vue')
-      },
-      {
-        path: 'search',
-        name: 'CandidateSearch',
-        component: () => import('@/views/Candidate/CandidateSearch.vue')
-      },
-      {
-        path: 'profile',
-        name: 'CandidateProfile',
-        component: () => import('@/views/Candidate/CandidateProfile.vue')
-      },
-      {
-        path: 'resume',
-        name: 'CandidateResume',
-        component: () => import('@/views/Candidate/MyResume.vue')
-      },
-      {
-        path: 'my-applications',
-        name: 'MyApplications',
-        component: () => import('@/views/Candidate/MyApplications.vue')
-      },
-    ]
-  },
-  {
-  path: '/admin/login',
-  name: 'AdminLogin',
-  component: AdminLogin,
-},
-   { path: '/admin/jobs',
+    path: '/admin/jobs',
+    name: 'AdminJobs',
     component: AdminJobs,
-    meta: { requiresAuth: true } 
-},
-{ path: '/admin/applications',
-     component: AdminApplications,
-      meta: { requiresAuth: true } 
-},
-
-{ path: '/admin/comments',
-     component: AdminComments,
-      meta: { requiresAuth: true } },
-
-      { path: '/admin/analytics',
-         component: AdminAnalytics,
-          meta: { requiresAuth: true } 
-        },
-
-          { path: '/admin/filters', 
-            component: AdminFilters,
-             meta: { requiresAuth: true } 
-            },
-
-
-  
-  { path: '/admin/payments',
-     component: AdminPayments,
-      meta: { requiresAuth: true } },
-
-
-      
-        
-
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/applications',
+    name: 'AdminApplications',
+    component: AdminApplications,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/comments',
+    name: 'AdminComments',
+    component: AdminComments,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/analytics',
+    name: 'AdminAnalytics',
+    component: AdminAnalytics,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/filters',
+    name: 'AdminFilters',
+    component: AdminFilters,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/payments',
+    name: 'AdminPayments',
+    component: AdminPayments,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/admin/dashboard',
-    name: 'Dashboard',
-    component: Dashboard, 
+    name: 'AdminDashboard',
+    component: AdminDashboard,
+    meta: { requiresAuth: true },
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        next();  
-      } else {
-        next('/login');  
-      }
+      const token = localStorage.getItem('token')
+      if (token) next()
+      else next('/login')
     }
   }
+]
 
-];
+// في حال أردت إضافة صفحة لاستقبال أي مسار خاطئ:
+routes.push({
+  path: '/:catchAll(.*)',
+  redirect: '/'    // أو يمكن عرض صفحة 404 خاصّة
+})
 
 const router = createRouter({
   history: createWebHistory(),
   routes
-});
+})
 
-export default router;
+export default router

@@ -1,38 +1,46 @@
 <template>
   <div>
-  
+    <!-- Hero Section (unchanged) -->
     <Transition name="fade-slide" appear>
       <div class="hero-section">
-        <div class="hero-content">
-          <div class="hero-text">
-            <h1><strong>Find Your Dream Job Today!</strong></h1>
-            <p class="subtitle"><strong>Join thousands of companies hiring right now</strong></p>
-            <div class="stats">4536+ Jobs listed</div>
-            <p class="description">
-              <strong>We connect top talent with leading companies worldwide. 
-              Start your career journey with us today!</strong>
-            </p>
-            <button class="upload-btn">Upload Your Resume</button>
-          </div>
-          <div class="hero-image">
-            <img src="@/assets/illustration.png" alt="People working">
-          </div>
-        </div>
+        <!-- ... your hero content ... -->
       </div>
     </Transition>
     
-  
+    <!-- Search Container -->
     <Transition name="fade-up" appear>
       <div class="search-container">
-        <JobFilters @filterChanged="applyFilter" />
+        <JobFilters 
+  :locations="locations"
+  :categories="categories"
+  :experienceLevels="experienceLevels"
+  :salaryRanges="salaryRanges"
+  :timeFilters="timeFilters"
+  @filterChanged="applyFilter"
+/>
+
+
       </div>
     </Transition>
 
+    <!-- Job Listings -->
     <div class="job-listings">
       <Transition name="fade" appear>
         <h2>Job Listing</h2>
       </Transition>
       
+      <!-- Loading State -->
+      <div v-if="isLoading" class="loading">Loading jobs...</div>
+      
+      <!-- Error State -->
+      <div v-if="error" class="error">{{ error }}</div>
+      
+      <!-- Empty State -->
+      <div v-if="!isLoading && !error && filteredJobs.length === 0" class="empty">
+        No jobs found matching your criteria
+      </div>
+      
+      <!-- Job List -->
       <TransitionGroup name="list" tag="div" class="job-list">
         <JobCard 
           v-for="job in paginatedJobs" 
@@ -41,8 +49,9 @@
         />
       </TransitionGroup>
      
+      <!-- Pagination Controls -->
       <Transition name="fade" appear>
-        <div class="pagination-controls">
+        <div v-if="filteredJobs.length > 0" class="pagination-controls">
           <button 
             @click="prevPage" 
             :disabled="currentPage === 1"
@@ -76,57 +85,234 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-
-
-import JobCard from '@/components/jobs/ JobCard.vue'
-import JobFilters from '@/components/jobs/JobFilters.vue'
+import axios from 'axios'
+import JobCard from '../../components/jobs/ JobCard.vue'
+import JobFilters from '../../components/jobs/JobFilters.vue'
 import dayjs from 'dayjs'
 
-const jobs = ref([])       
+const jobs = ref([])
+const locations = ref([]) // سيتم ملؤها من API
+const categories = ref([]) // سيتم ملؤها من API
+const experienceLevels = ref(['Entry', 'Mid', 'Senior']) // أو جلبها من API
 const filterCriteria = ref({})
 const currentPage = ref(1)
-const itemsPerPage = ref(6) 
+const itemsPerPage = ref(6)
+const isLoading = ref(false)
+const error = ref(null)
 
-onMounted(async () => {
+const salaryRanges = ref([
+  'Any',
+  '< 5000',
+  '5000 - 10000',
+  '> 10000'
+]);
+
+const timeFilters = ref([
+  'Any',
+  'Last 24 Hours',
+  'Last 7 Days',
+  'Last 30 Days'
+]);
+
+
+// جلب جميع البيانات المطلوبة
+const fetchInitialData = async () => {
+  isLoading.value = true
   try {
-    const res = await fetch('http://localhost:3000/jobs') 
-    const data = await res.json()
-    jobs.value = data
+    const [jobsRes, categoriesRes] = await Promise.all([
+      axios.get('http://localhost:8000/api/jobs'),
+      axios.get('http://localhost:8000/api/categories')
+    ])
+    
+    jobs.value = jobsRes.data.data || []
+    categories.value = categoriesRes.data.data || []
+    
+    // استخراج الدول الفريدة من الوظائف
+    locations.value = [...new Set(jobs.value.map(job => job.location))]
   } catch (err) {
-    console.error('Error fetching jobs:', err)
+    console.error('Error fetching data:', err)
+    error.value = 'Failed to load data. Please try again later.'
+  } finally {
+    isLoading.value = false
   }
-})
-
-const applyFilter = (filters) => {
-  filterCriteria.value = filters
-  currentPage.value = 1 
 }
 
+// const jobs = ref([])       
+// const filterCriteria = ref({})
+// const currentPage = ref(1)
+// const itemsPerPage = ref(6)
+// const isLoading = ref(false)
+// const error = ref(null)
+
+// Fetch jobs from API
+const fetchJobs = async () => {
+  isLoading.value = true
+  error.value = null
+  try {
+    const response = await axios.get('http://localhost:8000/api/jobs')
+    jobs.value = response.data.data || []
+  } catch (err) {
+    console.error('Error fetching jobs:', err)
+    error.value = 'Failed to load jobs. Please try again later.'
+    jobs.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Apply filters
+// const applyFilter = async (filters) => {
+//   isLoading.value = true
+//   error.value = null
+//   try {
+//     // Use the main jobs endpoint with filter parameters
+//     const response = await axios.get('http://localhost:8000/api/jobs', {
+//       params: {
+//         keyword: filters.keyword,
+//         location: filters.location,
+//         experience_level: filters.experience, // Note: changed to experience_level
+//         category_id: filters.category,
+//         salary_min: filters.salary?.split('-')[0],
+//         salary_max: filters.salary?.split('-')[1],
+//         posted_within_days: filters.datePosted
+//       }
+//     })
+    
+//     jobs.value = response.data.data || [] // Note: changed to response.data.data
+//     filterCriteria.value = filters
+//     currentPage.value = 1
+//   } catch (err) {
+//     console.error('Error filtering jobs:', err)
+//     error.value = 'Failed to apply filters. Please try again.'
+//     jobs.value = []
+//   } finally {
+//     isLoading.value = false
+//   }
+// }
+const applyFilter = async (filters) => {
+  isLoading.value = true
+  error.value = null
+  try {
+    // تحضير معاملات الفلترة
+    const params = {
+      keyword: filters.keyword || undefined,
+      location: filters.location || undefined,
+      experience_level: filters.experience || undefined,
+      category_id: filters.category || undefined
+    }
+
+    // معالجة فلتر الراتب
+    if (filters.salary) {
+      const [min, max] = filters.salary.split('-').map(Number)
+      if (!isNaN(min)) params.salary_min = min
+      if (!isNaN(max)) params.salary_max = max
+    }
+
+    // معالجة فلتر التاريخ
+    if (filters.datePosted) {
+      params.posted_within_days = Number(filters.datePosted)
+    }
+
+    // إزالة المعاملات غير المعرفة
+    Object.keys(params).forEach(key => params[key] === undefined && delete params[key])
+
+    const response = await axios.get('http://localhost:8000/api/jobs', { params })
+    jobs.value = response.data.data || []
+    filterCriteria.value = filters
+    currentPage.value = 1
+  } catch (err) {
+    console.error('Error filtering jobs:', err)
+    error.value = 'Failed to apply filters. Please try again.'
+    jobs.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+// Computed properties
+// const filteredJobs = computed(() => {
+//   if (!jobs.value.length) return []
+  
+//   return jobs.value.filter(job => {
+//     const f = filterCriteria.value
+
+//     const matchKeyword = !f.keyword || 
+//       (job.title?.toLowerCase().includes(f.keyword.toLowerCase()) || 
+//        job.description?.toLowerCase().includes(f.keyword.toLowerCase()))
+    
+//     const matchLocation = !f.location || job.location === f.location
+//     const matchCategory = !f.category || job.category_id == f.category
+//     const matchExperience = !f.experience || job.experience_level === f.experience
+    
+//     const matchSalary = !f.salary || (() => {
+//       if (!job.salary_range) return false
+//       const [min, max] = f.salary.split('-').map(Number)
+//       const [jobMin, jobMax] = job.salary_range.split('-').map(Number)
+//       return jobMin >= min && jobMax <= max
+//     })()
+    
+//     const matchDate = !f.datePosted || (() => {
+//       if (!job.created_at) return false
+//       const days = Number(f.datePosted)
+//       const postedDate = dayjs(job.created_at)
+//       return postedDate.isAfter(dayjs().subtract(days, 'day'))
+//     })()
+
+//     return matchKeyword && matchLocation && matchCategory && 
+//            matchExperience && matchSalary && matchDate
+//   })
+// })
+
+
 const filteredJobs = computed(() => {
+  if (!jobs.value.length) return []
+  
   return jobs.value.filter(job => {
     const f = filterCriteria.value
 
-    const matchKeyword = !f.keyword || job.title.toLowerCase().includes(f.keyword.toLowerCase()) || job.description.toLowerCase().includes(f.keyword.toLowerCase())
-    const matchLocation = !f.location || job.location === f.location
-    const matchCategory = !f.category || job.category === f.category
-    const matchExperience = !f.experience || job.experience_level === f.experience
+    
+    const matchKeyword = !f.keyword || 
+      (job.title?.toLowerCase().includes(f.keyword.toLowerCase()) || 
+      job.description?.toLowerCase().includes(f.keyword.toLowerCase()))
+    
+ 
+    const matchLocation = !f.location || 
+      job.location?.toLowerCase().includes(f.location.toLowerCase())
+    
+ 
+    const matchCategory = !f.category || 
+      job.category_id?.toString() === f.category.toString()
+ 
+    const matchExperience = !f.experience || 
+      job.experience_level?.toLowerCase() === f.experience.toLowerCase()
+    
+    
     const matchSalary = !f.salary || (() => {
-      const [min, max] = f.salary.split('-').map(Number)
-      const [jobMin, jobMax] = job.salary_range.split('-').map(Number)
-      return jobMin >= min && jobMax <= max
+      if (!job.salary) return false
+      const salary = Number(job.salary)
+      if (isNaN(salary)) return false
+      
+      if (f.salary === '<5000') return salary < 5000
+      if (f.salary === '5000-10000') return salary >= 5000 && salary <= 10000
+      if (f.salary === '>10000') return salary > 10000
+      return true
     })()
+    
+   
     const matchDate = !f.datePosted || (() => {
+      if (!job.created_at) return false
       const days = Number(f.datePosted)
+      if (isNaN(days)) return true
       const postedDate = dayjs(job.created_at)
       return postedDate.isAfter(dayjs().subtract(days, 'day'))
     })()
 
-    return matchKeyword && matchLocation && matchCategory && matchExperience && matchSalary && matchDate
+    return matchKeyword && matchLocation && matchCategory && 
+           matchExperience && matchSalary && matchDate
   })
 })
-
 const totalPages = computed(() => {
   return Math.ceil(filteredJobs.value.length / itemsPerPage.value)
 })
@@ -135,15 +321,6 @@ const paginatedJobs = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
   return filteredJobs.value.slice(start, end)
-})
-
-const startItem = computed(() => {
-  return (currentPage.value - 1) * itemsPerPage.value + 1
-})
-
-const endItem = computed(() => {
-  const end = currentPage.value * itemsPerPage.value
-  return end > filteredJobs.value.length ? filteredJobs.value.length : end
 })
 
 
@@ -165,7 +342,14 @@ const goToPage = (page) => {
   currentPage.value = page
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
+
+onMounted(() => {
+  fetchInitialData()
+})
+
 </script>
+
 <style scoped>
 .hero-section {
   background: #047fec; 

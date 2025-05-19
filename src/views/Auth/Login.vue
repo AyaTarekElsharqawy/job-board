@@ -33,7 +33,6 @@
 
 <script>
 import axios from 'axios';
-import bcrypt from 'bcryptjs';
 import AuthForm from './AuthForm.vue';
 
 export default {
@@ -46,32 +45,25 @@ export default {
   methods: {
     async loginUser({ email, password }) {
       try {
-        // Step 1: Get user by email only
-        const response = await axios.get('http://localhost:3000/users', {
-          params: { email }
+        const response = await axios.post('http://localhost:8000/api/login', {
+          email,
+          password
         });
 
-        const user = response.data[0];
+        const { token, user } = response.data;
 
-        if (!user) {
-          this.alertMessage = 'Invalid email or password.';
-          return;
-        }
-
-        // Step 2: Compare entered password with hashed password in db
-        const passwordMatch = await bcrypt.compare(password, user.password);
-
-        if (!passwordMatch) {
-          this.alertMessage = 'Invalid email or password.';
-          return;
-        }
-
-        // Login success
-        localStorage.setItem('token', 'fake-jwt-token');
+       
+        localStorage.setItem('token', token);
         localStorage.setItem('role', user.role);
+
+     
         this.$router.push(`/${user.role}/dashboard`);
       } catch (error) {
-        this.alertMessage = 'Server error. Please try again later.';
+        if (error.response && error.response.data.message) {
+          this.alertMessage = error.response.data.message;
+        } else {
+          this.alertMessage = 'Server error. Please try again later.';
+        }
         console.error(error);
       }
     }
@@ -83,49 +75,16 @@ export default {
 @import 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
 @import 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css';
 
-/* Body Background */
 body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Login page container with background */
 .login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Ensures the login form is vertically centered */
-  background: url('https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-business-simple-exhibition-board-jobs-image_22339.jpg') no-repeat center center fixed;
-  background-size: cover;
-  background-attachment: fixed;
-}
-
-/* Auth box styling */
-.auth-box {
-  width: 100%;
-  max-width: 420px;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.9); /* Slight transparency to make the background visible */
-  border-radius: 15px;
-}
-
-/* Logo styling */
-.logo-img {
-  height: 80px;
-}
-
-/* Focused input field styling */
-input.form-control:focus,
-select.form-select:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-  transition: all 0.3s ease;
-}
-
-/* Button styling */
-button {
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  min-height: 100vh;
 }
 </style>

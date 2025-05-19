@@ -123,7 +123,7 @@ const routes = [
     component: AdminJobs,
     meta: { requiresAuth: true } 
 },
-{ path: '/admin/applications',
+ { path: '/admin/applications',
      component: AdminApplications,
       meta: { requiresAuth: true } 
 },

@@ -52,11 +52,11 @@ export default {
 
         const { token, user } = response.data;
 
-        // Save token and role to localStorage
+       
         localStorage.setItem('token', token);
-        localStorage.setItem('user', user);
+        localStorage.setItem('role', user.role);
 
-        // Navigate based on role
+     
         this.$router.push(`/${user.role}/dashboard`);
       } catch (error) {
         if (error.response && error.response.data.message) {
@@ -82,7 +82,7 @@ body {
 }
 
 .login-page {
-  display: flex;
+   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;

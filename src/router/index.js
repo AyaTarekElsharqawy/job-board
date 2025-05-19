@@ -7,6 +7,15 @@ import JobForm from '@/views/Employer/JobForm.vue'
 import EmployerHome from '@/views/Employer/EmployerHome.vue'
 import JobDetails from '../views/jobs/JopDetails.vue'
 import EmployerProfile from '../views/Employer/EmployerProfile.vue'
+import AdminLogin from '../views/Admin/Login_test.vue';
+import AdminJobs from '../views/Admin/AdminJobs.vue';
+import Dashboard from '../views/Admin/Dashboard.vue';  
+import AdminComments from '../views/Admin/AdminComments.vue';
+import AdminApplications from '../views/Admin/AdminApplications.vue';
+import AdminAnalytics from '../views/Admin/AdminAnalytics.vue';
+import AdminFilters from '../views/Admin/AdminFilters.vue';
+import AdminPayments from '../views/Admin/AdminPayments.vue';
+// import add from './views/Candidate/AddCandidate.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -23,7 +32,6 @@ const routes = [
     name: 'BrowseJobs',
     component: () => import('@/views/jobs/BrowsJobs.vue')
   }
-  
   // {
   //   path: '/job-details',
   //   name: 'job-details',
@@ -99,18 +107,70 @@ const routes = [
         name: 'CandidateProfile',
         component: () => import('@/views/Candidate/CandidateProfile.vue')
       },
-      {
-        path: 'resume',
-        name: 'CandidateResume',
-        component: () => import('@/views/Candidate/MyResume.vue')
-      },
+      // {
+      //   path: 'add',
+      //   name: 'add',
+      //   component: () => import('@/views/Candidate/CandidateProfile.vue')// abanouuub---------------------
+      // },
       {
         path: 'my-applications',
         name: 'MyApplications',
         component: () => import('@/views/Candidate/MyApplications.vue')
       },
     ]
+  },
+  {
+   path: '/admin/login',
+  name: 'AdminLogin',
+  component: AdminLogin,
+},
+   { path: '/admin/jobs',
+    component: AdminJobs,
+    meta: { requiresAuth: true } 
+},
+ { path: '/admin/applications',
+     component: AdminApplications,
+      meta: { requiresAuth: true } 
+},
+
+{ path: '/admin/comments',
+     component: AdminComments,
+      meta: { requiresAuth: true } },
+
+      { path: '/admin/analytics',
+         component: AdminAnalytics,
+          meta: { requiresAuth: true } 
+        },
+
+          { path: '/admin/filters', 
+            component: AdminFilters,
+             meta: { requiresAuth: true } 
+            },
+
+
+  
+  { path: '/admin/payments',
+     component: AdminPayments,
+      meta: { requiresAuth: true } },
+
+
+      
+        
+
+  {
+    path: '/admin/dashboard',
+    name: 'Dashboard',
+    component: Dashboard, 
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        next();  
+      } else {
+        next('/login');  
+      }
+    }
   }
+
 ];
 
 const router = createRouter({

@@ -6,7 +6,7 @@ import EmployerDashboard from '@/views/Employer/EmployerDashboard.vue'
 import JobForm from '@/views/Employer/JobForm.vue'
 import EmployerHome from '@/views/Employer/EmployerHome.vue'
 import JobDetails from '../views/jobs/JopDetails.vue'
-
+import EmployerProfile from '../views/Employer/EmployerProfile.vue'
 
 const routes = [
   { path: '/', component: Home },
@@ -62,6 +62,11 @@ const routes = [
         path: 'applications',
         name: 'Applications',
         component: () => import('@/views/Employer/ApplicationList.vue')
+      },
+      {
+        path: 'profile',
+        name: 'EmployerProfile',
+        component: EmployerProfile
       }
             
     ]

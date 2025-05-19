@@ -1,6 +1,6 @@
 export default function RoleGuard(to, from, next) {
     const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
+    const role = localStorage.getItem('user').role;
   
     if (!token) return next('/login');
   

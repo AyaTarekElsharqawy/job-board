@@ -15,14 +15,9 @@
     
     <div class="nav-links" :class="{ 'active': isMenuOpen }">
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/browse-jobs">Browse Job</RouterLink>
+    
       
-      <div class="dropdown">
-        <button class="dropbtn">Pages</button>
-        <div class="dropdown-content">
-          <RouterLink to="/candidates">Candidates</RouterLink>
-        </div>
-      </div>
+    
       
       <div class="auth-buttons">
         <RouterLink to="/login" class="login-btn">Log in</RouterLink>

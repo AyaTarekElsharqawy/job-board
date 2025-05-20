@@ -45,6 +45,7 @@
 <script>
 import AuthForm from './AuthForm.vue';
 import bcrypt from 'bcryptjs';
+import axios from 'axios';
 
 export default {
   components: { AuthForm },
@@ -80,13 +81,18 @@ const newUser = {
 };
 
 
-        const response = await fetch('http://localhost:3000/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newUser)
-        });
+
+const response = await axios.post('http://127.0.0.1:8000/api/register', {
+  name,
+  email,
+  phone: formData.phone,
+  password: formData.password,
+  password_confirmation: formData.password_confirmation,
+  role,
+  profile_picture: image,
+});
+
+
 
         if (response.ok) {
           this.alertMessage = 'Registration successful! Redirecting to login…';

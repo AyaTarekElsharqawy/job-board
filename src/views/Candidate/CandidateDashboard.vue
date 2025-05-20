@@ -68,11 +68,12 @@ export default {
       applications: candidateStore.candidates[0]?.applications || []
     }));
 
-    const menuItems = ref([
-      { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
-      { path: '/candidate/profile', icon: 'lni lni-user', title: 'Profile' },
-      { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' },
-    ]);
+   const menuItems = ref([
+  { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
+  { path: '/candidate/add',       icon: 'lni lni-plus',      title: 'Add Candidate' },
+  { path: '/candidate/profile',   icon: 'lni lni-user',      title: 'Profile' },
+  { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' },
+]);
 
     const logout = () => {
       router.push('/login');

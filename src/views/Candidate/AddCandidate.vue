@@ -1,178 +1,299 @@
 <template>
   <div class="container mt-5">
-    <div class="card shadow-lg">
-      <div class="card-body">
-        <h2 class="card-title mb-4 text-primary">Add New Candidate</h2>
-        <form @submit.prevent="submitForm" novalidate :class="{ 'was-validated': wasValidated }">
-          <div class="row g-3">
-            <!-- Full Name -->
-            <div class="col-md-6">
-              <label class="form-label">Full Name</label>
-              <input type="text" v-model="form.name" class="form-control" required />
-              <div class="invalid-feedback">Full name is required.</div>
-            </div>
-
-            <!-- Email -->
-            <div class="col-md-6">
-              <label class="form-label">Email</label>
-              <input type="email" v-model="form.email" class="form-control" required />
-              <div class="invalid-feedback">Valid email is required.</div>
-            </div>
-
-            <!-- Phone -->
-            <div class="col-md-6">
-              <label class="form-label">Phone</label>
-              <input type="text" v-model="form.phone" class="form-control" required />
-              <div class="invalid-feedback">Phone number is required.</div>
-            </div>
-
-            <!-- Location -->
-            <div class="col-md-6">
-              <label class="form-label">Location</label>
-              <input type="text" v-model="form.location" class="form-control" required />
-              <div class="invalid-feedback">Location is required.</div>
-            </div>
-
-            <!-- LinkedIn -->
-            <div class="col-md-6">
-              <label class="form-label">LinkedIn Profile</label>
-              <input type="url" v-model="form.linkedin_profile" class="form-control" required />
-              <div class="invalid-feedback">Valid LinkedIn URL is required.</div>
-            </div>
-
-            <!-- Experience Level -->
-            <div class="col-md-6">
-              <label class="form-label">Experience Level</label>
-              <select v-model="form.experience_level" class="form-select" required>
-                <option value="">Select level</option>
-                <option value="junior">Junior</option>
-                <option value="mid">Mid-Level</option>
-                <option value="senior">Senior</option>
-              </select>
-              <div class="invalid-feedback">Experience level is required.</div>
-            </div>
-
-            <!-- Title -->
-            <div class="col-md-6">
-              <label class="form-label">Professional Title</label>
-              <input type="text" v-model="form.title" class="form-control" required />
-              <div class="invalid-feedback">Title is required.</div>
-            </div>
-
-            <!-- Profile Photo URL -->
-            <div class="col-md-6">
-              <label class="form-label">Profile Photo URL</label>
-              <input type="url" v-model="form.profile_photo" class="form-control" required />
-              <div class="invalid-feedback">Valid photo URL is required.</div>
-            </div>
-
-            <!-- Skills -->
-            <div class="col-12">
-              <label class="form-label">Skills (comma-separated)</label>
-              <input type="text" v-model="form.skills" class="form-control" required />
-              <div class="invalid-feedback">At least one skill is required.</div>
-            </div>
-
-            <!-- Experience -->
-            <div class="col-12">
-              <label class="form-label">Experience</label>
-              <textarea v-model="form.experience" class="form-control" rows="3" required></textarea>
-              <div class="invalid-feedback">Experience is required and must be valid JSON.</div>
-            </div>
-
-            <!-- Education -->
-            <div class="col-12">
-              <label class="form-label">Education</label>
-              <textarea v-model="form.education" class="form-control" rows="3" required></textarea>
-              <div class="invalid-feedback">Education is required and must be valid JSON.</div>
-            </div>
+    <h2 class="text-center mb-4">Add New Candidate Profile</h2>
+    <div class="card shadow-lg p-4">
+      <form @submit.prevent="submitProfile" novalidate>
+        <div class="row g-3">
+          <!-- Full Name -->
+          <div class="col-md-6">
+            <label for="name" class="form-label">Full Name</label>
+            <input
+              id="name"
+              v-model="profile.name"
+              type="text"
+              class="form-control"
+            />
+            <div v-if="errors.name" class="text-danger">{{ errors.name }}</div>
           </div>
 
-          <div class="mt-4">
-            <button type="submit" class="btn btn-primary w-100">Submit</button>
+          <!-- Email -->
+          <div class="col-md-6">
+            <label for="email" class="form-label">Email</label>
+            <input
+              id="email"
+              v-model="profile.email"
+              type="email"
+              class="form-control"
+            />
+            <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
           </div>
-        </form>
-      </div>
+
+          <!-- Phone -->
+          <div class="col-md-6">
+            <label for="phone" class="form-label">Phone</label>
+            <input
+              id="phone"
+              v-model="profile.phone"
+              type="text"
+              class="form-control"
+            />
+            <div v-if="errors.phone" class="text-danger">{{ errors.phone }}</div>
+          </div>
+
+          <!-- Location -->
+          <div class="col-md-6">
+            <label for="location" class="form-label">Location</label>
+            <input
+              id="location"
+              v-model="profile.location"
+              type="text"
+              class="form-control"
+            />
+            <div v-if="errors.location" class="text-danger">{{ errors.location }}</div>
+          </div>
+
+          <!-- LinkedIn -->
+          <div class="col-12">
+            <label for="linkedin_profile" class="form-label">LinkedIn Profile URL</label>
+            <input
+              id="linkedin_profile"
+              v-model="profile.linkedin_profile"
+              type="url"
+              class="form-control"
+              placeholder="https://linkedin.com/in/..."
+            />
+            <div v-if="errors.linkedin_profile" class="text-danger">{{ errors.linkedin_profile }}</div>
+          </div>
+
+          <!-- Professional Title -->
+          <div class="col-md-6">
+            <label for="title" class="form-label">Professional Title</label>
+            <input
+              id="title"
+              v-model="profile.title"
+              type="text"
+              class="form-control"
+            />
+            <div v-if="errors.title" class="text-danger">{{ errors.title }}</div>
+          </div>
+
+          <!-- Experience Level -->
+          <div class="col-md-6">
+            <label for="experience_level" class="form-label">Experience Level</label>
+            <select
+              id="experience_level"
+              v-model="profile.experience_level"
+              class="form-select"
+            >
+              <option value="">Select one</option>
+              <option value="junior">Junior</option>
+              <option value="mid">Mid‑Level</option>
+              <option value="senior">Senior</option>
+            </select>
+            <div v-if="errors.experience_level" class="text-danger">{{ errors.experience_level }}</div>
+          </div>
+
+          <!-- Skills -->
+          <div class="col-12">
+            <label for="skills" class="form-label">Skills (comma‑separated)</label>
+            <input
+              id="skills"
+              v-model="profile.skills"
+              type="text"
+              class="form-control"
+              placeholder="JavaScript, Vue.js, PHP"
+            />
+            <div v-if="errors.skills" class="text-danger">{{ errors.skills }}</div>
+          </div>
+
+          <!-- Profile Photo URL -->
+          <div class="col-12">
+            <label for="profile_photo" class="form-label">Profile Photo URL</label>
+            <input
+              id="profile_photo"
+              v-model="profile.profile_photo"
+              type="url"
+              class="form-control"
+              placeholder="https://example.com/photo.jpg"
+            />
+            <div v-if="errors.profile_photo" class="text-danger">{{ errors.profile_photo }}</div>
+          </div>
+
+          <!-- Experience Entries -->
+          <div class="col-12">
+            <label class="form-label">Experience</label>
+            <div v-for="(exp, idx) in experienceList" :key="idx" class="mb-3 border p-3 rounded">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <input
+                    v-model="exp.title"
+                    type="text"
+                    placeholder="Job Title"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <input
+                    v-model="exp.company"
+                    type="text"
+                    placeholder="Company"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <input
+                    v-model="exp.duration"
+                    type="text"
+                    placeholder="e.g. 2019 - 2022"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-md-1">
+                  <button @click.prevent="removeExperience(idx)" type="button" class="btn btn-danger w-100">—</button>
+                </div>
+              </div>
+            </div>
+            <button @click.prevent="addExperience" type="button" class="btn btn-secondary">+ Add Experience</button>
+          </div>
+
+          <!-- Education Entries -->
+          <div class="col-12">
+            <label class="form-label">Education</label>
+            <div v-for="(edu, idx) in educationList" :key="idx" class="mb-3 border p-3 rounded">
+              <div class="row g-2">
+                <div class="col-md-5">
+                  <input
+                    v-model="edu.degree"
+                    type="text"
+                    placeholder="Degree"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-md-5">
+                  <input
+                    v-model="edu.institution"
+                    type="text"
+                    placeholder="Institution"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-md-2">
+                  <button @click.prevent="removeEducation(idx)" type="button" class="btn btn-danger w-100">—</button>
+                </div>
+              </div>
+            </div>
+            <button @click.prevent="addEducation" type="button" class="btn btn-secondary">+ Add Education</button>
+          </div>
+
+          <!-- Submit -->
+          <div class="col-12 text-end mt-4">
+            <button type="submit" class="btn btn-primary">Create Profile</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script setup>
+import { reactive, ref } from 'vue'
+import axios from 'axios'
+import { useAuthStore } from '@/stores/useAuthStore'
 
-export default {
-  name: 'AddCandidate',
-  data() {
-    return {
-      wasValidated: false,
-      form: {
-        name: '',
-        email: '',
-        phone: '',
-        location: '',
-        linkedin_profile: '',
-        experience_level: '',
-        profile_photo: '',
-        title: '',
-        skills: '',
-        experience: '',
-        education: '',
-      }
-    };
-  },
-  methods: {
-    isValidJSON(str) {
-      try {
-        JSON.parse(str);
-        return true;
-      } catch {
-        return false;
-      }
-    },
-    async submitForm() {
-      this.wasValidated = true;
+const authStore = useAuthStore()
 
-      const formEl = this.$el.querySelector('form');
+// reactive data
+const profile = reactive({
+  user_id: authStore.user.id,
+  name: '',
+  email: '',
+  phone: '',
+  location: '',
+  linkedin_profile: '',
+  title: '',
+  experience_level: '',
+  skills: '',
+  profile_photo: ''
+})
 
-      // Manual validation for JSON fields
-      const experienceValid = this.isValidJSON(this.form.experience);
-      const educationValid = this.isValidJSON(this.form.education);
+const experienceList = ref([
+  { title: '', company: '', duration: '' }
+])
+const educationList = ref([
+  { degree: '', institution: '' }
+])
 
-      // Set custom validity for JSON fields if needed
-      const expField = formEl.querySelector('[v-model="form.experience"]');
-      const eduField = formEl.querySelector('[v-model="form.education"]');
+// validation errors
+const errors = reactive({
+  name: '',
+  email: '',
+  phone: '',
+  location: '',
+  linkedin_profile: '',
+  title: '',
+  experience_level: '',
+  skills: '',
+  profile_photo: ''
+})
 
-      if (!experienceValid) expField.setCustomValidity("Invalid JSON");
-      else expField.setCustomValidity("");
+const urlRegex = /^(https?:\/\/)[^\s]+$/
 
-      if (!educationValid) eduField.setCustomValidity("Invalid JSON");
-      else eduField.setCustomValidity("");
+function addExperience() {
+  experienceList.value.push({ title: '', company: '', duration: '' })
+}
+function removeExperience(i) {
+  if (experienceList.value.length > 1) experienceList.value.splice(i, 1)
+}
+function addEducation() {
+  educationList.value.push({ degree: '', institution: '' })
+}
+function removeEducation(i) {
+  if (educationList.value.length > 1) educationList.value.splice(i, 1)
+}
 
-      if (!formEl.checkValidity()) {
-        return;
-      }
+async function submitProfile() {
+  // reset errors
+  Object.keys(errors).forEach(k => (errors[k] = ''))
 
-      try {
-        const payload = {
-          ...this.form,
-          skills: this.form.skills.split(',').map(s => s.trim()),
-          experience: JSON.parse(this.form.experience),
-          education: JSON.parse(this.form.education),
-        };
-        await axios.post('/api/candidates', payload);
-        alert('Candidate added successfully!');
-        this.$router.push('/candidates');
-      } catch (error) {
-        console.error(error);
-        alert('Error adding candidate.');
-      }
-    }
+  // simple validations
+  if (!profile.name) errors.name = 'Required'
+  if (!profile.email) errors.email = 'Required'
+  if (!profile.phone) errors.phone = 'Required'
+  if (!profile.location) errors.location = 'Required'
+  if (profile.linkedin_profile && !urlRegex.test(profile.linkedin_profile))
+    errors.linkedin_profile = 'Invalid URL'
+  if (!profile.title) errors.title = 'Required'
+  if (!profile.experience_level) errors.experience_level = 'Required'
+  if (!profile.skills) errors.skills = 'Required'
+  if (profile.profile_photo && !urlRegex.test(profile.profile_photo))
+    errors.profile_photo = 'Invalid URL'
+
+  // if any errors, abort
+  if (Object.values(errors).some(e => e)) return
+
+  // prepare payload
+  const payload = {
+    ...profile,
+    skills: profile.skills.split(',').map(s => s.trim()),
+    experience: experienceList.value.filter(e => e.title && e.company),
+    education: educationList.value.filter(e => e.degree && e.institution)
   }
-};
+
+  try {
+    await axios.post(
+      'http://localhost:8000/api/candidate-profiles',
+      payload,
+      { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+    )
+    alert('Profile created successfully!')
+    // optional redirect: router.push('/candidate/profile/...')
+  } catch (err) {
+    console.error(err)
+    alert('Failed to create profile.')
+  }
+}
 </script>
 
 <style scoped>
-.card {
-  border-radius: 1rem;
-}
+.card { border-radius: 12px; }
 </style>

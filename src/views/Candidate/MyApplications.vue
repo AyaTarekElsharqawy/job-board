@@ -17,11 +17,28 @@
             'text-red-600 font-medium': application.status.toLowerCase() === 'rejected'
           }">{{ application.status }}</span>
         </p>
-        <p class="text-gray-500 text-sm mb-1">Location: {{ application.job.location }}</p>
-        <p class="text-gray-500 text-sm">Deadline: {{ new Date(application.job.deadline).toLocaleDateString() }}</p>
         <div class="mt-4 flex space-x-3">
           <button @click="viewJobDetails(application.job.id)" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">View Details</button>
-          <button v-if="application.status.toLowerCase() === 'pending'" @click="cancelApplication(application.id)" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">Cancel</button>
+          <button v-if="application.status.toLowerCase() === 'pending'" @click="openCancelModal(application.id)" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="cancelApplicationModal" tabindex="-1" aria-labelledby="cancelApplicationModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cancelApplicationModalLabel">Confirm Cancellation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to cancel this application?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger" @click="confirmCancelApplication">Confirm</button>
+          </div>
         </div>
       </div>
     </div>
@@ -33,6 +50,7 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApplicationStore } from '@/stores/applicationStore'
+import { Modal } from 'bootstrap'; 
 
 const router = useRouter()
 const applicationStore = useApplicationStore()
@@ -40,6 +58,7 @@ const applications = ref([])
 const loading = ref(false)
 const error = ref(null)
 const currentUserId = 'c7a6'
+const selectedApplicationId = ref(null) 
 
 onMounted(async () => {
   loading.value = true
@@ -58,18 +77,25 @@ const viewJobDetails = (jobId) => {
   router.push({ name: 'JobDetails', params: { id: jobId } })
 }
 
-const cancelApplication = async (applicationId) => {
-  if (confirm('Are you sure you want to cancel this application?')) {
-    try {
-      await applicationStore.deleteApplication(applicationId)
-      applications.value = applications.value.filter(app => app.id !== applicationId)
-    } catch (err) {
-      error.value = 'Failed to cancel application'
-      console.error(err)
-    }
+const openCancelModal = (applicationId) => {
+  selectedApplicationId.value = applicationId 
+  const modal = new Modal(document.getElementById('cancelApplicationModal'))
+  modal.show()
+}
+
+const confirmCancelApplication = async () => {
+  try {
+    await applicationStore.deleteApplication(selectedApplicationId.value)
+    applications.value = applications.value.filter(app => app.id !== selectedApplicationId.value)
+    const modal = Modal.getInstance(document.getElementById('cancelApplicationModal'))
+    modal.hide()
+  } catch (err) {
+    error.value = 'Failed to cancel application'
+    console.error(err)
   }
 }
 </script>
+
 <style scoped>
 .applications-page {
   background-color: #f9fafb;

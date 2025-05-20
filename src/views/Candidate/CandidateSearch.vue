@@ -21,7 +21,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import CandidateJobCard from '@/components/Candidate/CandidateJobCard.vue'
 import JobFilter from '@/components/jobs/JobFilters.vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'

@@ -6,6 +6,7 @@
             <router-link class="list-group-item list-group-item-action" :to="{ name: 'JobForm' }">Post a Job</router-link>
             <router-link class="list-group-item list-group-item-action" :to="{ name: 'JobList' }">Job Listings</router-link>
             <router-link class="list-group-item list-group-item-action" :to="{ name: 'Applications' }">Applications</router-link>
+            <router-link class="list-group-item list-group-item-action" :to="{ name: 'EmployerProfile' }">My Profile</router-link>
         </div>
     </aside>
   </div>

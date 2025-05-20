@@ -9,7 +9,7 @@
             <span class="location">{{ job.location }}</span>
             <span class="experience">{{ job.experience_level }}</span>
             <span class="work-type">{{ job.work_type }}</span>
-            <span class="salary">{{ formatSalary(job.salary_range) }}</span>
+            <span class="salary">{{ formatSalary(job.salary) }}</span>
           </div>
         </div>
 

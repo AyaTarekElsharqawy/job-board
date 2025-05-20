@@ -16,6 +16,7 @@ import AdminAnalytics from '../views/Admin/AdminAnalytics.vue';
 import AdminFilters from '../views/Admin/AdminFilters.vue';
 import AdminPayments from '../views/Admin/AdminPayments.vue';
 // import add from './views/Candidate/AddCandidate.vue';
+import AddProfile from '@/views/Employer/AddProfile.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -75,6 +76,11 @@ const routes = [
         path: 'profile',
         name: 'EmployerProfile',
         component: EmployerProfile
+      },
+      {
+        path: 'add-employer-profile',
+        name: 'AddProfile',
+        component: AddProfile
       }
             
     ]

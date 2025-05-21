@@ -52,11 +52,9 @@
       </div>
     </Transition>
 
-  
     <div v-if="isLoading" class="loading-state">
       <p>Loading job details...</p>
     </div>
-
 
     <div v-if="error" class="error-state">
       <p>{{ error }}</p>
@@ -64,103 +62,123 @@
     </div>
 
     <Transition name="fade" appear>
-  <div v-if="showForm" class="modal-overlay" @click.self="closeForm">
-    <div class="application-modal">
-      <button class="close-button" @click="closeForm">&times;</button>
-      
-      
-<JobComments />
-<h2 class="mb-4">Apply for {{ job.title }}</h2>
-      
-      <form 
-        @submit.prevent="submitApplication" 
-        class="application-form needs-validation" 
-        novalidate
-        ref="applicationForm"
-      >
-        
-
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input 
-            type="email" 
-            class="form-control" 
-            id="email" 
-            v-model="application.email" 
-            required
-            placeholder="Your email address"
+      <div v-if="showForm" class="modal-overlay" @click.self="closeForm">
+        <div class="application-modal">
+          <button class="close-button" @click="closeForm">&times;</button>
+          
+          <JobComments />
+          <h2 class="mb-4">Apply for {{ job.title }}</h2>
+          
+          <form 
+            @submit.prevent="submitApplication" 
+            class="application-form needs-validation" 
+            novalidate
+            ref="applicationForm"
           >
-          <div class="invalid-feedback">
-            Please provide a valid email.
-          </div>
-        </div>
+            <div class="mb-3">
+              <label for="name" class="form-label">Full Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="name" 
+                v-model="application.name" 
+                required
+                placeholder="Your full name"
+                :class="{ 'is-invalid': errors.name }"
+              >
+              <div class="invalid-feedback">
+                {{ errors.name || 'Please provide your full name.' }}
+              </div>
+            </div>
 
-        <div class="mb-3">
-          <label for="phone" class="form-label">Phone Number</label>
-          <input 
-            type="tel" 
-            class="form-control" 
-            id="phone" 
-            v-model="application.phone" 
-            required
-            placeholder="Your phone number"
-            pattern="[0-9]{10,15}"
-          >
-          <div class="invalid-feedback">
-            Please provide a valid phone number (10-15 digits).
-          </div>
-        </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                v-model="application.email" 
+                required
+                placeholder="Your email address"
+                :class="{ 'is-invalid': errors.email }"
+              >
+              <div class="invalid-feedback">
+                {{ errors.email || 'Please provide a valid email.' }}
+              </div>
+            </div>
 
-        <div class="mb-3">
-          <label for="resume" class="form-label">Resume (PDF/DOC)</label>
-          <input 
-            type="file" 
-            class="form-control" 
-            id="resume" 
-            @change="handleFileUpload" 
-            accept=".pdf,.doc,.docx" 
-            required
-          >
-          <div class="invalid-feedback">
-            Please upload your resume.
-          </div>
-        </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input 
+                type="tel" 
+                class="form-control" 
+                id="phone" 
+                v-model="application.phone" 
+                required
+                placeholder="Your phone number"
+                pattern="[0-9]{10,15}"
+                :class="{ 'is-invalid': errors.phone }"
+              >
+              <div class="invalid-feedback">
+                {{ errors.phone || 'Please provide a valid phone number (10-15 digits).' }}
+              </div>
+            </div>
 
-        <div class="mb-3">
-          <label for="cover-letter" class="form-label">Cover Letter</label>
-          <textarea 
-            class="form-control" 
-            id="cover-letter" 
-            v-model="application.coverLetter" 
-            rows="5" 
-            placeholder="Why are you a good fit for this position?"
-          ></textarea>
-        </div>
+            <div class="mb-3">
+              <label for="resume" class="form-label">Resume (PDF/DOC)</label>
+              <input 
+                type="file" 
+                class="form-control" 
+                id="resume" 
+                @change="handleFileUpload" 
+                accept=".pdf,.doc,.docx" 
+                required
+                :class="{ 'is-invalid': errors.resume }"
+              >
+              <div class="invalid-feedback">
+                {{ errors.resume || 'Please upload your resume.' }}
+              </div>
+            </div>
 
-        <button 
-          type="submit" 
-          class="btn btn-primary w-100"
-          :disabled="isSubmitting"
-        >
-          {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
-        </button>
+            <div class="mb-3">
+              <label for="cover-letter" class="form-label">Cover Letter</label>
+              <textarea 
+                class="form-control" 
+                id="cover-letter" 
+                v-model="application.coverLetter" 
+                rows="5" 
+                placeholder="Why are you a good fit for this position?"
+                :class="{ 'is-invalid': errors.coverLetter }"
+              ></textarea>
+              <div class="invalid-feedback">
+                {{ errors.coverLetter || 'Please provide a cover letter.' }}
+              </div>
+            </div>
 
-        <div 
-          v-if="submitMessage" 
-          class="alert mt-3" 
-          :class="submitSuccess ? 'alert-success' : 'alert-danger'"
-        >
-          {{ submitMessage }}
+            <button 
+              type="submit" 
+              class="btn btn-primary w-100"
+              :disabled="isSubmitting"
+            >
+              {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
+            </button>
+
+            <div 
+              v-if="submitMessage" 
+              class="alert mt-3" 
+              :class="submitSuccess ? 'alert-success' : 'alert-danger'"
+            >
+              {{ submitMessage }}
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
-</Transition>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -176,6 +194,14 @@ const showForm = ref(false)
 const isSubmitting = ref(false)
 const submitMessage = ref('')
 const submitSuccess = ref(false)
+const applicationForm = ref(null)
+const errors = ref({
+  name: '',
+  email: '',
+  phone: '',
+  resume: '',
+  coverLetter: ''
+})
 
 const application = ref({
   name: '',
@@ -184,7 +210,6 @@ const application = ref({
   resume: null,
   coverLetter: ''
 })
-
 
 const fetchJob = async () => {
   isLoading.value = true
@@ -214,36 +239,100 @@ const formattedSkills = computed(() => {
   return job.value.skills.split(',').map(skill => skill.trim())
 })
 
-
 const formattedTechnologies = computed(() => {
   if (!job.value?.technologies) return []
   return job.value.technologies.split(',').map(tech => tech.trim())
 })
-
 
 const getCategoryName = (categoryId) => {
   const category = categories.value.find(cat => cat.id === categoryId)
   return category ? category.name : 'Uncategorized'
 }
 
-
 const formatSalary = (salary) => {
   if (!salary) return 'Salary not specified'
   return `$${salary.toLocaleString()}`
 }
 
-
 const formatDate = (dateString) => {
   return dayjs(dateString).format('MMMM D, YYYY')
 }
 
-
 const handleFileUpload = (event) => {
-  application.value.resume = event.target.files[0]
+  const file = event.target.files[0]
+  if (file) {
+    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    
+    if (!validTypes.includes(file.type)) {
+      errors.value.resume = 'Please upload a PDF or DOC file.'
+      application.value.resume = null
+      return
+    }
+    
+    if (file.size > maxSize) {
+      errors.value.resume = 'File size should not exceed 5MB.'
+      application.value.resume = null
+      return
+    }
+    
+    errors.value.resume = ''
+    application.value.resume = file
+  }
+}
+
+const validateForm = () => {
+  let isValid = true
+  errors.value = {
+    name: '',
+    email: '',
+    phone: '',
+    resume: '',
+    coverLetter: ''
+  }
+
+  // Validate name
+  if (!application.value.name.trim()) {
+    errors.value.name = 'Full name is required.'
+    isValid = false
+  }
+
+  // Validate email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!application.value.email) {
+    errors.value.email = 'Email is required.'
+    isValid = false
+  } else if (!emailRegex.test(application.value.email)) {
+    errors.value.email = 'Please enter a valid email address.'
+    isValid = false
+  }
+
+  // Validate phone
+  const phoneRegex = /^[0-9]{10,15}$/
+  if (!application.value.phone) {
+    errors.value.phone = 'Phone number is required.'
+    isValid = false
+  } else if (!phoneRegex.test(application.value.phone)) {
+    errors.value.phone = 'Please enter a valid phone number (10-15 digits).'
+    isValid = false
+  }
+
+  // Validate resume
+  if (!application.value.resume) {
+    errors.value.resume = 'Resume is required.'
+    isValid = false
+  }
+
+  // Validate cover letter (optional)
+  // if (!application.value.coverLetter.trim()) {
+  //   errors.value.coverLetter = 'Cover letter is required.'
+  //   isValid = false
+  // }
+
+  return isValid
 }
 
 const handleApplyClick = async () => {
- 
   if (new Date(job.value.deadline) < new Date()) {
     submitMessage.value = 'This job is no longer accepting applications.'
     return
@@ -252,38 +341,48 @@ const handleApplyClick = async () => {
   const token = localStorage.getItem('token')
   
   if (!token) {
-  
     router.push('/login')
   } else {
-   
     showForm.value = true
-    
-   
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
     application.value.name = userData.name || ''
     application.value.email = userData.email || ''
     application.value.phone = userData.phone || ''
+    
+    await nextTick()
+    if (applicationForm.value) {
+      applicationForm.value.classList.remove('was-validated')
+    }
   }
 }
-
 
 const closeForm = () => {
   showForm.value = false
   submitMessage.value = ''
+  errors.value = {
+    name: '',
+    email: '',
+    phone: '',
+    resume: '',
+    coverLetter: ''
+  }
 }
 
 const submitApplication = async () => {
+  // Validate form
+  if (!validateForm()) {
+    await nextTick()
+    if (applicationForm.value) {
+      applicationForm.value.classList.add('was-validated')
+    }
+    return
+  }
+
   isSubmitting.value = true
   submitMessage.value = ''
   
   const token = localStorage.getItem('token')
   const jobId = route.params.id
-  
-  if (!application.value.resume) {
-    submitMessage.value = 'Please upload your resume file.'
-    isSubmitting.value = false
-    return
-  }
   
   try {
     const formData = new FormData()
@@ -307,7 +406,6 @@ const submitApplication = async () => {
     submitSuccess.value = true
     submitMessage.value = 'Application submitted successfully!'
     
- 
     setTimeout(() => {
       application.value = {
         name: '',
@@ -318,11 +416,23 @@ const submitApplication = async () => {
       }
       showForm.value = false
       submitMessage.value = ''
+      if (applicationForm.value) {
+        applicationForm.value.classList.remove('was-validated')
+      }
     }, 3000)
   } catch (error) {
     console.error('Full error response:', error.response)
     
     if (error.response?.status === 422) {
+      // Handle validation errors from server
+      const serverErrors = error.response.data.errors
+      if (serverErrors) {
+        for (const field in serverErrors) {
+          if (errors.value.hasOwnProperty(field)) {
+            errors.value[field] = serverErrors[field][0]
+          }
+        }
+      }
       submitMessage.value = 'Please check your inputs and try again.'
     } else if (error.response?.status === 409) {
       submitMessage.value = error.response.data.message || 

@@ -33,6 +33,8 @@ import AdminFilters from '@/views/Admin/AdminFilters.vue'
 import AdminPayments from '@/views/Admin/AdminPayments.vue'
 import JobDetailsView from '@/views/jobs/JobDetails.vue'
 const routes = [
+
+  // { path: '/yoyo', name: 'EmployerHome', component: EmployerHome },
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
@@ -42,12 +44,10 @@ const routes = [
     path: '/jobs/:id',
     component: JobDetailsView
   },
-
   {
     path: '/employer',
     component: EmployerDashboard,
     children: [
-      
       { path: '', name: 'EmployerHome', component: EmployerHome },
       { path: 'jobform', name: 'JobForm', component: JobForm },
       { path: 'joblist', name: 'JobList', component: JobList },
@@ -56,6 +56,8 @@ const routes = [
       { path: 'add-employer-profile', name: 'AddProfile', component: AddProfile }
     ]
   },
+  
+  
 
   {
     path: '/candidate',

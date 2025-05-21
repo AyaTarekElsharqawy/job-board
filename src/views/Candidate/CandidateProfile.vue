@@ -23,11 +23,7 @@
                       <i :class="item.icon"></i> {{ item.title }}
                     </router-link>
                   </li>
-                  <li>
-                    <a href="#" @click.prevent="logout" class="block py-2 px-4 text-gray-700 hover:bg-red-200 rounded">
-                      <i class="lni lni-exit"></i> Logout
-                    </a>
-                  </li>
+                 
                 </ul>
               </div>
             </div>

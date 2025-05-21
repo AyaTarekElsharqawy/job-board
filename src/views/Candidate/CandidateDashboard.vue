@@ -20,11 +20,7 @@
                       <i :class="item.icon"></i> {{ item.title }}
                     </router-link>
                   </li>
-                  <li>
-                    <a href="#" @click.prevent="logout" class="block py-2 px-4 text-gray-700 hover:bg-red-200 rounded">
-                      <i class="lni lni-exit"></i> Logout
-                    </a>
-                  </li>
+                
                 </ul>
               </div>
             </div>
@@ -50,7 +46,7 @@
 
 <script>
 import { useCandidateStore } from '@/stores/candidateStore';
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -59,14 +55,40 @@ export default {
     const candidateStore = useCandidateStore();
     const router = useRouter();
 
-    const loading = computed(() => candidateStore.loading);
-    const error = computed(() => candidateStore.error);
-    const candidate = computed(() => ({
-      name: "John Doe",
-      email: "johndoe@example.com",
+    const candidate = ref({
+      name: "",
+      email: "",
       profile_picture: "https://i.ibb.co/0jQ7J3T/candidate-avatar.jpg",
-      applications: candidateStore.candidates[0]?.applications || []
-    }));
+      applications: []
+    });
+
+    // دالة لقراءة البيانات من localStorage
+    const loadCandidateData = () => {
+      const storedUser = localStorage.getItem('user');
+      console.log('storedUser:', storedUser); // للتأكد من وجود البيانات
+
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          console.log('parsed userData:', userData); // للتأكد من صحة البيانات
+
+          if (userData) {
+            candidate.value.name = userData.name || "No Name";
+            candidate.value.email = userData.email || "No Email";
+            candidate.value.profile_picture = userData.profile_picture || candidate.value.profile_picture;
+          }
+        } catch (error) {
+          console.error("Error parsing user from localStorage:", error);
+        }
+      } else {
+        console.warn("No user data found in localStorage.");
+      }
+    };
+
+    // تحميل البيانات عند تركيب المكون
+    onMounted(() => {
+      loadCandidateData();
+    });
 
     const menuItems = ref([
       { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
@@ -75,12 +97,13 @@ export default {
     ]);
 
     const logout = () => {
+      // مسح بيانات المستخدم من localStorage عند تسجيل الخروج
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
       router.push('/login');
     };
 
     return {
-      loading,
-      error,
       candidate,
       menuItems,
       logout
@@ -88,6 +111,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 @import url('https://cdn.lineicons.com/3.0/lineicons.css');

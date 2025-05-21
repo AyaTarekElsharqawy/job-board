@@ -7,10 +7,10 @@
       No applications found.
     </div>
 
-    <div v-else class="table-responsive">
+    <div v-else class="table-responsive" style="margin-bottom: 10%;">
       <h2 class="text-center mb-4">My Applications</h2>
       <table class="table table-hover align-middle table-bordered table-striped shadow-sm">   
-        <thead class="table-dark">
+        <thead class="table-dark" >
           <tr>
             <th scope="col">Cover Letter</th>
             <th scope="col">Work Type</th>

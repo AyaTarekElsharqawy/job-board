@@ -107,30 +107,25 @@ export default {
         password: '',
         password_confirmation: '',
         role: '',
-        image: null, // base64 string
+        profile_picture: null, // base64 string
       },
       previewImage: null,
       imageRequired: false,
     };
   },
   methods: {
-    handleImageUpload(event) {
+      handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.form.image = e.target.result;
-          this.previewImage = e.target.result;
-          this.imageRequired = false; // reset if image is provided
-        };
-        reader.readAsDataURL(file);
+        this.form.profile_picture = file; // store the File object directly
+        this.previewImage = URL.createObjectURL(file); // quick preview
+        this.imageRequired = false;
       }
     },
     submitForm() {
       const formEl = this.$el;
 
-      // Set flag to trigger image validation
-      if (!this.isLogin && !this.form.image) {
+      if (!this.isLogin && !this.form.profile_picture) {
         this.imageRequired = true;
       }
 
@@ -144,16 +139,20 @@ export default {
         return;
       }
 
-      const payload = { ...this.form };
       if (this.isLogin) {
-        delete payload.name;
-        delete payload.phone;
-        delete payload.password_confirmation;
-        delete payload.role;
-        delete payload.image;
+        // For login, just pass email and password as a plain object
+        const { email, password } = this.form;
+        this.onSubmit({ email, password });
+      } else {
+        // Use FormData for registration with image
+        const formData = new FormData();
+        Object.entries(this.form).forEach(([key, value]) => {
+          if (value !== null && value !== '') {
+            formData.append(key, value);
+          }
+        });
+        this.onSubmit(formData);
       }
-
-      this.onSubmit(payload);
     },
   },
 };

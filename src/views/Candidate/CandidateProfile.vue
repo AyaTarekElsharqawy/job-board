@@ -8,12 +8,12 @@
           <div class="col-lg-3 col-md-4 col-12">
             <div class="dashboard-sidebar">
               <div class="user-image">
-                <img :src="candidate.profilePhoto || 'https://randomuser.me/api/portraits/men/32.jpg'" 
+                <img :src="candidate.user?.profile_picture || 'https://randomuser.me/api/portraits/men/32.jpg'" 
                      alt="Profile Photo" 
                      class="w-24 h-24 rounded-full object-cover mx-auto">
-                <h3 class="name text-center mt-2">{{ candidate.name }}</h3>
+                <h3 class="name text-center mt-2">{{ candidate.user?.name }}</h3>
                 <p class="title text-center text-gray-600">{{ candidate.title }}</p>
-                <p class="email text-center text-gray-600">{{ candidate.email }}</p>
+                <p class="email text-center text-gray-600">{{ candidate.user?.email }}</p>
               </div>
               
               <div class="dashboard-menu mt-4">
@@ -48,20 +48,16 @@
                 <div v-if="isEditing" class="space-y-6">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label class="block text-gray-700 mb-2">Full Name</label>
-                      <input v-model="editForm.name" type="text" 
+                      <label class="block text-gray-700 mb-2">Education</label>
+                      <input v-model="editForm.education" type="text" 
                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                      <label class="block text-gray-700 mb-2">Email</label>
-                      <input v-model="editForm.email" type="email" 
+                      <label class="block text-gray-700 mb-2">Skills (comma-separated)</label>
+                      <input v-model="editForm.skills" type="email" 
                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <div>
-                      <label class="block text-gray-700 mb-2">Phone</label>
-                      <input v-model="editForm.phone" type="text" 
-                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
+                    
                     <div>
                       <label class="block text-gray-700 mb-2">Location</label>
                       <input v-model="editForm.location" type="text" 
@@ -102,11 +98,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <p class="text-gray-500">Full Name</p>
-                        <p class="text-gray-800 font-medium">{{ candidate.name }}</p>
+                        <p class="text-gray-800 font-medium">{{ candidate.user?.name }}</p>
                       </div>
                       <div>
                         <p class="text-gray-500">Phone</p>
-                        <p class="text-gray-800 font-medium">{{ candidate.phone }}</p>
+                        <p class="text-gray-800 font-medium">{{ candidate.user?.phone }}</p>
                       </div>
                       <div>
                         <p class="text-gray-500">Location</p>
@@ -132,22 +128,7 @@
                     </div>
                   </div>
 
-                  <div class="bg-gray-50 rounded-lg p-6">
-                    <h3 class="block-title">Work Experience</h3>
-                    <div class="space-y-6">
-                      <div v-for="(job, index) in candidate.experience" :key="index" 
-                           class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
-                        <div class="flex items-center space-x-2">
-                          <div>
-                            <h4 class="font-bold text-gray-800 inline">{{ job.position }}</h4>
-                            <span class="text-gray-500 text-sm ml-2">({{ formatDateRange(job.duration) }})</span>
-                          </div>
-                        </div>
-                        <p class="text-blue-600 mt-1">{{ job.company }}</p>
-                        <p class="text-gray-600 mt-2">{{ job.description }}</p>
-                      </div>
-                    </div>
-                  </div>
+                  
 
                   <div class="bg-gray-50 rounded-lg p-6">
                     <h3 class="block-title">Skills</h3>
@@ -162,15 +143,15 @@
                   <div class="bg-gray-50 rounded-lg p-6">
                     <h3 class="block-title">Education</h3>
                     <div class="space-y-6">
-                      <div v-for="(edu, index) in candidate.education" :key="index" 
-                           class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                      <div class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
                         <div class="flex items-center space-x-2">
                           <div>
-                            <h4 class="font-bold text-gray-800 inline">{{ edu.degree }}</h4>
-                            <span class="text-gray-500 text-sm ml-2">({{ formatYear(edu.year) }})</span>
+                            
                           </div>
                         </div>
-                        <p class="text-blue-600 mt-1">{{ edu.institution }}</p>
+                        <div class="mt-2">
+                          <p class="text-gray-800 font-medium">{{ candidate.education }}</p>
+                          </div>
                       </div>
                     </div>
                   </div>
@@ -188,51 +169,21 @@
 import { useCandidateStore } from '@/stores/candidateStore';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 export default {
   name: "CandidateProfile",
   setup() {
     const candidateStore = useCandidateStore();
     const router = useRouter();
-
+    const candidate = ref({});
     const isEditing = ref(false);
     const editForm = ref({});
-
-    const candidate = computed(() => {
-      const cand = candidateStore.candidates.find(c => c.user_id === 3) || {};
-      return {
-        name: cand.name || "John Doe",
-        title: cand.title || "Software Engineer",
-        email: cand.email || "johndoe@example.com",
-        phone: cand.phone_number || "+1234567890",
-        location: cand.location || "New York, USA",
-        linkedin_profile: cand.linkedin_profile || "https://linkedin.com/in/candidate-a",
-        experience_level: cand.experience_level || "junior",
-        profilePhoto: cand.profilePhoto,
-        experience: cand.experience || [
-          {
-            position: "Software Engineer",
-            company: "Tech Corp",
-            description: "Developed innovative software solutions.",
-            duration: "2019 - Present"
-          },
-          {
-            position: "Junior Developer",
-            company: "Web Solutions",
-            description: "Assisted in building and maintaining websites.",
-            duration: "2017 - 2019"
-          }
-        ],
-        skills: cand.skills || ["JavaScript", "Vue.js", "Node.js", "HTML", "CSS"],
-        education: cand.education || [
-          {
-            degree: "Bachelor of Science in Computer Science",
-            institution: "XYZ University",
-            year: "2017"
-          }
-        ]
-      };
-    });
+    const currUser = JSON.parse(localStorage.getItem('user'));
+    if (!currUser) {
+      router.push('/login');
+    }
+    
 
     const menuItems = ref([
       { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
@@ -241,35 +192,51 @@ export default {
     ]);
 
     onMounted(() => {
-      candidateStore.fetchCandidateById(3);
+      axios.get('http://localhost:8000/api/candidates/user/'+ currUser.id , {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }).then(response => {
+        candidate.value = response.data.data;
+        console.log('Candidate:', candidate.value);
+      }).catch(error => {
+        console.error(error);
+      });
     });
 
     const editProfile = () => {
       editForm.value = {
-        name: candidate.value.name,
-        title: candidate.value.title,
-        email: candidate.value.email,
-        phone: candidate.value.phone,
+        education: candidate.value.education,
+        skills: candidate.value.skills.join(', '),
         location: candidate.value.location,
         linkedin_profile: candidate.value.linkedin_profile,
         experience_level: candidate.value.experience_level,
-        profilePhoto: candidate.value.profilePhoto
       };
       isEditing.value = true;
     };
 
     const saveProfile = async () => {
-      await candidateStore.updateCandidate(3, {
-        user_id: 3,
-        name: editForm.value.name,
-        title: editForm.value.title,
-        email: editForm.value.email,
-        phone_number: editForm.value.phone,
-        location: editForm.value.location,
-        linkedin_profile: editForm.value.linkedin_profile,
-        experience_level: editForm.value.experience_level,
-        profilePhoto: editForm.value.profilePhoto
-      });
+      const payload = {
+        ...editForm.value,
+        skills: editForm.value.skills.split(',').map(s => s.trim()).filter(s => s.length > 0),
+      };
+      try {
+        await axios.put('http://localhost:8000/api/candidates/' + candidate.value.id, payload, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+        candidate.value.education = payload.education;
+        candidate.value.skills = payload.skills;
+        candidate.value.location = payload.location;
+        candidate.value.linkedin_profile = payload.linkedin_profile;
+        candidate.value.experience_level = payload.experience_level;
+        isEditing.value = false;
+      } catch (error) {
+        console.error(error);
+      }
       isEditing.value = false;
     };
 

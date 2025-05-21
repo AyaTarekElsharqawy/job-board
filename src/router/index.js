@@ -17,7 +17,7 @@ import AdminFilters from '../views/Admin/AdminFilters.vue';
 import AdminPayments from '../views/Admin/AdminPayments.vue';
 // import add from './views/Candidate/AddCandidate.vue';
 import AddProfile from '@/views/Employer/AddProfile.vue';
-
+import AddCandidate from '@/views/Candidate/AddCandidate.vue';
 const routes = [
   { path: '/', component: Home },
   { path: '/login', component: Login, name: 'login' },
@@ -113,11 +113,11 @@ const routes = [
         name: 'CandidateProfile',
         component: () => import('@/views/Candidate/CandidateProfile.vue')
       },
-      // {
-      //   path: 'add',
-      //   name: 'add',
-      //   component: () => import('@/views/Candidate/CandidateProfile.vue')// abanouuub---------------------
-      // },
+      {
+        path: 'add-profile',
+        name: 'addCandidateProfile',
+        component: AddCandidate // abanouuub---------------------
+      },
       {
         path: 'my-applications',
         name: 'MyApplications',

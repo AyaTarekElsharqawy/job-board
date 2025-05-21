@@ -1,128 +1,120 @@
+<template>
+  <div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">Job Management</h1>
 
+    <div class="p-4 bg-white rounded shadow mb-4 flex flex-wrap gap-4 items-end">
+      <input
+        v-model="filters.search"
+        type="text"
+        placeholder="Search by job title or company"
+        class="border p-2 rounded w-64"
+      />
 
-  <template>
-  <div class="admin-dashboard">
-    <!-- Navbar -->
-    <nav class="main-navbar">
-      <div class="navbar-brand">
-        <router-link to="/dashboard" class="logo-link">
-          <img src="../../assets/logo.png" alt="Logo" class="logo">
-        </router-link>
-      </div>
-      
-      <div class="navbar-menu">
-        <router-link 
-          v-for="item in navItems" 
-          :key="item.path" 
-          :to="item.path"
-          class="nav-link"
-          active-class="active"
-        >
-          <FontAwesomeIcon :icon="['fas', item.icon]" class="nav-icon" />
-          <span class="nav-text">{{ item.title }}</span>
-        </router-link>
-      </div>
-      
-      <div class="navbar-user">
-        <span class="welcome-msg">Welcome, Admin</span>
-        <button @click="logout" class="logout-btn">
-          <FontAwesomeIcon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
-          <span class="logout-text">Logout</span>
-        </button>
-      </div>
-    </nav>
+      <select v-model="filters.status" class="border p-2 rounded">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
 
-    <!-- Main Content -->
-    <div class="filters-container">
-      <div class="header-section">
-        <h2 class="page-title">
-          <span class="icon">🧩</span>
-          User Filters
-        </h2>
-      </div>
+      <select v-model="filters.type" class="border p-2 rounded">
+        <option value="">All Types</option>
+        <option value="full-time">Full-time</option>
+        <option value="part-time">Part-time</option>
+        <option value="remote">Remote</option>
+      </select>
 
-      <div class="table-wrapper">
-        <table class="filters-table">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Filter Details</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="filter in filters" :key="filter.id">
-              <td>{{ filter.user?.name }}</td>
-              <td class="filter-details">
-                <pre>{{ JSON.stringify(JSON.parse(filter.filters_json), null, 2) }}</pre>
-              </td>
-              <td>{{ new Date(filter.created_at).toLocaleString() }}</td>
-              <td>
-                <button @click="deleteFilter(filter.id)" class="delete-btn">
-                  <FontAwesomeIcon :icon="['fas', 'trash-alt']" />
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <input
+        v-model="filters.date"
+        type="date"
+        class="border p-2 rounded"
+      />
 
-      <p v-if="message" class="message">{{ message }}</p>
+      <button @click="getJobs" class="bg-blue-600 text-white px-4 py-2 rounded">
+        Apply Filter
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full bg-white rounded shadow text-sm">
+        <thead class="bg-gray-100 text-left">
+          <tr>
+            <th class="p-2">#</th>
+            <th class="p-2">Title</th>
+            <th class="p-2">Company</th>
+            <th class="p-2">Type</th>
+            <th class="p-2">Status</th>
+            <th class="p-2">Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(job, index) in jobs" :key="job.id" class="border-b">
+            <td class="p-2">{{ index + 1 }}</td>
+            <td class="p-2">{{ job.title }}</td>
+            <td class="p-2">{{ job.company }}</td>
+            <td class="p-2">{{ job.type }}</td>
+            <td class="p-2">
+              <span
+                :class="{
+                  'text-yellow-500': job.status === 'pending',
+                  'text-green-600': job.status === 'approved',
+                  'text-red-600': job.status === 'rejected'
+                }"
+              >
+                {{ getStatusText(job.status) }}
+              </span>
+            </td>
+            <td class="p-2">{{ job.created_at }}</td>
+          </tr>
+          <tr v-if="jobs.length === 0">
+            <td class="p-4 text-center text-gray-500" colspan="6">No results found</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from '../../../axios';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import axios from 'axios';
 
-const filters = ref([]);
-const message = ref('');
+const jobs = ref([]);
 
-const navItems = [
- { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-    { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-    { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-    { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-      { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-    { path: '/admin/filters', title: 'Users', icon: 'users' }
-];
+const filters = ref({
+  search: '',
+  status: '',
+  type: '',
+  date: ''
+});
 
-const fetchFilters = async () => {
+const getJobs = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const res = await axios.get('/api/admin/filters', {
-      headers: { Authorization: `Bearer ${token}` }
+    const response = await axios.get('/api/admin/jobs', {
+      params: filters.value
     });
-    filters.value = res.data;
-  } catch (e) {
-    console.error('Fetch failed', e);
+    jobs.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
   }
 };
 
-const deleteFilter = async (id) => {
-  const token = localStorage.getItem('token');
-  try {
-    await axios.delete(`/api/admin/filters/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    message.value = 'Filter deleted successfully';
-    fetchFilters();
-  } catch (e) {
-    console.error('Delete failed', e);
-    message.value = 'An error occurred during deletion';
+const getStatusText = (status) => {
+  switch (status) {
+    case 'pending':
+      return 'Pending';
+    case 'approved':
+      return 'Approved';
+    case 'rejected':
+      return 'Rejected';
+    default:
+      return status;
   }
 };
 
-const logout = () => {
-  localStorage.removeItem('token');
-  window.location.href = '/login';
-};
-
-onMounted(fetchFilters);
+onMounted(() => {
+  getJobs();
+});
 </script>
 
 <style scoped>

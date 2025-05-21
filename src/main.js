@@ -1,13 +1,17 @@
+// src/main.js
 import './assets/main.css'
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import App from './App.vue'
-import router from './router'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import App    from './App.vue'
+import router from './router'
+
+
 import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
 import { 
   faBriefcase, 
   faFileAlt, 
@@ -15,30 +19,36 @@ import {
   faChartLine, 
   faFilter, 
   faMoneyBillWave,
-  faSignOutAlt
+  faSignOutAlt 
 } from '@fortawesome/free-solid-svg-icons'
 
-// Add icons to library
+import { 
+  faTachometerAlt,   
+  faCreditCard,      
+  faChartBar,        
+  faUsers            
+} from '@fortawesome/free-solid-svg-icons'
+
 library.add(
-  faBriefcase, 
-  faFileAlt, 
-  faComment, 
-  faChartLine, 
-  faFilter, 
+  faBriefcase,
+  faFileAlt,
+  faComment,
+  faChartLine,
+  faFilter,
   faMoneyBillWave,
-  faSignOutAlt
+  faSignOutAlt,
+  faTachometerAlt,  // ✅ إضافة tachometer-alt
+  faCreditCard,     // ✅ إضافة credit-card
+  faChartBar,       // ✅ إضافة chart-bar
+  faUsers           // ✅ إضافة users
 )
 
 const app = createApp(App)
 
-// Use Pinia for state management
 app.use(createPinia())
 
-// Set up router
-app.use(router)
-
-// Register FontAwesomeIcon component globally
 app.component('FontAwesomeIcon', FontAwesomeIcon)
 
-// Mount the app to the DOM
+app.use(router)
+
 app.mount('#app')

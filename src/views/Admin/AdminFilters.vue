@@ -1,107 +1,120 @@
-<!-- src/views/Admin/AdminFilters.vue -->
 <template>
-  <div class="admin-dashboard">
-    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
-    <font-awesome-icon :icon="['fas', 'credit-card']" />
+  <div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">Job Management</h1>
 
-    <!-- Navbar -->
-    <nav class="main-navbar">
-      <!-- … (كما في القالب الأصلي) … -->
-    </nav>
+    <div class="p-4 bg-white rounded shadow mb-4 flex flex-wrap gap-4 items-end">
+      <input
+        v-model="filters.search"
+        type="text"
+        placeholder="Search by job title or company"
+        class="border p-2 rounded w-64"
+      />
 
-    <!-- Main Content -->
-    <div class="filters-container">
-      <div class="header-section">
-        <h2 class="page-title">
-          <span class="icon">🧩</span>
-          User Filters
-        </h2>
-      </div>
+      <select v-model="filters.status" class="border p-2 rounded">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
 
-      <div class="table-wrapper">
-        <table class="filters-table">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Filter Details</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="filter in filters" :key="filter.id">
-              <td>{{ filter.user?.name || '—' }}</td>
-              <td class="filter-details">
-                <!-- نفترض أن الفلاتر مخزنة كـ JSON -->
-                <pre>{{ JSON.stringify(JSON.parse(filter.filters_json), null, 2) }}</pre>
-              </td>
-              <td>
-                {{ filter.created_at 
-                    ? new Date(filter.created_at).toLocaleString() 
-                    : '—' 
-                }}
-              </td>
-              <td>
-                <button @click="deleteFilter(filter.id)" class="delete-btn">
-                  <FontAwesomeIcon :icon="['fas', 'trash-alt']" />
-                  Delete
-                </button>
-              </td>
-            </tr>
-            <tr v-if="filters.length === 0">
-              <td colspan="4" style="text-align: center;">No filters found.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <select v-model="filters.type" class="border p-2 rounded">
+        <option value="">All Types</option>
+        <option value="full-time">Full-time</option>
+        <option value="part-time">Part-time</option>
+        <option value="remote">Remote</option>
+      </select>
 
-      <p v-if="message" class="message">{{ message }}</p>
+      <input
+        v-model="filters.date"
+        type="date"
+        class="border p-2 rounded"
+      />
+
+      <button @click="getJobs" class="bg-blue-600 text-white px-4 py-2 rounded">
+        Apply Filter
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full bg-white rounded shadow text-sm">
+        <thead class="bg-gray-100 text-left">
+          <tr>
+            <th class="p-2">#</th>
+            <th class="p-2">Title</th>
+            <th class="p-2">Company</th>
+            <th class="p-2">Type</th>
+            <th class="p-2">Status</th>
+            <th class="p-2">Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(job, index) in jobs" :key="job.id" class="border-b">
+            <td class="p-2">{{ index + 1 }}</td>
+            <td class="p-2">{{ job.title }}</td>
+            <td class="p-2">{{ job.company }}</td>
+            <td class="p-2">{{ job.type }}</td>
+            <td class="p-2">
+              <span
+                :class="{
+                  'text-yellow-500': job.status === 'pending',
+                  'text-green-600': job.status === 'approved',
+                  'text-red-600': job.status === 'rejected'
+                }"
+              >
+                {{ getStatusText(job.status) }}
+              </span>
+            </td>
+            <td class="p-2">{{ job.created_at }}</td>
+          </tr>
+          <tr v-if="jobs.length === 0">
+            <td class="p-4 text-center text-gray-500" colspan="6">No results found</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from '../../../axios'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-const filters = ref([])
-const message = ref('')
+const jobs = ref([]);
 
-const fetchFilters = async () => {
+const filters = ref({
+  search: '',
+  status: '',
+  type: '',
+  date: ''
+});
+
+const getJobs = async () => {
   try {
-    const token = localStorage.getItem('token')
-    // المسار الجديد: /api/admin/filters
-    const res = await axios.get('/api/admin/filters', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    filters.value = res.data.data || []
-  } catch (e) {
-    console.error('Fetch failed', e)
-    filters.value = []
+    const response = await axios.get('/api/admin/jobs', {
+      params: filters.value
+    });
+    jobs.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
   }
-}
+};
 
-const deleteFilter = async (id) => {
-  try {
-    const token = localStorage.getItem('token')
-    await axios.delete(`/api/admin/filters/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    message.value = 'Filter deleted successfully'
-    await fetchFilters()
-  } catch (e) {
-    console.error('Delete failed', e)
-    message.value = 'An error occurred during deletion'
+const getStatusText = (status) => {
+  switch (status) {
+    case 'pending':
+      return 'Pending';
+    case 'approved':
+      return 'Approved';
+    case 'rejected':
+      return 'Rejected';
+    default:
+      return status;
   }
-}
+};
 
-const logout = () => {
-  localStorage.removeItem('token')
-  window.location.href = '/login'
-}
-
-onMounted(fetchFilters)
+onMounted(() => {
+  getJobs();
+});
 </script>
 
 <style scoped>

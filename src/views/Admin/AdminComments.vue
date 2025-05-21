@@ -1,111 +1,66 @@
-<!-- src/views/Admin/AdminComments.vue -->
 <template>
-  <div class="admin-dashboard">
-    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
-    <font-awesome-icon :icon="['fas', 'credit-card']" />
-
-    <!-- Navbar -->
-    <nav class="main-navbar">
-      <!-- … (كما في القالب الأصلي) … -->
-    </nav>
-
-    <!-- Main Content -->
-    <div class="comments-container">
-      <div class="header-section">
-        <h2 class="page-title">
-          <span class="icon">📝</span>
-          Manage Comments
-        </h2>
-      </div>
-
-      <div class="table-wrapper">
-        <table class="comments-table">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Job</th>
-              <th>Comment</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="comment in comments" :key="comment.id">
-              <td>{{ comment.user?.name || '—' }}</td>
-              <td>{{ comment.job?.title || '—' }}</td>
-              <td class="comment-text">{{ comment.comment_text || '—' }}</td>
-              <td>
-                {{ comment.created_at 
-                    ? new Date(comment.created_at).toLocaleString() 
-                    : '—' 
-                }}
-              </td>
-              <td>
-                <button @click="deleteComment(comment.id)" class="delete-btn">
-                  <FontAwesomeIcon :icon="['fas', 'trash-alt']" />
-                  Delete
-                </button>
-              </td>
-            </tr>
-            <tr v-if="comments.length === 0">
-              <td colspan="5" style="text-align: center;">No comments found.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p v-if="message" class="message">{{ message }}</p>
-    </div>
+  <div>
+    <h1>Manage Comments</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Comment</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="comment in comments" :key="comment.id">
+          <td>{{ comment.user ? comment.user.name : 'Unknown' }}</td>
+          <td>{{ comment.content }}</td>
+          <td>{{ formatDate(comment.created_at) }}</td>
+          <td>
+            <button @click="deleteComment(comment.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
+
+
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from '../../../axios'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { ref, onMounted } from 'vue';
+import api from '../../../axios'; // Make sure your axios file is correctly configured with baseURL and Authorization headers
 
-const comments = ref([])
-const message = ref('')
+const comments = ref([]);
+const message = ref('');
 
+// Fetch comments from API
 const fetchComments = async () => {
   try {
-    const token = localStorage.getItem('token')
-    // استدعاء المسار الجديد: /api/admin/comments
-    const res = await axios.get('/api/admin/comments', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    comments.value = res.data.data || []
-  } catch (e) {
-    console.error('Fetch failed', e)
-    comments.value = []
+const res = await api.get('/admin/comments');
+    comments.value = res.data.data || [];
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    message.value = 'Failed to fetch comments';
   }
-}
+};
 
+// Delete a specific comment
 const deleteComment = async (id) => {
+  if (!confirm('Are you sure you want to delete this comment?')) return;
   try {
-    const token = localStorage.getItem('token')
-    // المسار الأصلي في الـ backend: /api/admin/comments/{id}
-    await axios.delete(`/api/admin/comments/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    message.value = 'Comment deleted successfully'
-    await fetchComments()
-  } catch (e) {
-    console.error('Delete failed', e)
-    message.value = 'Error deleting comment'
+    await api.delete(`/admin/comments/${id}`);
+    message.value = 'Comment deleted successfully';
+    await fetchComments(); // Update the list after deletion
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    message.value = 'An error occurred while deleting the comment';
   }
-}
-
-const logout = () => {
-  localStorage.removeItem('token')
-  window.location.href = '/login'
-}
+};
 
 onMounted(() => {
-  fetchComments()
-})
+  fetchComments();
+});
 </script>
-
 
 <style scoped>
 /* Navbar Styles - Same as previous */

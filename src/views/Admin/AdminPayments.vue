@@ -78,7 +78,7 @@ const fetchPayments = async () => {
     })
     payments.value = res.data.data || []
   } catch (e) {
-    console.error('Fetch failed', e)
+    console.error("Fetch failed", e)
     payments.value = []
   }
 }
@@ -86,14 +86,13 @@ const fetchPayments = async () => {
 const fetchUserData = async () => {
   try {
     const token = localStorage.getItem('token')
-    // المسار الصحيح لجلب معلومات المستخدم المصادق عليه هو /api/user
     const res = await axios.get('/api/user', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    // يُرجّح أن الإجابة تكون في res.data.user أو res.data
+  
     user.value = res.data.user || res.data || {}
   } catch (e) {
-    console.error('Failed to fetch user data', e)
+    console.error("Failed to fetch user data", e)
     user.value = {}
   }
 }

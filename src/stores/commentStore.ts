@@ -7,38 +7,51 @@ export const useCommentStore = defineStore('comment', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const apiUrl = 'http://localhost:3000/comments'
+  const apiUrl = 'http://localhost:8000/api';
 
-  const fetchComments = async (jobId?: number) => {
-    loading.value = true
-    error.value = null
-    try {
-      const res = await axios.get(jobId ? `${apiUrl}?job_id=${jobId}` : apiUrl)
-      comments.value = res.data
-    } catch (err) {
-        error.value = 'Failed to load comments'
-    } finally {
-      loading.value = false
-    }
+  const fetchComments = async (jobId: number) => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const res = await axios.get(`${apiUrl}/jobs/${jobId}/comments`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    comments.value = res.data.data; 
+  } catch (err) {
+    error.value = 'Failed to load comments';
+  } finally {
+    loading.value = false;
   }
+};
 
-  const addComment = async (commentData: any) => {
-    try {
-      const res = await axios.post(apiUrl, commentData)
-      comments.value.push(res.data)
-    } catch (err) {
-        error.value = 'Failed to add comment'
-    }
+const addComment = async (jobId: number, content: string) => {
+  try {
+    const res = await axios.post(`${apiUrl}/jobs/${jobId}/comments`, { content }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    comments.value.unshift(res.data.data);
+  } catch (err) {
+    error.value = 'Failed to add comment';
   }
+};
 
-  const deleteComment = async (id: number) => {
-    try {
-      await axios.delete(`${apiUrl}/${id}`)
-      comments.value = comments.value.filter(comment => comment.id !== id)
-    } catch (err) {
-        error.value = 'Failed to delete comment'
-    }
+const deleteComment = async (id: number) => {
+  try {
+    await axios.delete(`${apiUrl}/comments/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    comments.value = comments.value.filter(c => c.id !== id);
+  } catch (err) {
+    error.value = 'Failed to delete comment';
   }
+};
+
 
   return {
     comments,

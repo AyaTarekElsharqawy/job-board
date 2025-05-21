@@ -1,15 +1,14 @@
-<!-- src/views/Admin/AdminApplications.vue -->
 <template>
   <div class="admin-dashboard">
-    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
-    <font-awesome-icon :icon="['fas', 'credit-card']" />
-
-    <!-- Navbar -->
     <nav class="main-navbar">
-      <!-- … (كما في القالب الأصلي) … -->
+      <div class="navbar-brand">
+        <span class="app-name">Admin Dashboard</span>
+      </div>
+      <div class="navbar-user">
+        <button @click="logout" class="logout-btn">Logout</button>
+      </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="applications-container">
       <div class="header-section">
         <h2 class="page-title">
@@ -47,7 +46,6 @@
                   :disabled="app.status === 'accepted'"
                   class="action-btn accept"
                 >
-                  <FontAwesomeIcon :icon="['fas', 'check']" />
                   Accept
                 </button>
                 <button 
@@ -55,7 +53,6 @@
                   :disabled="app.status === 'rejected'"
                   class="action-btn reject"
                 >
-                  <FontAwesomeIcon :icon="['fas', 'times']" />
                   Reject
                 </button>
               </td>
@@ -75,7 +72,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from '../../../axios'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const applications = ref([])
 const message = ref('')
@@ -83,22 +79,21 @@ const message = ref('')
 const fetchApplications = async () => {
   try {
     const token = localStorage.getItem('token')
-    // المسار الذي أضفناه في الـ backend: /api/admin/applications
     const res = await axios.get('/api/admin/applications', {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
     applications.value = res.data.data || []
   } catch (e) {
-    console.error('Fetch error', e)
-    message.value = 'Error fetching applications'
-    applications.value = []
+    console.error('Error fetching applications', e)
+    message.value = 'Failed to load applications'
   }
 }
 
 const updateStatus = async (id, status) => {
   try {
     const token = localStorage.getItem('token')
-    // المسار الذي أضفناه في الـ backend: /api/admin/applications/{id}/status
     const res = await axios.patch(
       `/api/admin/applications/${id}/status`,
       { status },
@@ -117,9 +112,7 @@ const logout = () => {
   window.location.href = '/login'
 }
 
-onMounted(() => {
-  fetchApplications()
-})
+onMounted(fetchApplications)
 </script>
 
 <style scoped>

@@ -45,6 +45,8 @@ export default {
   methods: {
     async loginUser({ email, password }) {
       try {
+        console.log('Login attempt with:', email, password);
+        // Validate input
         const response = await axios.post('http://localhost:8000/api/login', {
           email,
           password
@@ -55,9 +57,20 @@ export default {
         // Save token and user data
         localStorage.setItem('token', token);
         localStorage.setItem('role', user.role);
+        localStorage.setItem('user', JSON.stringify(user));
 
         // Redirect to appropriate dashboard
-        this.$router.push(`/${user.role}/dashboard`);
+        if(user.role === 'admin') {
+          this.$router.push('/admin/dashboard');
+        } else if (user.role === 'employer') {
+          this.$router.push('/employer');
+        } else if (user.role === 'candidate') {
+          this.$router.push('/candidate/dashboard');
+        } else {
+          this.alertMessage = 'Invalid user role.';
+          return;
+        }
+        // this.$router.push(`/${user.role}/dashboard`);
       } catch (error) {
         if (error.response && error.response.data.message) {
           this.alertMessage = error.response.data.message;

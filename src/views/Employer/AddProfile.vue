@@ -4,7 +4,12 @@
         <div class="card shadow p-4">
             <form @submit.prevent="submitJob">
             <div class="row g-3">
-                <!-- EMPLOYER PROFILE SECTION -->
+                <div class="col-md-12 alert alert-danger text-center" v-if="errorMessage">
+                    {{ errorMessage }}
+                </div>
+                <div class="col-md-12 alert alert-success text-center" v-if="successMessage">
+                    {{ successMessage }}
+                </div>
                 <div class="col-md-6">
                 <label for="company_name" class="form-label">Company Name</label>
                 <input type="text" id="company_name" v-model="profile.company_name" class="form-control" />
@@ -40,8 +45,12 @@
     
     <script setup>
     import { reactive, ref } from 'vue';
+    import { useRouter } from 'vue-router';
     import axios from 'axios';
     import { onMounted } from 'vue';
+    const successMessage = ref('');
+    const errorMessage = ref('');
+    const router = useRouter();
     const errors = reactive({
         company_name: '',
         company_website: '',
@@ -101,10 +110,16 @@
                 },
             });
             console.log('Employer profile created:', response.data);
-            alert('Employer profile created successfully');
+            successMessage.value = 'Employer profile created successfully';
+            profile.company_name = '';
+            profile.company_website = '';
+            profile.bio = '';
+            profile.company_logo = null;
+            router.push({ path: '/employer' });
+
             } catch (error) {
             console.error('Failed to create employer profile:', error);
-            alert('Failed to create employer profile');
+            errorMessage.value = 'Failed to create employer profile';
             }
         }
     };
@@ -115,3 +130,6 @@
         border-radius: 12px;
     }
     </style>
+
+
+    

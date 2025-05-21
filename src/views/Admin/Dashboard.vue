@@ -2,6 +2,8 @@
 
 <template>
   <div class="admin-dashboard">
+      <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
+    <font-awesome-icon :icon="['fas', 'credit-card']" />
     <!-- Navigation Bar -->
     <nav class="navbar">
       <div class="navbar-left">
@@ -102,7 +104,7 @@ onMounted(async () => {
     });
     user.value = res.data;
   } catch (err) {
-  //  router.push('/login');
+   router.push('/admin/login');
   }
 });
 

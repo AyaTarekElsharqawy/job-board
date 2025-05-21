@@ -1,132 +1,117 @@
+<!-- src/views/Admin/AdminPayments.vue -->
+<template>
+  <div class="admin-dashboard">
+    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
+    <font-awesome-icon :icon="['fas', 'credit-card']" />
 
+    <!-- Navbar -->
+    <nav class="main-navbar">
+      <!-- … (كما في القالب الأصلي) … -->
+    </nav>
 
-  <template>
-    <div class="admin-dashboard">
-      <!-- Navbar -->
-      <nav class="main-navbar">
-        <div class="navbar-brand">
-          <router-link to="/dashboard" class="logo-link">
-            <img src="../../assets/logo.png" alt="Logo" class="logo">
-          </router-link>
-        </div>
-        
-        <div class="navbar-menu">
-          <router-link 
-            v-for="item in navItems" 
-            :key="item.path" 
-            :to="item.path"
-            class="nav-link"
-            active-class="active"
-          >
-            <FontAwesomeIcon :icon="['fas', item.icon]" class="nav-icon" />
-            <span class="nav-text">{{ item.title }}</span>
-          </router-link>
-        </div>
-        
-        <div class="navbar-user">
-          <span class="welcome-msg">Welcome, {{ user?.name }}</span>
-          <button @click="logout" class="logout-btn">
-            <FontAwesomeIcon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
-            <span class="logout-text">Logout</span>
-          </button>
-        </div>
-      </nav>
-  
-      <!-- Main Content -->
-      <div class="payments-container">
-        <div class="header-section">
-          <h2 class="page-title">
-            <span class="icon">💳</span>
-            Payments
-          </h2>
-        </div>
-  
-        <div class="table-wrapper">
-          <table class="payments-table">
-            <thead>
-              <tr>
-                <th>Applicant</th>
-                <th>Job</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="payment in payments" :key="payment.id">
-                <td>{{ payment.application?.candidate?.user?.name || 'N/A' }}</td>
-                <td>{{ payment.application?.job?.title || 'N/A' }}</td>
-                <td class="amount">{{ payment.amount }} $</td>
-                <td>{{ payment.payment_method }}</td>
-                <td>
-                  <span :class="['status-badge', payment.status.toLowerCase()]">
-                    {{ payment.status }}
-                  </span>
-                </td>
-                <td>{{ formatDate(payment.created_at) }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <!-- Main Content -->
+    <div class="payments-container">
+      <div class="header-section">
+        <h2 class="page-title">
+          <span class="icon">💳</span>
+          Payments
+        </h2>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="payments-table">
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Job</th>
+              <th>Amount</th>
+              <th>Payment Method</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="payment in payments" :key="payment.id">
+              <td>{{ payment.application?.candidate?.user?.name || 'N/A' }}</td>
+              <td>{{ payment.application?.job?.title || 'N/A' }}</td>
+              <td class="amount">{{ payment.amount || 0 }} $</td>
+              <td>{{ payment.payment_method || '—' }}</td>
+              <td>
+                <span :class="['status-badge', (payment.status || '').toLowerCase()]">
+                  {{ payment.status }}
+                </span>
+              </td>
+              <td>{{ formatDate(payment.created_at) }}</td>
+            </tr>
+            <tr v-if="payments.length === 0">
+              <td colspan="6" style="text-align: center;">No payments found.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </template>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from '../../../axios'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+const payments = ref([])
+const user = ref({})
+
+const navItems = [
+  { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
+  { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
+  { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
+  { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
+  { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
+  { path: '/admin/filters', title: 'Users', icon: 'users' }
+]
+
+const fetchPayments = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const res = await axios.get('/api/admin/payments', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    payments.value = res.data.data || []
+  } catch (e) {
+    console.error("Fetch failed", e)
+    payments.value = []
+  }
+}
+
+const fetchUserData = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const res = await axios.get('/api/user', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
   
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from '../../../axios';
-  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-  
-  const payments = ref([]);
-  const user = ref({});
-  const navItems = [
-    { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-    { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-    { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-    { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-      { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-    { path: '/admin/filters', title: 'Users', icon: 'users' }
-  ];
-  
-  const fetchPayments = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('/api/admin/payments', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      payments.value = res.data;
-    } catch (e) {
-      console.error('Fetch failed', e);
-    }
-  };
-  
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('/api/admin/user', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      user.value = res.data;
-    } catch (e) {
-      console.error('Failed to fetch user data', e);
-    }
-  };
-  
-  const logout = () => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  };
-  
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString();
-  };
-  
-  onMounted(() => {
-    fetchPayments();
-    fetchUserData();
-  });
-  </script>
+    user.value = res.data.user || res.data || {}
+  } catch (e) {
+    console.error("Failed to fetch user data", e)
+    user.value = {}
+  }
+}
+
+const formatDate = (dateString) => {
+  return dateString ? new Date(dateString).toLocaleString() : '—'
+}
+
+const logout = () => {
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
+
+onMounted(() => {
+  fetchPayments()
+  fetchUserData()
+})
+</script>
+
   
   <style scoped>
   .admin-dashboard {

@@ -1,10 +1,9 @@
 <template>
-   <nav class="navbar">
+  <nav class="navbar">
     <RouterLink to="/" class="logo-link">
       <img src="@/assets/ll.png" alt="Job Board Logo" class="logo">
     </RouterLink>
     
-  
     <button class="mobile-menu-btn" @click="toggleMenu">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -15,13 +14,11 @@
     
     <div class="nav-links" :class="{ 'active': isMenuOpen }">
       <RouterLink to="/">Home</RouterLink>
-    
-      
-    
       
       <div class="auth-buttons">
-        <RouterLink to="/login" class="login-btn">Log in</RouterLink>
-        <RouterLink to="/employer/jobform" class="post-job-btn">Post A Job</RouterLink>
+        <button v-if="isLoggedIn" @click="handleLogout" class="logout-btn">Log out</button>
+        <RouterLink v-else to="/login" class="login-btn">Log in</RouterLink>
+      
       </div>
     </div>
   </nav>
@@ -29,12 +26,28 @@
 
 <script setup>
 import { RouterLink } from 'vue-router'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const isMenuOpen = ref(false)
+
+const isLoggedIn = computed(() => {
+  return !!localStorage.getItem('token')
+})
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
+}
+
+const handleLogout = () => {
+
+  localStorage.removeItem('token')
+  localStorage.removeItem('role')
+ 
+  router.push('/login')
+ 
+  isMenuOpen.value = false
 }
 </script>
 
@@ -243,5 +256,44 @@ const toggleMenu = () => {
   .nav-links {
     width: 80%;
   }
+}
+.login-btn {
+  background: transparent;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.25rem;
+  border: 2px solid white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.logout-btn {
+  background: transparent;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.25rem;
+  border: 2px solid white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.auth-buttons {
+  display: flex;
+  gap: 1.5rem;
+  margin-left: 1rem;
+  align-items: center;
 }
 </style>

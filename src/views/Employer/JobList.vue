@@ -14,7 +14,7 @@
                 <li><strong>Technologies:</strong> {{ job.technologies }}</li>
                 <li><strong>Category:</strong> {{ job.category.name }}</li>
               </ul>
-              <button class="btn btn-outline-primary">View Details</button>
+              <button class="btn btn-outline-primary" @click="viewJobDetails(job)">View Details</button>
             </div>
           </div>
         </div>
@@ -29,6 +29,8 @@
   <script setup>
   import { ref, onMounted } from 'vue'
   import axios from 'axios';
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
   // Simulated data — replace with API call if needed
   const jobs = ref([])
   
@@ -55,6 +57,12 @@
 
 
   })
+
+  function viewJobDetails(job) {
+    router.push({
+      path: '/jobs/' + job.id,
+    });
+  }
   </script>
   
   <style scoped>

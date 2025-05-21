@@ -17,15 +17,30 @@
 
       <!-- Alert -->
       <div
-        v-if="alertMessage"
-        class="alert alert-danger alert-dismissible fade show"
+        v-if="successMessage"
+        class="alert alert-success alert-dismissible fade show"
         role="alert"
       >
-        {{ alertMessage }}
+        {{ successMessage }}
         <button
           type="button"
           class="btn-close"
-          @click="alertMessage = null"
+          @click="successMessage = null"
+          aria-label="Close"
+        ></button>
+      </div>
+
+       <!-- Alert -->
+       <div
+        v-if="errorMessage"
+        class="alert alert-success alert-dismissible fade show"
+        role="alert"
+      >
+        {{ errorMessage }}
+        <button
+          type="button"
+          class="btn-close"
+          @click="errorMessage = null"
           aria-label="Close"
         ></button>
       </div>
@@ -45,60 +60,36 @@
 <script>
 import AuthForm from './AuthForm.vue';
 import bcrypt from 'bcryptjs';
+import axios from 'axios';
 
 export default {
   components: { AuthForm },
   data() {
     return {
-      alertMessage: null
+      successMessage: null,
+      errorMessage: null
     };
   },
   methods: {
-    async registerUser(formData) {
-      try {
-        const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(formData.email)}`);
-        const existingUsers = await res.json();
+      async registerUser(formData) {
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/api/register', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
 
-        if (existingUsers.length > 0) {
-          this.alertMessage = 'Email is already registered.';
-          return;
+          if (response.status === 201) {
+            this.successMessage = 'Registration successful! Redirecting…';
+            setTimeout(() => this.$router.push('/login'), 1500);
+          } else {
+            this.errorMessage = 'Registration failed.';
+          }
+        } catch (err) {
+          console.error(err);
+          this.errorMessage = err.response?.data?.message || 'An error occurred.';
         }
-
-        const salt = bcrypt.genSaltSync(10);
-        const hashedPassword = bcrypt.hashSync(formData.password, salt);
-
-        const { name, email, role, image } = formData;
-
-const newUser = {
-  name,
-  email,
-  password: hashedPassword,
-  role,
-  profile_picture: image,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-};
-
-
-        const response = await fetch('http://localhost:3000/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newUser)
-        });
-
-        if (response.ok) {
-          this.alertMessage = 'Registration successful! Redirecting to login…';
-          setTimeout(() => this.$router.push('/login'), 1500);
-        } else {
-          this.alertMessage = 'Registration failed. Try again.';
-        }
-      } catch (err) {
-        console.error(err);
-        this.alertMessage = 'An error occurred. Please try again.';
       }
-    }
   }
 };
 

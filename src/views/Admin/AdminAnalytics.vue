@@ -1,4 +1,3 @@
-<!-- src/views/admin/AdminAnalytics.vue -->
 <template>
   <div class="admin-dashboard">
     <!-- Navbar -->

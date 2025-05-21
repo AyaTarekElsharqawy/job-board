@@ -129,17 +129,17 @@ const routes = [
    path: '/admin/login',
   name: 'AdminLogin',
   component: AdminLogin,
-},
+  },
    { path: '/admin/jobs',
     component: AdminJobs,
     meta: { requiresAuth: true } 
-},
- { path: '/admin/applications',
+  },
+  { path: '/admin/applications',
      component: AdminApplications,
       meta: { requiresAuth: true } 
-},
+  },
 
-{ path: '/admin/comments',
+  { path: '/admin/comments',
      component: AdminComments,
       meta: { requiresAuth: true } },
 
@@ -155,9 +155,9 @@ const routes = [
 
 
   
-  { path: '/admin/payments',
-     component: AdminPayments,
-      meta: { requiresAuth: true } },
+    { path: '/admin/payments',
+      component: AdminPayments,
+        meta: { requiresAuth: true } },
 
 
       

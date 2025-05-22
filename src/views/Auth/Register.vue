@@ -8,7 +8,7 @@
           src="https://raw.githubusercontent.com/abanoub1234/kkkk/refs/heads/main/JobBoardLogo.png"
           alt="jobDev Logo"
           class="img-fluid"
-          style="max-width: 250px;"
+          style="width: 700px;"
         />
       </div>
 

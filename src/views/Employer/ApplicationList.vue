@@ -39,10 +39,21 @@
             </td>
             <td>
               <button class="btn btn-sm btn-outline-success me-2" 
-                      @click="updateStatus(app.id, 'accepted')"
-                      :disabled="['accepted'].includes(app.status)">
-                Accept
+                      @click="handleCheckout(app.job.id, app.job.salary * 0.15, app.id)"
+                      :disabled="['accepted'].includes(app.status)"
+
+              >
+                Accept  
               </button>
+              <!-- <PaymentButton 
+              :jobId="app.job.id" 
+              :amount="app.job.salary * 0.15" 
+               
+              @click="updateStatus(app.id, 'accepted')"
+              :disabled="['accepted'].includes(app.status)"
+              >
+              
+              </PaymentButton> -->
               <button class="btn btn-sm btn-outline-danger"
                       :disabled="['rejected'].includes(app.status)"
                       data-bs-toggle="modal" :data-bs-target="'#rejectModal' + app.id"> 
@@ -100,6 +111,9 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import PaymentButton from '@/components/Employer/PaymentButton.vue';
+import { loadStripe } from '@stripe/stripe-js';
+// import { getGlobalIndex} from 'vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
 
 const router = useRouter();
 const userRole = localStorage.getItem('role')
@@ -174,6 +188,7 @@ async function fetchApplications() {
     if (response.data.message === 'No applications found for this employer.') {
       applications.value = []
     } else {
+      console.log(response.data.data)
       applications.value = response.data.data
       currentPage.value = response.data.current_page
       lastPage.value = response.data.last_page
@@ -182,6 +197,34 @@ async function fetchApplications() {
     }
   } catch (error) {
     console.error('Error fetching applications:', error)
+  }
+}
+
+async function handleCheckout(id, amount, application_id) {
+
+
+  try {
+    // Call your Laravel API to create checkout session
+    console.log('Creating checkout session for job ID:', id, 'with amount:', amount);
+    const response = await axios.post(`/api/stripe/checkout-session/${id}`, { amount, application_id: application_id },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+    const sessionId = response.data.id;
+
+    // Load Stripe.js with your publishable key from env
+    const stripe = await loadStripe(import.meta.env.VITE_STRIPE_KEY);
+
+    // Redirect to Stripe Checkout
+    await stripe.redirectToCheckout({ sessionId });
+  } catch (err) {
+    // error.value = err.response?.data?.message || err.message || 'Error during checkout';
+    console.error('Error during checkout:', err);
+  } finally {
+    console.log('Checkout process completed');
   }
 }
 

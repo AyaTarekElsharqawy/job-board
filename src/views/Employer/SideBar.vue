@@ -1,6 +1,9 @@
 <template>
   <div>
     <aside class="shadow-bg bg-white rounded-lg p-4 mb-4 dashboard">
+      <h5 class="text-center">Welcome, {{ currUser.name }}</h5>
+      <img :src="currUser.profile_picture" alt="Profile Picture" class="rounded-circle mx-auto d-block" @error="onLogoError" />
+      <p class="text-center">{{ currUser.email }}</p>
       <router-link class="list-group-item list-group-item-action" :to="{ name: 'EmployerHome' }">Home</router-link>
       <router-link class="list-group-item list-group-item-action" :to="{ name: 'JobForm' }">Post a Job</router-link>
       <router-link class="list-group-item list-group-item-action" :to="{ name: 'JobList' }">Job Listings</router-link>
@@ -12,6 +15,10 @@
 
 <script setup>
     import { RouterLink } from 'vue-router';
+    import { ref } from 'vue';
+    const currUser = JSON.parse(localStorage.getItem('user'));
+
+
 </script>
 
 <style>
@@ -34,5 +41,11 @@
     
     color: #000;
     font-weight: bold;
+  }
+
+  img {
+    width: 100px;
+    height: 100px;
+    object-fit: fit(contain);
   }
 </style>

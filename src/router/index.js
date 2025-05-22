@@ -22,7 +22,8 @@ import JobList from '@/views/Employer/JobList.vue'
 import ApplicationList from '@/views/Employer/ApplicationList.vue'
 import EmployerProfile from '@/views/Employer/EmployerProfile.vue'
 import AddProfile from '@/views/Employer/AddProfile.vue'
-
+import PaymentSuccess from '@/components/Employer/PaymentSuccess.vue';
+import PaymentCancel from '@/components/Employer/PaymentCancel.vue';
 // Admin
 import AdminDashboard from '@/views/Admin/Dashboard.vue'
 import AdminJobs from '@/views/Admin/AdminJobs.vue'
@@ -44,6 +45,8 @@ const routes = [
     path: '/jobs/:id',
     component: JobDetailsView
   },
+  { path: '/payment-success', component: PaymentSuccess },
+  { path: '/payment-cancel', component: PaymentCancel },
   {
     path: '/employer',
     component: EmployerDashboard,
@@ -90,6 +93,12 @@ const routes = [
   { path: '/admin/payments', name: 'AdminPayments', component: AdminPayments, meta: { requiresAuth: true } },
 
   // { path: '/:catchAll(.*)', redirect: '/' }
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/Public/NotFound.vue')
+  }
+  
 ]
 
 const router = createRouter({

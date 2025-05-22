@@ -33,6 +33,11 @@
               {{ employer.company_website || 'N/A' }}
             </a>
           </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="text-muted">Phone</h6>
+            <p>{{ employer.user.phone }}</p>
+              
+          </div>
         </div>
       </div>
     </div>

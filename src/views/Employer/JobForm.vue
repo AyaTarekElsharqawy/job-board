@@ -52,7 +52,7 @@
               <select id="experience_level" v-model="job.experience_level" class="form-select">
                 <option disabled value="">Select experience level</option>
                 <option>entry</option>
-                <option>juniorl</option>
+                <option>junior</option>
                 <option>mid</option>
                 <option>senior</option>
                
@@ -172,7 +172,7 @@
             <div>
               <label for="category_id" class="form-label">Job Category</label>
               <select id="category_id" v-model="job.category_id" class="form-select">
-              <option disabled value="">Select a category_id</option>
+              <option disabled value="">Select a category</option>
               <option 
                 v-for="category_id in categories" 
                 :key="category_id.id" 

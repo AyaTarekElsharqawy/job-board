@@ -5,10 +5,10 @@
      
       <div class="text-center mb-4">
         <img
-          height="80px"
           src="https://raw.githubusercontent.com/abanoub1234/kkkk/refs/heads/main/JobBoardLogo.png"
           alt="jobDev Logo"
-          class="logo-img mb-2"
+          class="img-fluid"
+          style="width: 200px;"
         />
         <h3 class="fw-bold text-primary">Welcome to job Board</h3>
       </div>
@@ -61,7 +61,7 @@ export default {
 
         // Redirect to appropriate dashboard
         if(user.role === 'admin') {
-          this.$router.push('/admin/dashboard');
+          this.$router.push('/admin/jobs');
         } else if (user.role === 'employer') {
           this.$router.push('/employer');
         } else if (user.role === 'candidate') {
@@ -83,3 +83,10 @@ export default {
   }
 };
 </script>
+<style scoped>
+  .login-page {
+  background: url('https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-business-simple-exhibition-board-jobs-image_22339.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+}
+</style>

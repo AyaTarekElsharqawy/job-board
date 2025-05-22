@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="bg-gray-100 font-sans min-h-screen">
     <!-- Candidate Dashboard Section -->
@@ -6,28 +7,7 @@
         <div class="row">
           <!-- Sidebar (Left Side) -->
           <div class="col-lg-3 col-md-4 col-12">
-            <div class="dashboard-sidebar">
-              <div class="user-image">
-                <img :src="candidate.profile_picture || 'https://i.ibb.co/0jQ7J3T/candidate-avatar.jpg'" alt="User Image" class="w-24 h-24 rounded-full object-cover mx-auto">
-                <h3 class="name text-center mt-2">{{ candidate.name }}</h3>
-                <p class="email text-center text-gray-600">{{ candidate.email }}</p>
-              </div>
-              
-              <div class="dashboard-menu mt-4">
-                <ul class="space-y-2">
-                  <li v-for="(item, index) in menuItems" :key="index" :class="{ 'active': $route.path === item.path }">
-                    <router-link :to="item.path" class="block py-2 px-4 text-gray-700 hover:bg-blue-200 rounded">
-                      <i :class="item.icon"></i> {{ item.title }}
-                    </router-link>
-                  </li>
-                  <li>
-                    <a href="#" @click.prevent="logout" class="block py-2 px-4 text-gray-700 hover:bg-red-200 rounded">
-                      <i class="lni lni-exit"></i> Logout
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <Sidebar />
           </div>
 
           <!-- Main Content -->
@@ -50,39 +30,25 @@
 
 <script>
 import { useCandidateStore } from '@/stores/candidateStore';
-import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import Sidebar from '@/components/Sidebar.vue';
 
 export default {
   name: 'CandidateDashboard',
+  components: {
+    Sidebar
+  },
   setup() {
     const candidateStore = useCandidateStore();
     const router = useRouter();
 
-    const loading = computed(() => candidateStore.loading);
-    const error = computed(() => candidateStore.error);
-    const candidate = computed(() => ({
-      name: "John Doe",
-      email: "johndoe@example.com",
-      profile_picture: "https://i.ibb.co/0jQ7J3T/candidate-avatar.jpg",
-      applications: candidateStore.candidates[0]?.applications || []
-    }));
-
-    const menuItems = ref([
-      { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
-      { path: '/candidate/profile', icon: 'lni lni-user', title: 'Profile' },
-      { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' },
-    ]);
-
     const logout = () => {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
       router.push('/login');
     };
 
     return {
-      loading,
-      error,
-      candidate,
-      menuItems,
       logout
     };
   }
@@ -110,171 +76,9 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.header-area {
-  padding: 15px 0;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.navbar-brand img {
-  max-height: 40px;
-  transition: transform 0.3s;
-}
-
-.navbar-brand:hover img {
-  transform: scale(1.05);
-}
-
 .dashboard {
   padding: 30px 0;
   background-color: var(--bg-color);
-}
-
-.dashboard-sidebar {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-  padding: 20px;
-  margin-bottom: 30px;
-  border: 1px solid var(--border-color);
-  transition: box-shadow 0.3s;
-}
-
-.dashboard-sidebar:hover {
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
-.user-image {
-  text-align: center;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
-}
-
-.user-image img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 15px;
-  border: 3px solid var(--border-color);
-  transition: all 0.3s;
-}
-
-.user-image img:hover {
-  border-color: var(--primary-color);
-  transform: rotate(5deg);
-}
-
-.user-image .name {
-  font-size: 18px;
-  margin-bottom: 5px;
-  color: var(--text-color);
-  font-weight: 600;
-}
-
-.user-image .email {
-  color: var(--light-text);
-  font-size: 14px;
-}
-
-.dashboard-menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dashboard-menu li {
-  margin-bottom: 5px;
-}
-
-.dashboard-menu li a {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  color: var(--text-color);
-  text-decoration: none;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  font-size: 14px;
-}
-
-.dashboard-menu li a:hover {
-  background: rgba(0, 160, 225, 0.1);
-  color: var(--primary-hover);
-  transform: translateX(5px);
-}
-
-.dashboard-menu li.active a {
-  background: var(--primary-color);
-  color: white;
-  font-weight: 500;
-}
-
-.dashboard-menu li a i {
-  margin-right: 10px;
-  width: 20px;
-  text-align: center;
-  font-size: 16px;
-}
-
-.single-widget {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-  margin-bottom: 30px;
-  padding: 20px;
-  border: 1px solid var(--border-color);
-  transition: all 0.3s;
-  text-align: center;
-}
-
-.single-widget:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-}
-
-.single-widget .content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
-}
-
-.single-widget .icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  font-size: 24px;
-  color: #fff;
-  background: var(--primary-color);
-  transition: all 0.3s;
-}
-
-.single-widget:hover .icon {
-  background: var(--primary-hover);
-  transform: scale(1.1);
-}
-
-.single-widget .info h3 {
-  font-size: 24px;
-  margin: 0 0 5px;
-  color: var(--text-color);
-  font-weight: 600;
-}
-
-.single-widget .info p {
-  margin: 0;
-  color: var(--light-text);
-  font-size: 14px;
 }
 
 .dashboard-block {
@@ -307,199 +111,12 @@ body {
   color: var(--primary-color);
 }
 
-.applications-table {
-  overflow-x: auto;
+.text-gray-700 {
+  color: #374151;
 }
 
-.applications-table table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
-}
-
-.applications-table th {
-  background: var(--primary-color);
-  color: white;
-  font-weight: 500;
-  padding: 12px 15px;
-  text-align: left;
-  font-size: 14px;
-}
-
-.applications-table td {
-  padding: 12px 15px;
-  border-top: 1px solid var(--border-color);
-  text-align: left;
-  font-size: 14px;
-}
-
-.applications-table tr:hover td {
-  background-color: rgba(0, 160, 225, 0.05);
-}
-
-.applications-table .job a {
-  color: var(--text-color);
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-
-.applications-table .job a:hover {
-  color: var(--primary-hover);
-  text-decoration: underline;
-}
-
-.status-pending {
-  color: var(--warning-color);
-  background: rgba(255, 152, 0, 0.1);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  display: inline-block;
-  font-weight: 500;
-}
-
-.status-viewed {
-  color: var(--primary-color);
-  background: rgba(0, 160, 225, 0.1);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  display: inline-block;
-  font-weight: 500;
-}
-
-.status-rejected {
-  color: var(--danger-color);
-  background: rgba(244, 67, 54, 0.1);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  display: inline-block;
-  font-weight: 500;
-}
-
-.status-accepted {
-  color: var(--success-color);
-  background: rgba(76, 175, 80, 0.1);
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  display: inline-block;
-  font-weight: 500;
-}
-
-.action .btn-view,
-.action .btn-cancel {
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 13px;
-  margin-left: 5px;
-  display: inline-flex;
-  align-items: center;
-  transition: all 0.3s;
-  border: none;
-  cursor: pointer;
-}
-
-.action .btn-view {
-  color: var(--primary-color);
-  background: rgba(0, 160, 225, 0.1);
-}
-
-.action .btn-view:hover {
-  color: white;
-  background: var(--primary-hover);
-}
-
-.action .btn-cancel {
-  color: var(--danger-color);
-  background: rgba(244, 67, 54, 0.1);
-}
-
-.action .btn-cancel:hover {
-  color: white;
-  background: var(--danger-color);
-}
-
-.action .btn-view i,
-.action .btn-cancel i {
-  margin-right: 5px;
-}
-
-/* تحسينات الإشعارات */
-.notification-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.notification-list li {
-  display: flex;
-  padding: 15px 0;
-  border-bottom: 1px solid var(--border-color);
-  align-items: center;
-  transition: all 0.3s;
-}
-
-.notification-list li:hover {
-  background-color: rgba(0, 160, 225, 0.05);
-  transform: translateX(5px);
-}
-
-.notification-list li:last-child {
-  border-bottom: none;
-}
-
-.notification-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(0, 160, 225, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-  color: var(--primary-color);
-  font-size: 18px;
-  transition: all 0.3s;
-}
-
-.notification-list li:hover .notification-icon {
-  background: var(--primary-color);
-  color: white;
-}
-
-.notification-content {
-  flex: 1;
-}
-
-.notification-content p {
-  margin: 0 0 5px;
-  color: var(--text-color);
-  font-size: 14px;
-}
-
-.notification-time {
-  font-size: 12px;
-  color: var(--light-text);
-}
-
-.counter {
-  transition: all 0.5s ease-out;
-}
-
-@media (max-width: 768px) {
-  .dashboard-sidebar {
-    margin-bottom: 20px;
-  }
-  
-  .single-widget {
-    margin-bottom: 15px;
-  }
-  
-  .dashboard-widgets {
-    flex-direction: column;
-  }
+.text-lg {
+  font-size: 1.125rem;
 }
 </style>
+```

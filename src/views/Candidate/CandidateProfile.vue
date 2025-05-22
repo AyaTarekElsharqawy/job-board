@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="bg-gray-100 font-sans min-h-screen">
     <!-- Candidate Profile Section -->
@@ -6,31 +7,7 @@
         <div class="row">
           <!-- Sidebar Menu -->
           <div class="col-lg-3 col-md-4 col-12">
-            <div class="dashboard-sidebar">
-              <div class="user-image">
-                <img :src="candidate.user?.profile_picture || 'https://randomuser.me/api/portraits/men/32.jpg'" 
-                     alt="Profile Photo" 
-                     class="w-24 h-24 rounded-full object-cover mx-auto">
-                <h3 class="name text-center mt-2">{{ candidate.user?.name }}</h3>
-                <p class="title text-center text-gray-600">{{ candidate.title }}</p>
-                <p class="email text-center text-gray-600">{{ candidate.user?.email }}</p>
-              </div>
-              
-              <div class="dashboard-menu mt-4">
-                <ul class="space-y-2">
-                  <li v-for="(item, index) in menuItems" :key="index" :class="{ 'active': $route.path === item.path }">
-                    <router-link :to="item.path" class="block py-2 px-4 text-gray-700 hover:bg-blue-200 rounded">
-                      <i :class="item.icon"></i> {{ item.title }}
-                    </router-link>
-                  </li>
-                  <li>
-                    <a href="#" @click.prevent="logout" class="block py-2 px-4 text-gray-700 hover:bg-red-200 rounded">
-                      <i class="lni lni-exit"></i> Logout
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <Sidebar />
           </div>
 
           <!-- Main Content -->
@@ -54,7 +31,7 @@
                     </div>
                     <div>
                       <label class="block text-gray-700 mb-2">Skills (comma-separated)</label>
-                      <input v-model="editForm.skills" type="email" 
+                      <input v-model="editForm.skills" type="text" 
                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     
@@ -128,8 +105,6 @@
                     </div>
                   </div>
 
-                  
-
                   <div class="bg-gray-50 rounded-lg p-6">
                     <h3 class="block-title">Skills</h3>
                     <div class="flex flex-wrap gap-2">
@@ -146,12 +121,11 @@
                       <div class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
                         <div class="flex items-center space-x-2">
                           <div>
-                            
                           </div>
                         </div>
                         <div class="mt-2">
                           <p class="text-gray-800 font-medium">{{ candidate.education }}</p>
-                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -167,12 +141,16 @@
 
 <script>
 import { useCandidateStore } from '@/stores/candidateStore';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import Sidebar from '@/components/Sidebar.vue';
 
 export default {
   name: "CandidateProfile",
+  components: {
+    Sidebar
+  },
   setup() {
     const candidateStore = useCandidateStore();
     const router = useRouter();
@@ -183,21 +161,23 @@ export default {
     if (!currUser) {
       router.push('/login');
     }
-    
-
-    const menuItems = ref([
-      { path: '/candidate/dashboard', icon: 'lni lni-dashboard', title: 'Dashboard' },
-      { path: '/candidate/profile', icon: 'lni lni-user', title: 'Profile' },
-      { path: '/candidate/my-applications', icon: 'lni lni-list', title: 'My Job Applications' },
-    ]);
 
     onMounted(() => {
-      axios.get('http://localhost:8000/api/candidates/user/'+ currUser.id , {
+      axios.get('http://localhost:8000/api/candidates/user/' + currUser.id, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       }).then(response => {
-        candidate.value = response.data.data;
+        const candidateData = response.data.data;
+        candidate.value = {
+          education: candidateData.education,
+          skills: candidateData.skills,
+          location: candidateData.location,
+          linkedin_profile: candidateData.linkedin_profile,
+          experience_level: candidateData.experience_level,
+          user: candidateData.user,
+          id: candidateData.id
+        };
         console.log('Candidate:', candidate.value);
       }).catch(error => {
         console.error(error);
@@ -245,6 +225,8 @@ export default {
     };
 
     const logout = () => {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
       router.push('/login');
     };
 
@@ -288,7 +270,6 @@ export default {
       saveProfile,
       cancelEdit,
       logout,
-      menuItems,
       formatDateRange,
       formatYear
     };
@@ -320,95 +301,6 @@ body {
 .profile {
   padding: 30px 0;
   background-color: var(--bg-color);
-}
-
-.dashboard-sidebar {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-  padding: 20px;
-  margin-bottom: 30px;
-  border: 1px solid var(--border-color);
-  transition: box-shadow 0.3s;
-}
-
-.dashboard-sidebar:hover {
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
-.user-image {
-  text-align: center;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
-}
-
-.user-image img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 15px;
-  border: 3px solid var(--border-color);
-  transition: all 0.3s;
-}
-
-.user-image img:hover {
-  border-color: var(--primary-color);
-  transform: rotate(5deg);
-}
-
-.user-image .name {
-  font-size: 18px;
-  margin-bottom: 5px;
-  color: var(--text-color);
-  font-weight: 600;
-}
-
-.user-image .title,
-.user-image .email {
-  color: var(--light-text);
-  font-size: 14px;
-}
-
-.dashboard-menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dashboard-menu li {
-  margin-bottom: 5px;
-}
-
-.dashboard-menu li a {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  color: var(--text-color);
-  text-decoration: none;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  font-size: 14px;
-}
-
-.dashboard-menu li a:hover {
-  background: rgba(0, 160, 225, 0.1);
-  color: var(--primary-hover);
-  transform: translateX(5px);
-}
-
-.dashboard-menu li.active a {
-  background: var(--primary-color);
-  color: white;
-  font-weight: 500;
-}
-
-.dashboard-menu li a i {
-  margin-right: 10px;
-  width: 20px;
-  text-align: center;
-  font-size: 16px;
 }
 
 .dashboard-block {
@@ -507,8 +399,8 @@ body {
   margin-right: 0.5rem;
 }
 
-.ml-2 {
-  margin-left: 0.5rem;
+.ml-1 {
+  margin-left: 0.25rem;
 }
 
 .grid {
@@ -685,9 +577,12 @@ body {
   gap: 0.5rem;
 }
 
-@media (max-width: 768px) {
-  .dashboard-sidebar {
-    margin-bottom: 20px;
-  }
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: inline-block;
+  font-weight: 500;
 }
 </style>
+```

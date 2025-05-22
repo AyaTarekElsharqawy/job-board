@@ -1,33 +1,14 @@
 <template>
     <div>
-        <h1 class="">Welcome to Employer Dashboard</h1>
-        <div class="row">
-            <main class="col-md-9">
-                <div class="row g-3">
-                    <div class="card col-md-4 m-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Jobs</h5>
-                            <p class="card-text">100</p>
-                            <router-link to="#" class="btn btn-primary">View</router-link>
-                        </div>
-                    </div>
-                    <div class="card col-md-4 m-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Applicants</h5>
-                            <p class="card-text">50</p>
-                            <router-link to="#" class="btn btn-primary">View</router-link>
-                        </div>
-                    </div>
-                    <div class="card col-md-4 m-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Interviews</h5>
-                            <p class="card-text">20</p>
-                            <router-link to="#" class="btn btn-primary">View</router-link>
-                        </div>
-                    </div>
-                </div>
-            </main>
+        <div class="shadow-md bg-white rounded-lg p-4 mb-4 dashboard">
+            <h1 class="">Welcome to Employer Dashboard</h1>
+            <p>
+                <br>
+                Here you can manage your jobs, candidates, and more.
+                <br>
+            </p>
         </div>
+        
     </div>
 </template>
 
@@ -37,5 +18,18 @@
 </script>
 
 <style>
-
+    .dashboard {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s;
+    }
+    .dashboard h1 {
+        color: #343a40;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
 </style>

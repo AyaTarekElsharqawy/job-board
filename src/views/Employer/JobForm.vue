@@ -51,11 +51,11 @@
               <label for="experience_level" class="form-label">Experience Level</label>
               <select id="experience_level" v-model="job.experience_level" class="form-select">
                 <option disabled value="">Select experience level</option>
-                <option>Entry-level</option>
-                <option>Mid-level</option>
-                <option>Senior</option>
-                <option>Lead</option>
-                <option>Executive</option>
+                <option>entry</option>
+                <option>junior</option>
+                <option>mid</option>
+                <option>senior</option>
+               
               </select>
             </div>
             <div v-if="errors.experience_level" class="text-danger">
@@ -172,7 +172,7 @@
             <div>
               <label for="category_id" class="form-label">Job Category</label>
               <select id="category_id" v-model="job.category_id" class="form-select">
-              <option disabled value="">Select a category_id</option>
+              <option disabled value="">Select a category</option>
               <option 
                 v-for="category_id in categories" 
                 :key="category_id.id" 
@@ -200,6 +200,20 @@
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const currUser = JSON.parse(localStorage.getItem('user'))
+const token = localStorage.getItem('token')
+
+if (!currUser) {
+  router.push('/login')
+}
+if (currUser.role !== 'employer') {
+  router.push({ path: '/' })
+}
+
+const successMessage = ref('');
+const errorMessage = ref('');
 const errors = reactive({
   title: '',
   salary: '',
@@ -384,7 +398,6 @@ const submitJob = () => {
     )
     .then(response => {
       console.log(response);
-      alert('Job posted successfully')
       job.title = ''
       job.salary = ''
       job.deadline = ''
@@ -424,10 +437,15 @@ const submitJob = () => {
       success.work_type = ''
       success.technologies = ''
       success.category_id = ''
+      successMessage.value = 'Job posted successfully'
+      errorMessage.value = ''
+      setTimeout(() => {
+        successMessage.value = ''
+      }, 3000);
+      router.push({ path: '/employer/joblist' });
     })
     .catch(error => {
       console.error('Error posting job:', error);
-      alert('Failed to post job');
     });
   }
 };

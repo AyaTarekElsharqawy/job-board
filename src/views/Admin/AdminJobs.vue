@@ -1,41 +1,11 @@
 <template>
   <div class="admin-dashboard">
-    <!-- نعرض الأيقونات المسجّلة فقط -->
-    <font-awesome-icon :icon="['fas', 'tachometer-alt']" />
-    <font-awesome-icon :icon="['fas', 'credit-card']" />
-
-    <!-- Navbar -->
-    <nav class="main-navbar">
-      <div class="navbar-brand">
-        <router-link to="/dashboard" class="logo-link">
-          <img src="../../assets/logo.png" alt="Logo" class="logo">
-        </router-link>
-      </div>
-      
-      <div class="navbar-menu">
-        <router-link 
-          v-for="item in navItems" 
-          :key="item.path" 
-          :to="item.path"
-          class="nav-link"
-          active-class="active"
-        >
-          <font-awesome-icon :icon="['fas', item.icon]" class="nav-icon" />
-          <span class="nav-text">{{ item.title }}</span>
-        </router-link>
-      </div>
-      
-      <div class="navbar-user">
-        <span class="welcome-msg">Welcome, {{ user?.name || '—' }}</span>
-        <button @click="logout" class="logout-btn">
-          <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="logout-icon" />
-          <span class="logout-text">Logout</span>
-        </button>
-      </div>
-    </nav>
-
+    
     <!-- Main Content -->
     <div class="jobs-container">
+      <div v-if="message" class="message text-center text-danger" :class="{ error: message.includes('Error') }">
+        {{ message }}
+      </div>
       <div class="header-section">
         <h2 class="page-title">
           <span class="icon">💼</span>
@@ -48,15 +18,16 @@
           <thead>
             <tr>
               <th>Title</th>
-              <th>Company</th>
+              <th>Employer</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
+            
             <tr v-for="job in jobs" :key="job.id">
               <td>{{ job.title }}</td>
-              <td>{{ job.employer?.company_name || 'N/A' }}</td>
+              <td>{{ job.employer?.name || 'N/A' }}</td>
               <td>
                 <span 
                   :class="[
@@ -69,17 +40,17 @@
               </td>
               <td class="actions">
                 <button 
-                  @click="updateStatus(job.id, 'approved')" 
-                  :disabled="job.status?.toLowerCase() === 'approved'"
+                  @click="acceptJob(job.id)" 
+                  :disabled="['closed', 'published'].includes(job.status?.toLowerCase())"
                   class="action-btn approve"
                 >
                   <font-awesome-icon :icon="['fas', 'check']" />
-                  Approve
+                  Publish
                 </button>
                 <button 
-                  @click="updateStatus(job.id, 'rejected')" 
-                  :disabled="job.status?.toLowerCase() === 'rejected'"
-                  class="action-btn reject"
+                  
+                  :disabled="['closed', 'rejected'].includes(job.status?.toLowerCase())"
+                  class="btn btn-danger action-btn reject" data-bs-toggle="modal" :data-bs-target="'#rejectModal' + job.id "
                 >
                   <font-awesome-icon :icon="['fas', 'times']" />
                   Reject
@@ -92,69 +63,149 @@
           </tbody>
         </table>
       </div>
-
-      <div v-if="message" class="message" :class="{ error: message.includes('Error') }">
-        {{ message }}
+      <div v-for="job in jobs" :key="'modal-' + job.id">
+        <div class="modal fade" :id="'rejectModal' + job.id" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Reject Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>Are you sure you want to reject this job?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" @click="rejectJob(job.id)" data-bs-dismiss="modal">Reject</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      
     </div>
+
+        <div class="pagination-controls mt-4 text-center">
+          <button 
+            class="btn btn-sm btn-outline-primary mx-1"
+            :disabled="currentPage === 1"
+            @click="goToPage(currentPage - 1)"
+          >
+            Previous
+          </button>
+
+          <span class="mx-2">Page {{ currentPage }} of {{ lastPage }}</span>
+
+          <button 
+            class="btn btn-sm btn-outline-primary mx-1"
+            :disabled="currentPage === lastPage"
+            @click="goToPage(currentPage + 1)"
+          >
+            Next
+          </button>
+        </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import api from '../../../axios'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+// import api from '../../../axios'
+import axios from 'axios'
+// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const jobs = ref([])
 const message = ref('')
 const user = ref({})
+const currentPage = ref(1)
+const lastPage = ref(1)
 
-const navItems = [
-  { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
-  { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
-  { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
-  { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
-  { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
-  { path: '/admin/filters', title: 'Users', icon: 'users' }
-]
+
+// const navItems = [
+//   { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
+//   { path: '/admin/jobs', title: 'Jobs', icon: 'briefcase' },
+//   { path: '/admin/applications', title: 'Applications', icon: 'file-alt' },
+//   { path: '/admin/payments', title: 'Payments', icon: 'credit-card' },
+//   { path: '/admin/analytics', title: 'Analytics', icon: 'chart-bar' },
+//   { path: '/admin/filters', title: 'Users', icon: 'users' }
+// ]
 
 const fetchJobs = async () => {
   try {
-    const res = await api.get('/api/admin/jobs')
-    jobs.value = res.data.data || []
-  } catch (e) {
-    console.error('Fetch error:', e)
+    const response = await axios.get(`http://localhost:8000/api/jobs?page=${currentPage.value}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+
+    if (response.data.message === "No Jobs at the time!") {
+      jobs.value = []
+    } else {
+      jobs.value = response.data.data
+      lastPage.value = response.data.last_page
+    }
+  } catch (error) {
+    console.error('Error fetching jobs:', error)
     message.value = 'Error fetching jobs'
-    jobs.value = []
+  }
+}
+
+const goToPage = (page) => {
+  if (page >= 1 && page <= lastPage.value) {
+    currentPage.value = page
+    fetchJobs()
   }
 }
 
 const fetchUserData = async () => {
-  try {
-    const res = await api.get('/api/user')
-    user.value = res.data.user || res.data || {}
-  } catch (e) {
-    console.error('Failed to fetch user data', e)
-    user.value = {}
-  }
+  // axios.get('http://localhost:8000/api/user', {
+  //   headers: {
+  //     'Authorization': `Bearer ${localStorage.getItem('token')}`
+  //   }
+  // }).then(response => {
+  //   user.value = response.data.data
+  //   console.log(user.value)
+  // }).catch(error => {
+  //   console.error('Error fetching user data:', error)
+  //   message.value = 'Error fetching user data'
+  // })
 }
 
-const updateStatus = async (id, status) => {
-  try {
-    const endpoint = status === 'approved' ? 'approve' : 'reject'
-    const res = await api.put(`/api/admin/jobs/${id}/${endpoint}`)
-    message.value = res.data.message || 'Status updated'
-    await fetchJobs()
-  } catch (e) {
-    console.error('Update error:', e.response?.data || e.message)
-    message.value = 'Error updating status'
-  }
+const acceptJob = (id) => {
+  axios.put(`http://localhost:8000/api/jobs/${id}`, {
+    status: 'published'
+  }, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(response => {
+    console.log(response)
+    fetchJobs();
+  }).catch(error => {
+    console.error('Error accepting job:', error)
+    message.value = error.response?.data?.message || 'Error accepting job'
+  })
 }
 
-const logout = () => {
-  localStorage.removeItem('token')
-  window.location.href = '/login'
+const rejectJob = async (id) => {
+try {
+  await axios.put(`http://localhost:8000/api/jobs/${id}`, {
+    status: 'rejected'
+  }, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  })
+  await fetchJobs()
+
+} catch (error) {
+  console.error('Error rejecting job:', error)
+  message.value = error.response?.data?.message || 'Error rejecting job'
 }
+}
+
 
 onMounted(() => {
   fetchJobs()
@@ -163,6 +214,11 @@ onMounted(() => {
 </script>
   
   <style scoped>
+  .pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   /* Reuse the navbar styles from payments page */
   .main-navbar {
     display: flex;

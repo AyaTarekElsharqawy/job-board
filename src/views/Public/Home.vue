@@ -1,18 +1,16 @@
 <template>
   <div>
-   
     <Transition name="fade-slide" appear>
       <div class="hero-section">
         <div class="hero-content">
           <div class="hero-text">
             <h1><strong>Find Your Dream Job Today!</strong></h1>
             <p class="subtitle"><strong>Join thousands of companies hiring right now</strong></p>
-            <div class="stats">4536+ Jobs listed</div>
+            <div class="stats">{{ filteredJobs.length }}+ Jobs listed</div>
             <p class="description">
               <strong>We connect top talent with leading companies worldwide. 
               Start your career journey with us today!</strong>
             </p>
-           
           </div>
           <div class="hero-image">
             <img src="@/assets/illustration.png" alt="People working">
@@ -24,28 +22,23 @@
     <Transition name="fade-up" appear>
       <div class="search-container">
         <JobFilters 
-  :locations="locations"
-  :categories="categories"
-  :experienceLevels="experienceLevels"
-  :salaryRanges="salaryRanges"
-  :timeFilters="timeFilters"
-  @filterChanged="applyFilter"
-/>
-
-
+          :locations="locations"
+          :categories="categories"
+          :experienceLevels="experienceLevels"
+          :salaryRanges="salaryRanges"
+          :timeFilters="timeFilters"
+          @filterChanged="applyFilter"
+        />
       </div>
     </Transition>
-
 
     <div class="job-listings">
       <Transition name="fade" appear>
         <h2>Job Listing</h2>
       </Transition>
       
-     
       <div v-if="isLoading" class="loading">Loading jobs...</div>
       
-   
       <div v-if="error" class="error">{{ error }}</div>
      
       <div v-if="!isLoading && !error && filteredJobs.length === 0" class="empty">
@@ -60,7 +53,6 @@
         />
       </TransitionGroup>
      
-    
       <Transition name="fade" appear>
         <div v-if="filteredJobs.length > 0" class="pagination-controls">
           <button 
@@ -96,7 +88,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
@@ -119,48 +110,30 @@ const salaryRanges = ref([
   '< 5000',
   '5000 - 10000',
   '> 10000'
-]);
+])
 
 const timeFilters = ref([
   'Any',
   'Last 24 Hours',
   'Last 7 Days',
   'Last 30 Days'
-]);
-
-
+])
 
 const fetchInitialData = async () => {
   isLoading.value = true
   try {
-    const [jobsRes, categoriesRes] = await Promise.all([
-      axios.get('http://localhost:8000/api/jobs'),
-      axios.get('http://localhost:8000/api/categories')
+    const [jobsRes, categoriesRes, locationsRes] = await Promise.all([
+      axios.get('http://localhost:8000/api/jobs/published'),
+      axios.get('http://localhost:8000/api/categories'),
+      axios.get('http://localhost:8000/api/jobs/locations')
     ])
     
     jobs.value = jobsRes.data.data || []
     categories.value = categoriesRes.data.data || []
-    
-   
-    locations.value = [...new Set(jobs.value.map(job => job.location))]
+    locations.value = locationsRes.data.locations || []
   } catch (err) {
     console.error('Error fetching data:', err)
     error.value = 'Failed to load data. Please try again later.'
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const fetchJobs = async () => {
-  isLoading.value = true
-  error.value = null
-  try {
-    const response = await axios.get('http://localhost:8000/api/jobs')
-    jobs.value = response.data.data || []
-  } catch (err) {
-    console.error('Error fetching jobs:', err)
-    error.value = 'Failed to load jobs. Please try again later.'
-    jobs.value = []
   } finally {
     isLoading.value = false
   }
@@ -171,28 +144,32 @@ const applyFilter = async (filters) => {
   isLoading.value = true
   error.value = null
   try {
-  
-    const params = {
-      keyword: filters.keyword || undefined,
-      location: filters.location || undefined,
-      experience_level: filters.experience || undefined,
-      category_id: filters.category || undefined
-    }
+    const postData = {}
+
+    if (filters.keyword) postData.keyword = filters.keyword
+    if (filters.location) postData.location = filters.location
+    if (filters.experience) postData.experience = filters.experience  
+    if (filters.category) postData.category_id = filters.category
 
     if (filters.salary) {
-      const [min, max] = filters.salary.split('-').map(Number)
-      if (!isNaN(min)) params.salary_min = min
-      if (!isNaN(max)) params.salary_max = max
+      if (filters.salary === '< 5000') {
+        postData.salary_max = 5000
+      } else if (filters.salary === '5000 - 10000') {
+        postData.salary_min = 5000
+        postData.salary_max = 10000
+      } else if (filters.salary === '> 10000') {
+        postData.salary_min = 10000
+      }
     }
 
     if (filters.datePosted) {
-      params.posted_within_days = Number(filters.datePosted)
+      if (filters.datePosted === 'Last 24 Hours') postData.posted_within_days = 1
+      else if (filters.datePosted === 'Last 7 Days') postData.posted_within_days = 7
+      else if (filters.datePosted === 'Last 30 Days') postData.posted_within_days = 30
     }
 
-    Object.keys(params).forEach(key => params[key] === undefined && delete params[key])
-
-    const response = await axios.get('http://localhost:8000/api/jobs', { params })
-    jobs.value = response.data.data || []
+    const response = await axios.post('http://localhost:8000/api/jobs/filter', postData)
+    jobs.value = response.data.jobs || response.data || []
     filterCriteria.value = filters
     currentPage.value = 1
   } catch (err) {
@@ -204,54 +181,11 @@ const applyFilter = async (filters) => {
   }
 }
 
-
 const filteredJobs = computed(() => {
-  if (!jobs.value.length) return []
-  
-  return jobs.value.filter(job => {
-    const f = filterCriteria.value
-
-    
-    const matchKeyword = !f.keyword || 
-      (job.title?.toLowerCase().includes(f.keyword.toLowerCase()) || 
-      job.description?.toLowerCase().includes(f.keyword.toLowerCase()))
-    
  
-    const matchLocation = !f.location || 
-      job.location?.toLowerCase().includes(f.location.toLowerCase())
-    
- 
-    const matchCategory = !f.category || 
-      job.category_id?.toString() === f.category.toString()
- 
-    const matchExperience = !f.experience || 
-      job.experience_level?.toLowerCase() === f.experience.toLowerCase()
-    
-    
-    const matchSalary = !f.salary || (() => {
-      if (!job.salary) return false
-      const salary = Number(job.salary)
-      if (isNaN(salary)) return false
-      
-      if (f.salary === '<5000') return salary < 5000
-      if (f.salary === '5000-10000') return salary >= 5000 && salary <= 10000
-      if (f.salary === '>10000') return salary > 10000
-      return true
-    })()
-    
-   
-    const matchDate = !f.datePosted || (() => {
-      if (!job.created_at) return false
-      const days = Number(f.datePosted)
-      if (isNaN(days)) return true
-      const postedDate = dayjs(job.created_at)
-      return postedDate.isAfter(dayjs().subtract(days, 'day'))
-    })()
-
-    return matchKeyword && matchLocation && matchCategory && 
-           matchExperience && matchSalary && matchDate
-  })
+  return jobs.value
 })
+
 const totalPages = computed(() => {
   return Math.ceil(filteredJobs.value.length / itemsPerPage.value)
 })
@@ -261,7 +195,6 @@ const paginatedJobs = computed(() => {
   const end = start + itemsPerPage.value
   return filteredJobs.value.slice(start, end)
 })
-
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
@@ -282,11 +215,9 @@ const goToPage = (page) => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-
 onMounted(() => {
   fetchInitialData()
 })
-
 </script>
 
 <style scoped>

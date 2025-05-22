@@ -3,7 +3,7 @@
     <RouterLink to="/" class="logo-link">
       <img src="@/assets/ll.png" alt="Job Board Logo" class="logo">
     </RouterLink>
-    
+
     <button class="mobile-menu-btn" @click="toggleMenu">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -11,14 +11,25 @@
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
     </button>
-    
+
     <div class="nav-links" :class="{ 'active': isMenuOpen }">
-      <RouterLink to="/">Home</RouterLink>
-      
+    
+      <template v-if="userRole === 'candidate'">
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/candidate/dashboard">Dashboard</RouterLink>
+      </template>
+
+      <template v-else-if="userRole === 'employer'">
+        <RouterLink to="/employer">Dashboard</RouterLink>
+      </template>
+
+      <template v-else>
+        <RouterLink to="/">Home</RouterLink>
+      </template>
+
       <div class="auth-buttons">
         <button v-if="isLoggedIn" @click="handleLogout" class="logout-btn">Log out</button>
         <RouterLink v-else to="/login" class="login-btn">Log in</RouterLink>
-      
       </div>
     </div>
   </nav>
@@ -32,25 +43,20 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const isMenuOpen = ref(false)
 
-const isLoggedIn = computed(() => {
-  return !!localStorage.getItem('token')
-})
+const isLoggedIn = computed(() => !!localStorage.getItem('token'))
+const userRole = computed(() => localStorage.getItem('role'))
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
 const handleLogout = () => {
-
   localStorage.removeItem('token')
   localStorage.removeItem('role')
- 
   router.push('/login')
- 
   isMenuOpen.value = false
 }
 </script>
-
 <style scoped>
 .navbar {
   background: #047fec;

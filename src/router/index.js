@@ -31,14 +31,19 @@ import AdminComments from '@/views/Admin/AdminComments.vue'
 import AdminAnalytics from '@/views/Admin/AdminAnalytics.vue'
 import AdminFilters from '@/views/Admin/AdminFilters.vue'
 import AdminPayments from '@/views/Admin/AdminPayments.vue'
-
+import JobDetailsView from '@/views/jobs/JobDetails.vue'
 const routes = [
+
+  // { path: '/yoyo', name: 'EmployerHome', component: EmployerHome },
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
   { path: '/job-details/:id', name: 'JobDetails', component: JobDetails, props: true },
   { path: '/browse-jobs', name: 'BrowseJobs', component: BrowseJobs },
-
+  {
+    path: '/jobs/:id',
+    component: JobDetailsView
+  },
   {
     path: '/employer',
     component: EmployerDashboard,
@@ -51,13 +56,15 @@ const routes = [
       { path: 'add-employer-profile', name: 'AddProfile', component: AddProfile }
     ]
   },
+  
+  
 
   {
     path: '/candidate',
     children: [
       { path: 'dashboard', name: 'CandidateDashboard', component: CandidateDashboard },
       { path: 'job/:id/apply', name: 'JobApply', component: () => import('@/views/Candidate/JobApplyForm.vue') },
-      { path: 'search', name: 'CandidateSearch', component: () => import('@/views/Candidate/CandidateSearch.vue') },
+   
       { path: 'profile', name: 'CandidateProfile', component: () => import('@/views/Candidate/CandidateProfile.vue') },
       { path: 'add-profile', name: 'addCandidateProfile', component: AddCandidate },
       { path: 'my-applications', name: 'MyApplications', component: () => import('@/views/Candidate/MyApplications.vue') }

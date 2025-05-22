@@ -1,146 +1,185 @@
 <template>
-  <div class="container mt-4">
-    <h3 class="mb-3">Job Applications</h3>
+  <div class="container">
+    <h2 class="text-center mb-4">Job Applications</h2>
 
     <div v-if="applications.length" class="table-responsive">
       <table class="table table-bordered table-hover">
-        <thead class="table-light">
+        <thead class="table-primary">
           <tr>
             <th>#</th>
-            <th>Applicant</th>
+            <th>Applicant Name</th>
             <th>Email</th>
             <th>Job Title</th>
             <th>Status</th>
             <th>Resume</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(app, index) in applications" :key="app.id">
-            <td>{{ getGlobalIndex(index) }}</td>
+            <td>{{ index + 1 }}</td>
             <td>{{ app.user.name }}</td>
             <td>{{ app.user.email }}</td>
             <td>{{ app.job.title }}</td>
             <td>
-              <span class="badge" 
-                :class="{
-                  'bg-warning text-dark': app.status === 'pending',
-                  'bg-success': app.status === 'accepted',
-                  'bg-danger': app.status === 'rejected'
-                }">
+              <a :href="getResumeUrl(app.resume_snapshot)" target="_blank" download>View Resume</a>
+            </td>
+            <td>
+              <span class="badge"
+                    :class="{
+                      'bg-warning text-dark': app.status === 'pending',
+                      'bg-success': app.status === 'accepted',
+                      'bg-danger': app.status === 'rejected'
+                    }">
                 {{ app.status }}
               </span>
             </td>
             <td>
-              <a :href="'http://localhost:8000/' + app.resume_snapshot" 
-                 target="_blank" class="btn btn-sm btn-outline-primary">
-                View
-              </a>
+              <button class="btn btn-sm btn-outline-success me-2" 
+                      @click="updateStatus(app.id, 'accepted')"
+                      :disabled="['accepted'].includes(app.status)">
+                      Accept
+              </button>
+              <button class="btn btn-sm btn-outline-danger"
+                      :disabled="['rejected'].includes(app.status)"
+                      data-bs-toggle="modal" :data-bs-target="'#rejectModal' + app.id"> 
+                Reject
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
-
-      <!-- Pagination Info -->
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="text-muted">
-          Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ totalApplications }} applications
-        </span>
-
-        <!-- Pagination Controls -->
-        <nav>
-          <ul class="pagination mb-0">
-            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <button class="page-link" @click="goToPage(currentPage - 1)">Previous</button>
-            </li>
-
-            <li v-for="page in visiblePages" :key="page" :class="{ active: currentPage === page }" class="page-item">
-              <button class="page-link" @click="goToPage(page)">{{ page }}</button>
-            </li>
-
-            <li class="page-item" :class="{ disabled: currentPage === lastPage }">
-              <button class="page-link" @click="goToPage(currentPage + 1)">Next</button>
-            </li>
-          </ul>
-        </nav>
-      </div>
     </div>
 
-    <div v-else-if="!loading" class="alert alert-info text-center">
-      No applications found.
+    <div v-else class="text-center">
+      <p>No applications received yet.</p>
     </div>
 
-    <div v-if="loading" class="text-center my-4">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+    <div v-for="app in applications" :key="'modal-' + app.id">
+      <div class="modal fade" :id="'rejectModal' + app.id" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Reject Job</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to reject this job?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger" @click="updateStatus(app.id, 'rejected')" data-bs-dismiss="modal">Reject</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-// State
-const applications = ref([])
-const loading = ref(false)
-
-const currentPage = ref(1)
-const lastPage = ref(1)
-const perPage = ref(10)
-const totalApplications = ref(0)
-
-const user = JSON.parse(localStorage.getItem('user'))
-const token = localStorage.getItem('token')
-
-if (!user || user.role !== 'employer') {
-  window.location.href = '/' // Redirect to home if not employer
+const router = useRouter();
+if (localStorage.getItem('role') !== 'employer') {
+  router.push({ path: '/' });
 }
 
-const fetchApplications = async () => {
+const applications = ref([])
+const currUser = JSON.parse(localStorage.getItem('user'));
+
+if (!currUser) {
+  router.push('/login')
+}
+
+onMounted(() => {
+  fetchApps(); 
+})
+
+async function updateStatus(id, newStatus) {
   try {
-    loading.value = true
-    const response = await axios.get(`http://localhost:8000/api/employer/applcations/${user.id}?page=${currentPage.value}&per_page=${perPage.value}`, {
+    await axios.put(`http://localhost:8000/api/applications/${id}/status`, {
+      status: newStatus
+    }, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
+    }).then(() => {
+      fetchApps() 
     })
 
-    if (response.data.success) {
+  } catch (error) {
+    console.error('Failed to update status:', error)
+    alert('Failed to update status. Please try again.')
+  }
+}
+
+const fetchApps = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/employer/applcations/${currUser.id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    if(response.data.message === 'No applications found for this employer.'){
+      applications.value = []
+    } else {
       applications.value = response.data.data
-      currentPage.value = response.data.current_page
-      lastPage.value = response.data.last_page
-      perPage.value = response.data.per_page
-      totalApplications.value = response.data.total_applications
     }
   } catch (error) {
-    console.error('Failed to fetch applications:', error)
-  } finally {
-    loading.value = false
+    console.error('Error fetching applications:', error)
   }
 }
 
-onMounted(fetchApplications)
 
-// Pagination helpers
-const getGlobalIndex = (i) => (currentPage.value - 1) * perPage.value + i + 1
-const getStartIndex = () => (currentPage.value - 1) * perPage.value + 1
-const getEndIndex = () => Math.min(currentPage.value * perPage.value, totalApplications.value)
-
-const goToPage = (page) => {
-  if (page >= 1 && page <= lastPage.value) {
-    currentPage.value = page
-    fetchApplications()
-  }
+function getResumeUrl(filename) {
+  return `http://localhost:8000/storage/${filename}`
+ 
 }
-
-const visiblePages = computed(() => {
-  const pages = []
-  const start = Math.max(1, currentPage.value - 2)
-  const end = Math.min(lastPage.value, currentPage.value + 2)
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
-  }
-  return pages
-})
 </script>
+
+<style scoped>
+table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+thead th {
+  background-color: #007bff;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+}
+
+tbody td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.75em;
+  border-radius: 0.75rem;
+}
+
+button.btn {
+  min-width: 80px;
+}
+
+.table td, .table th {
+  padding: 1rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.modal-title {
+  font-weight: bold;
+}
+</style>

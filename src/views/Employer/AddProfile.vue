@@ -44,7 +44,6 @@
     </template>
     
     <script setup>
-   
     import { reactive, ref } from 'vue';
     import { useRouter } from 'vue-router';
     import axios from 'axios';
@@ -52,9 +51,6 @@
     const successMessage = ref('');
     const errorMessage = ref('');
     const router = useRouter();
-    if (localStorage.getItem('role') !== 'employer') {
-        router.push({ path: '/' });
-    }
     const errors = reactive({
         company_name: '',
         company_website: '',

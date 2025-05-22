@@ -51,10 +51,11 @@
               <label for="experience_level" class="form-label">Experience Level</label>
               <select id="experience_level" v-model="job.experience_level" class="form-select">
                 <option disabled value="">Select experience level</option>
-                <option value="entry">Entry-level</option>
-                <option value="junior">Junior</option>
-                <option value="mid">Mid-level</option>
-                <option value="senior">Senior</option> 
+                <option>Entry-level</option>
+                <option>Mid-level</option>
+                <option>Senior</option>
+                <option>Lead</option>
+                <option>Executive</option>
               </select>
             </div>
             <div v-if="errors.experience_level" class="text-danger">
@@ -102,7 +103,7 @@
 
           <div class="col-md-6">
             <div>
-              <label for="skills" class="form-label">Required Skills (comma-separated)</label>
+              <label for="skills" class="form-label">Required Skills</label>
               <textarea id="skills" v-model="job.skills" class="form-control" rows="3"></textarea>
             </div>
             <div v-if="errors.skills" class="text-danger">
@@ -156,7 +157,7 @@
 
           <div class="col-md-6">
             <div>
-              <label for="technologies" class="form-label">Technologies (comma-separated)</label>
+              <label for="technologies" class="form-label">Technologies</label>
               <input type="text" id="technologies" v-model="job.technologies" class="form-control" />
             </div>
             <div v-if="errors.technologies" class="text-danger">
@@ -199,11 +200,6 @@
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-const router = useRouter();
-if (localStorage.getItem('role') !== 'employer') {
-  router.push({ path: '/' });
-}
 const errors = reactive({
   title: '',
   salary: '',

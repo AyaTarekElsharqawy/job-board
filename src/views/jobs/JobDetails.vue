@@ -16,12 +16,12 @@
         <div class="job-body">
           <div class="job-section">
             <h2>Job Description</h2>
-            <p>{{ job.description }}</p>
+            <div class="text-content">{{ job.description }}</div>
           </div>
 
           <div class="job-section">
             <h2>Responsibilities</h2>
-            <p>{{ job.responsibilities }}</p>
+            <div class="text-content">{{ job.responsibilities }}</div>
           </div>
 
           <div class="job-section">
@@ -323,12 +323,6 @@ const validateForm = () => {
     isValid = false
   }
 
-  // Validate cover letter (optional)
-  // if (!application.value.coverLetter.trim()) {
-  //   errors.value.coverLetter = 'Cover letter is required.'
-  //   isValid = false
-  // }
-
   return isValid
 }
 
@@ -449,6 +443,7 @@ const submitApplication = async () => {
 
 onMounted(fetchJob)
 </script>
+
 <style scoped>
 .job-details-container {
   max-width: 1200px;
@@ -461,11 +456,14 @@ onMounted(fetchJob)
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 2rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .job-header h1 {
   color: #047fec;
   margin-bottom: 1rem;
+  word-break: break-word;
 }
 
 .job-meta {
@@ -479,6 +477,7 @@ onMounted(fetchJob)
 .job-meta span {
   padding-right: 1rem;
   border-right: 1px solid #ddd;
+  word-break: break-word;
 }
 
 .job-meta span:last-child {
@@ -495,6 +494,12 @@ onMounted(fetchJob)
   font-size: 1.25rem;
 }
 
+.text-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+}
+
 .skills-list, .technologies-list {
   display: flex;
   flex-wrap: wrap;
@@ -507,6 +512,7 @@ onMounted(fetchJob)
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.9rem;
+  word-break: break-word;
 }
 
 .job-footer {
@@ -516,6 +522,8 @@ onMounted(fetchJob)
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #eee;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .apply-button {
@@ -527,6 +535,7 @@ onMounted(fetchJob)
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.3s;
+  flex-shrink: 0;
 }
 
 .apply-button:hover {
@@ -535,6 +544,7 @@ onMounted(fetchJob)
 
 .deadline {
   color: #666;
+  word-break: break-word;
 }
 
 /* Modal Styles */
@@ -557,6 +567,8 @@ onMounted(fetchJob)
   border-radius: 8px;
   width: 100%;
   max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
 }
 
@@ -595,11 +607,15 @@ onMounted(fetchJob)
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
 }
 
 .form-group textarea {
   min-height: 150px;
   resize: vertical;
+  white-space: pre-wrap;
 }
 
 .submit-button {
@@ -628,6 +644,7 @@ onMounted(fetchJob)
   border-radius: 4px;
   margin-top: 1rem;
   text-align: center;
+  word-break: break-word;
 }
 
 .message.success {
@@ -675,5 +692,31 @@ onMounted(fetchJob)
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .job-content {
+    padding: 1rem;
+  }
+  
+  .job-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .job-meta span {
+    border-right: none;
+    padding-right: 0;
+  }
+  
+  .job-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .application-modal {
+    width: 95%;
+    padding: 1rem;
+  }
 }
 </style>

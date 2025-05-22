@@ -28,3 +28,17 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+
+echo ".DS_Store
+node_modules/
+*.deb
+*.rar
+*.zip
+*.webm
+*.jpg
+*.pdf
+*.png
+*.run
+*.tmp
+*.log" >> .gitignore

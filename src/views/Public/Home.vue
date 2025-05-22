@@ -122,15 +122,15 @@ const timeFilters = ref([
 const fetchInitialData = async () => {
   isLoading.value = true
   try {
-    const [jobsRes, categoriesRes] = await Promise.all([
+    const [jobsRes, categoriesRes, locationsRes] = await Promise.all([
       axios.get('http://localhost:8000/api/jobs/published'),
-      axios.get('http://localhost:8000/api/categories')
+      axios.get('http://localhost:8000/api/categories'),
+      axios.get('http://localhost:8000/api/jobs/locations')
     ])
     
     jobs.value = jobsRes.data.data || []
     categories.value = categoriesRes.data.data || []
-    
-    locations.value = [...new Set(jobs.value.map(job => job.location))]
+    locations.value = locationsRes.data.locations || []
   } catch (err) {
     console.error('Error fetching data:', err)
     error.value = 'Failed to load data. Please try again later.'
@@ -139,46 +139,37 @@ const fetchInitialData = async () => {
   }
 }
 
-const fetchJobs = async () => {
-  isLoading.value = true
-  error.value = null
-  try {
-    const response = await axios.get('http://localhost:8000/api/jobs/published')
-    jobs.value = response.data.data || []
-  } catch (err) {
-    console.error('Error fetching jobs:', err)
-    error.value = 'Failed to load jobs. Please try again later.'
-    jobs.value = []
-  } finally {
-    isLoading.value = false
-  }
-}
 
 const applyFilter = async (filters) => {
   isLoading.value = true
   error.value = null
   try {
-    const params = {
-      keyword: filters.keyword || undefined,
-      location: filters.location || undefined,
-      experience_level: filters.experience || undefined,
-      category_id: filters.category || undefined
-    }
+    const postData = {}
+
+    if (filters.keyword) postData.keyword = filters.keyword
+    if (filters.location) postData.location = filters.location
+    if (filters.experience) postData.experience = filters.experience  
+    if (filters.category) postData.category_id = filters.category
 
     if (filters.salary) {
-      const [min, max] = filters.salary.split('-').map(Number)
-      if (!isNaN(min)) params.salary_min = min
-      if (!isNaN(max)) params.salary_max = max
+      if (filters.salary === '< 5000') {
+        postData.salary_max = 5000
+      } else if (filters.salary === '5000 - 10000') {
+        postData.salary_min = 5000
+        postData.salary_max = 10000
+      } else if (filters.salary === '> 10000') {
+        postData.salary_min = 10000
+      }
     }
 
     if (filters.datePosted) {
-      params.posted_within_days = Number(filters.datePosted)
+      if (filters.datePosted === 'Last 24 Hours') postData.posted_within_days = 1
+      else if (filters.datePosted === 'Last 7 Days') postData.posted_within_days = 7
+      else if (filters.datePosted === 'Last 30 Days') postData.posted_within_days = 30
     }
 
-    Object.keys(params).forEach(key => params[key] === undefined && delete params[key])
-
-    const response = await axios.get('http://localhost:8000/api/jobs/filter', { params })
-    jobs.value = response.data.jobs || []
+    const response = await axios.post('http://localhost:8000/api/jobs/filter', postData)
+    jobs.value = response.data.jobs || response.data || []
     filterCriteria.value = filters
     currentPage.value = 1
   } catch (err) {
@@ -191,44 +182,8 @@ const applyFilter = async (filters) => {
 }
 
 const filteredJobs = computed(() => {
-  return jobs.value.filter(job => {
-    const f = filterCriteria.value
-    
-    const matchKeyword = !f.keyword || 
-      (job.title?.toLowerCase().includes(f.keyword.toLowerCase()) || 
-      job.description?.toLowerCase().includes(f.keyword.toLowerCase()))
-    
-    const matchLocation = !f.location || 
-      job.location?.toLowerCase().includes(f.location.toLowerCase())
-    
-    const matchCategory = !f.category || 
-      job.category_id?.toString() === f.category.toString()
  
-    const matchExperience = !f.experience || 
-      job.experience_level?.toLowerCase() === f.experience.toLowerCase()
-    
-    const matchSalary = !f.salary || (() => {
-      if (!job.salary) return false
-      const salary = Number(job.salary)
-      if (isNaN(salary)) return false
-      
-      if (f.salary === '<5000') return salary < 5000
-      if (f.salary === '5000-10000') return salary >= 5000 && salary <= 10000
-      if (f.salary === '>10000') return salary > 10000
-      return true
-    })()
-    
-    const matchDate = !f.datePosted || (() => {
-      if (!job.created_at) return false
-      const days = Number(f.datePosted)
-      if (isNaN(days)) return true
-      const postedDate = dayjs(job.created_at)
-      return postedDate.isAfter(dayjs().subtract(days, 'day'))
-    })()
-
-    return matchKeyword && matchLocation && matchCategory && 
-           matchExperience && matchSalary && matchDate
-  })
+  return jobs.value
 })
 
 const totalPages = computed(() => {
@@ -265,9 +220,6 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-/* أضف أنماطك هنا */
-</style>
 <style scoped>
 .hero-section {
   background: #047fec; 

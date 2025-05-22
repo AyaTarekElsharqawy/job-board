@@ -25,12 +25,12 @@
       </select>
     </div>
 
-    <div class="filter-group">
+    <!-- <div class="filter-group">
       <select v-model="filters.salary" @change="emitFilters">
         <option value="">All Salaries</option>
         <option v-for="range in props.salaryRanges" :key="range" :value="range">{{ range }}</option>
       </select>
-    </div>
+    </div> -->
 
     <div class="filter-group">
       <select v-model="filters.datePosted" @change="emitFilters">

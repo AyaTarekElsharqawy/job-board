@@ -89,7 +89,7 @@ const routes = [
   { path: '/admin/filters', name: 'AdminFilters', component: AdminFilters, meta: { requiresAuth: true } },
   { path: '/admin/payments', name: 'AdminPayments', component: AdminPayments, meta: { requiresAuth: true } },
 
-  { path: '/:catchAll(.*)', redirect: '/' }
+  // { path: '/:catchAll(.*)', redirect: '/' }
 ]
 
 const router = createRouter({

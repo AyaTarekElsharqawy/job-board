@@ -47,47 +47,50 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-export default {
-  data() {
-    return {
-      employer: {
-        company_name: '',
-        company_website: '',
-        company_logo: '',
-        bio: '',
-        user_id: '',
-        created_at: '',
-        updated_at: '',
-        user: {}
-      },
-      defaultLogo: 'https://placeholder.com/150?text=No+Logo'
-    };
-  },
-  mounted() {
-    axios
-      .get('http://localhost:8000/api/employer-profile', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      .then((response) => {
-        this.employer = response.data.data;
-        console.log(this.employer);
-      })
-      .catch((error) => {
-        console.error('Error fetching profile:', error);
-      });
-  },
-  methods: {
-    // onLogoError(event) {
-    //   event.target.src = this.defaultLogo;
-    // },
-  }
-};
+const router = useRouter()
+
+if (localStorage.getItem('role') !== 'employer') {
+  router.push({ path: '/' })
+}
+
+const employer = ref({
+  company_name: '',
+  company_website: '',
+  company_logo: '',
+  bio: '',
+  user_id: '',
+  created_at: '',
+  updated_at: '',
+  user: {}
+})
+
+const fallbackLogo = 'https://via.placeholder.com/150?text=No+Logo'
+
+const onLogoError = (event) => {
+  event.target.src = fallbackLogo
+}
+
+onMounted(() => {
+  axios
+    .get('http://localhost:8000/api/employer-profile', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    .then((response) => {
+      employer.value = response.data.data
+    })
+    .catch((error) => {
+      console.error('Error fetching profile:', error)
+    })
+})
 </script>
+
 
 <style scoped>
 .profile {

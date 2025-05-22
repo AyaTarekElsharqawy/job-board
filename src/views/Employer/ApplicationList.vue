@@ -11,6 +11,7 @@
             <th>Email</th>
             <th>Job Title</th>
             <th>Status</th>
+            <th>Resume</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -19,7 +20,10 @@
             <td>{{ index + 1 }}</td>
             <td>{{ app.user.name }}</td>
             <td>{{ app.user.email }}</td>
-            <td>{{ app.jobTitle }}</td>
+            <td>{{ app.job.title }}</td>
+            <td>
+              <a :href="'http://localhost:8000/'+app.resume_snapshot" target="_blank" class="btn btn-sm btn-outline-primary">View Resume</a>
+            </td>
             <td>
               <span class="badge"
                     :class="{
@@ -46,11 +50,15 @@
 </template>
 
 <script setup>
+
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
-const router = useRouter()
+const router = useRouter();
+if (localStorage.getItem('role') !== 'employer') {
+        router.push({ path: '/' });
+    }
 const applications = ref([])
 const currUser = JSON.parse(localStorage.getItem('user'));
 

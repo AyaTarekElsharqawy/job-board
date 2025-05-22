@@ -95,6 +95,10 @@
   // import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
   import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
+  
+  if (localStorage.getItem('role') !== 'admin') {
+    window.location.href = '/';
+  }
   const jobs = ref([])
   const message = ref('')
   const user = ref({})

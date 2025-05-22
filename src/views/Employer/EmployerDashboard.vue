@@ -8,6 +8,7 @@
 </template>
 
 <script setup>
+
 import { RouterLink, RouterView } from 'vue-router';  
 import SideBar from './SideBar.vue';
 

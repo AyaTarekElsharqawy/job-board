@@ -1,0 +1,330 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "password": "hashed-password",
+      "role": "admin",
+      "profile_picture": null,
+      "created_at": "2025-05-01T12:00:00Z",
+      "updated_at": "2025-05-01T12:00:00Z"
+    },
+    {
+      "id": "2",
+      "name": "Company A",
+      "email": "employer@example.com",
+      "password": "hashed-password",
+      "role": "employer",
+      "profile_picture": null,
+      "created_at": "2025-05-01T12:00:00Z",
+      "updated_at": "2025-05-01T12:00:00Z"
+    },
+    {
+      "id": "3",
+      "name": "Candidate A",
+      "email": "candidate@example.com",
+      "password": "hashed-password",
+      "role": "candidate",
+      "profile_picture": null,
+      "created_at": "2025-05-01T12:00:00Z",
+      "updated_at": "2025-05-01T12:00:00Z"
+    },
+    {
+      "id": "3e0a",
+      "name": "Abanoub Emad Fares",
+      "email": "abanobemad45@gmail.com",
+      "phone": "01274454814",
+      "password": "123456",
+      "password_confirmation": "123456",
+      "role": "employer",
+      "image": "data:image/jpeg;base64,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",
+      "created_at": "2025-05-07T07:18:24.378Z",
+      "updated_at": "2025-05-07T07:18:24.378Z"
+    },
+    {
+      "id": "08ae",
+      "name": "boomboo",
+      "email": "abanobemad405@gmail.com",
+      "phone": "01274454814",
+      "password": "$2b$10$qG71hGNNjzNu0OdVwdRwsO3cl.NBIt4SnhO05e.RGxGdhtZv4CkNe",
+      "password_confirmation": "123456",
+      "role": "employer",
+      "image": "data:image/jpeg;base64,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",
+      "created_at": "2025-05-07T07:24:06.270Z",
+      "updated_at": "2025-05-07T07:24:06.270Z"
+    },
+    {
+      "id": "4902",
+      "name": "noba",
+      "email": "abanobemad045@gmail.com",
+      "password": "$2b$10$EadrU4kG9SrICMkrqGClPesZQiIXz1xRCjIOHThc06YvLrZToJG4O",
+      "created_at": "2025-05-07T07:26:37.346Z",
+      "updated_at": "2025-05-07T07:26:37.346Z"
+    },
+    {
+      "id": "cfce",
+      "name": "Abanoub Emad Fares",
+      "email": "abanobemad4005@gmail.com",
+      "password": "$2b$10$XqIwwphkjDXjBelQgkvkqeVu/Q3DD1bMFFIFe/S3AeVuC7AQPVUDi",
+      "role": "",
+      "profile_picture": null,
+      "created_at": "2025-05-07T07:28:41.815Z",
+      "updated_at": "2025-05-07T07:28:41.815Z"
+    },
+    {
+      "id": "c7a6",
+      "name": "Abanoub Emad Fares",
+      "email": "abanobemad4500@gmail.com",
+      "password": "$2b$10$itmBLBRm1TKwUkwC3HyoHu/kOTWrcmeSfDnOj6LRn7sZa1WmhnTfO",
+      "role": "candidate",
+      "profile_picture": "data:image/jpeg;base64,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",
+      "created_at": "2025-05-07T07:31:12.353Z",
+      "updated_at": "2025-05-07T07:31:12.353Z"
+    },
+    {
+      "id": "3036",
+      "name": "Abanoub Emad Fares",
+      "email": "abanobemad@gmail.com",
+      "password": "$2b$10$cFp6Dq3fPvsHi.du9F7aouu9GJTPQFGdbk4wmapOHWQGjIxDAO3Bu",
+      "role": "employer",
+      "profile_picture": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw0PEA0NDQ0PDQ0NDQ8NDw0ODQ8PDQ0NFREXFxURFRUYHSggGholHRcVITEhJSkrLi4uFyEzODMsNygtLi4BCgoKDg0OFw8PGS4fHR0rNzAtLSsvKysrLSsvLjcrLS4tKysrKy0tKy0rKystListKy0tLSsrLS0tLSsrKy0wK//AABEIAMIBAwMBIgACEQEDEQH/xAAbAAEBAAMBAQEAAAAAAAAAAAAAAQIFBgQHA//EAEQQAAIBAwEFBQQECwYHAAAAAAABAgMEERIFBhMhMQdBUYGRFGFxoRUiMrEWIzM2QnJ0s8Hh8AgkNDXR8VJTYmNzkqL/xAAZAQEBAQEBAQAAAAAAAAAAAAAAAQIDBgX/xAAoEQEBAAEDAwEIAwAAAAAAAAAAARECAyEEEjFxEzJBUWGR0eEUIqH/2gAMAwEAAhEDEQA/APtAAOrmAAAAQAAABAAABAgAQCkAKAAAgAAEAAAEAAAAQjfmxp8ef3FQ1eHP7ic/HHwMiATT8fVjCKQCpAIBXpABlQAAQAACAAACBAAAQAFAAACBgAQpAAAAgAAGLeenqG88vV/wKVBIAgAAMCMAAVAJkA9QAMtBAAABAAACIAABAAAAKBAAABAAAAEAAEk/VlMV4+nwKgkUEAAAAQNk5v3L5gG0Rv3MuMdAUE34fNAyRCZV6iFIZUAIAAAQIAAIUgAAFAAgAAgAAACFIAAIVEk/nyKTv+C+8oAgAAjZWY9X8PvAJd7/ANiggAEb8P5ImPF/wKM0QiivAEwr1gAyoQAIEKQAAfjd3VKjF1K1WnRprrOrOMILzbwWS24g/UGijvnshvSto2+c4y54j/7NY+ZuqVWE4qdOUZwksxnCSlGS9zXJm9e1r0e/ps9ZhcMwCGEAAAIAAAIAAABkAKiR7/iCR/i/vKAAIAZI9BPp8vmVlEJJ/MpO/wAgAAAyRCogHqIAYaACBAAAazeTbNOxtqt1UWrQtMKecOrVf2IZ7svv7km+4+G317fbTuE567mvUk1SowX1aa5vTCPSKS7/ADb7zue2i4ljZ9H9CUriq/1oKEV8py9T8+zGEKFjtPaSp8WvT4sIxX2nTpUY1NC/WlLzwvA9J0GnT0vSfyZpzr1XE++P3XXTxMufqdnm2Iw4ns8JPGXSjcUnWXlnS/Js1+7237vZlZunqUVPTXtJ5jGeH9ZOL+zPr9bqu/K5Hrs9+tqxrxryup1k5pyt2o8CcW+cFFL6vua5/E3nbFY04XFrcRWmdxSqQqLvk6bhpk/fieH8EfQm5u+0nT9VNNm5LjGfhzZc/wCVefFfT9nXtO4o0rii9VOtTjUi2sPD7mu5ro/gftVqRipTk1GMIuUpN4UYpZbb8MHFdkVeUrCcH0pXdWMfdGUYTa9ZSfmdTt7/AAl7+x3H7qR5Pqtn2O9r258K5Wc4NkbYtLyEqlncU7mEJaJSpS1KMsZw/Jo9p8s/s/P+5X2eX98j16fkInqvO1SdStVo7J2TcbUhReJ1qbqaWstaoxhCb0vDw3jPgcroubIt08vpJzuyd8bW6v7vZdOFZXFmqjnOcIqlLhzjCWlqTfWS6pHn3H33t9rRqxjTnbXVDHFtqjUmk3jVGWFqWeTyk0+q5o+ZWO26tjvDtqtRsq+0K053lGFvbxk5uTuKctUtMW1FKL5pPqizT5hNPl92YOG3Q7RYXtzLZ93Z1NnXvPRRqSk1NqOpxeqMZRljnhrml1P03o7RbfZ17Cxr21WUZUFWdanJSeZKWiEaeMtuUdPVdSdtzhO2+HakPnFj2ptXVK22jsu42bTuGlSq1nNSxKWIznCcI/Vz1km8HU7471W2yqCr3GqcqkuHSo08cSrNLL68lFLm33cu9odtMVvjX7d2zbWNCV1dzdOjBxi5KE5vVJ4ikopvqcBDtXr0nSqbQ2HdWdpWaUbjVUeU+eYqdOKlyy8J5wdFv9tezjsuV3Vtqe0rWq7eUKTqOnTqxqSWiamk2sZz0L20x83R7MvaVxRpXFCWujXgqtOWmUdUJc08Pmj0nHVd6qNlsa12lTstNF0bdU7OnUSVGNRfVjra6LpnBor3tZlwo3Fpse6uLaMI8e5m6lO3o1Wlqpqoqck8N4y8dOSHbaYr6aVo4+73w42yJ7UsbWrXlKEoezxzxKMtWipJuKfKHOWcdEnyON7Ddr3EVKwVlWqW1StWrSv05uhRqKjH8U/q6cvSv0s/XXIdtxb8jt4y+wT/AIr7wSXRlTIyGK6vyKSXj/WAKAAKgEQD1AEMKAAAQAo4rtV2PO4s416cdU7KbqySXN27jipj4YjL4RZyXZVtipSuvYlDiUb3La/5VSEG+J700tLX6vhz+xM5C83ftNmK/wBrWtOarRtKzhRi80oTfNygsZSylyzhJPCR9bpes03ptXS65nPu+t/fLcvGHHbvewPb06cben7M61WnbQw3TpXFOKaml05yhPHctSxjBqt/9s1bu9qqpB042sp2tOl1klGb1Sf/AFSfP4aUaCzuZ0KlKvBvXRqQqxffKUZJ488fM+50t1LGV49qSpylWq8OrGnUf4ulVUV+MUcfb5Lr0fPqfX6rc2+j3tO7rzq/pies/MvN/LdxLlNwtjys7GjSqLTWqOVxVi+sZzxiD96ior4pmy3hko2d9J8oqzuW2+SS4Uj3nznens1ur+4ua301WpW9zNTdo6NSpShiMUopcZRf2fBHltzcu7uXXq825c/N5c/2TKr9Cbe4Wri6blU9P2uL7D9XHvzg3PYJw/o+5044ntstfjp4UNHy1fM7Xdfd622bbRtLZNwUnOc54c61WSSlOXdnCSx3JJHG3nZW4V6tfZW1a+y41866NOE5RWW3iMo1IvSsvCeceIuqXP1XMuWp3Wx+Fe0+Djh6LriacY6UtXT/ALmPMu40l+FG21nrG+S59X7VRePk/Q7Tcfci22TGq4VJ3FzXwqtzUjpcknlRjHL0rLz1bb6voaS+7LKVa6v776Qr0ri5qyr206NN052VWUm29Sn+MXd+jy7x3Tn0Mzlpd+fzm2Pwfy2mz14xn8tU6+/R8sGe9cU96tkppNcK2eGs81Ks/wCZ0O6HZzCxupbQur2ptG856KtSDhw246XN6pycpacrLfJM5PtD2f7VvHs+24tShxre3iq1J6atKWus1OL8U0iyy/ZZZ4e3+0Fo9m2fnHE49fHTVw+EtXlnQePte/xO7vtf5Lhx4+v7OeLR42fLGTfbN7LX7VSu9p7Ur7T4Di6dOpTnFNxeYqUpVJPTnnpWMvq+uep3w3Wtdq0Fb3OqEoS4lKtTxxKU2sPCfJprk0+vuaTE1SYTMmGo7ZNH0Rea8Z4tvw+meLx44x78avLJyG19f4I2uvrqoaf/AB+1S0/LBtIdk9ao6ML/AG3c3lpQacbbhzhyxjCcqslHlyylnHTB129O61O9sPoylUVnSjwFTlGlxI04UmtMdOpZWFjqSWTE+qZk4cRvN+adp+z7Of8A9xNraJfgo+S/yWs+ne4zbfqbfau5yr7Jo7H9qcODTtqaueBqzwpJ54etdcf8XL3nrpbtKOyvofjtr2Kdn7TwlnMotcTh6vF9NXmS3hM8OU7MfzeufjtH92TsG/y+5/b5/uKJ1e6G7EdnWX0fKt7VGU60pzdLhKUanJx06pY5d+TRbqdnlXZt0q1DatZ2anObsXRajVzTcFrlr0trKerTl6V0LmcrbOXeGK8PNfAyMWvUywoCYAnTp08PAJlMV3vy9AM0QIAeogBhQhSAAAUACMDmLLcbZ9G7lfQg851U7d6fZ6FXvnFY80nyXd3Y6cEOm5vbm7ZddzjjlbQAHNAgAAAhUDT3e7NjWvKO0qlJyvLeKjTqcSoopLVjMU8P7Uu43AChAAgQrIAaIn69CmL8fX/UooBCAACiNd6/3GRJ/wBe8JAGyLwEu5eZQioBAK9IBDCgAKABAAAAEAAAEAAACMAFQIAAAIAADAgAAxXh6f6FDRE+5+T8SigADF9V6lJHvfkGwiLq35GRIr+veAKikRQr0AAyoAABAABAAABAAAAEAKgAQAAGBAAAIAUCAAAwAMenvXzQ1eHNmRGBF4El3IyMe9+hUUAAVAIEHpABloIAAAIAAAAgAAhSFQAIAAAAgAAhWQoEKQgAAoAACAAIjJH+ZWYrly9PeUZEAAyQCBB6SFIZaACAAAAIAAAIVAAACAACFZAAYIAAIAABQAAAjDAQIAAI0UhRE+5+XvKRoJ9z9fED9IgiYIPSQoMNIyFAEBQUYlAAjAAQIAAIwAIUAojDIAAAAAgKAAAgAAEAAEACKYyXJ/AAokHyABVf/9k=",
+      "created_at": "2025-05-07T07:57:34.787Z",
+      "updated_at": "2025-05-07T07:57:34.787Z"
+    },
+    {
+      "id": "78f0",
+      "name": "Abanoub Emad Fares",
+      "email": "abanobemad245@gmail.com",
+      "password": "$2b$10$iQ0A878upeZ7tcKnjQcyVOdeOPxlzZBLdUmyDQtwm6wLFxgshSV0m",
+      "role": "employer",
+      "profile_picture": "data:image/jpeg;base64,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",
+      "created_at": "2025-05-09T14:10:09.221Z",
+      "updated_at": "2025-05-09T14:10:09.221Z"
+    }
+  ],
+  "employers": [
+    {
+      "id": "1",
+      "user_id": 2,
+      "company_name": "Company A",
+      "company_website": "https://companya.com",
+      "company_logo": null,
+      "bio": "We are a software company.",
+      "created_at": "2025-05-01T12:00:00Z",
+      "updated_at": "2025-05-01T12:00:00Z"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "1",
+      "user_id": 3,
+      "resume": "/resumes/candidate-a.pdf",
+      "linkedin_profile": "https://linkedin.com/in/candidate-a",
+      "phone_number": "01000000000",
+      "experience_level": "junior",
+      "location": "Cairo",
+      "created_at": "2025-05-01T12:00:00Z",
+      "updated_at": "2025-05-01T12:00:00Z"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1",
+      "employer_id": 1,
+      "title": "Frontend Developer",
+      "description": "Build modern UI with Vue.",
+      "responsibilities": "Develop and maintain frontend.",
+      "skills": "Vue, JavaScript, CSS",
+      "category": "programming",
+      "location": "Remote",
+      "experience_level": "Entry",
+      "technologies": "Vue.js, Pinia, Tailwind",
+      "work_type": "remote",
+      "salary_range": "2000-4000",
+      "benefits": "Health insurance, Bonuses",
+      "deadline": "2025-06-01",
+      "status": "approved",
+      "created_at": "2025-05-01T12:00:00Z",
+      "updated_at": "2025-05-01T12:00:00Z"
+    },
+    {
+      "id": "2",
+      "employer_id": 2,
+      "title": "Backend Developer",
+      "description": "Build scalable APIs.",
+      "responsibilities": "Maintain server-side logic.",
+      "skills": "Node.js, Express",
+      "category": "programming",
+      "location": "California, USA",
+      "experience_level": "Mid",
+      "technologies": "Node.js, MongoDB",
+      "work_type": "onsite",
+      "salary_range": "3000-6000",
+      "benefits": "Gym, Paid Vacation",
+      "deadline": "2025-05-25",
+      "status": "approved",
+      "created_at": "2025-04-25T08:00:00Z",
+      "updated_at": "2025-04-25T08:00:00Z"
+    },
+    {
+      "id": "3",
+      "employer_id": 3,
+      "title": "UX/UI Designer",
+      "description": "Design user-centric interfaces.",
+      "responsibilities": "Create wireframes and prototypes.",
+      "skills": "Figma, Adobe XD",
+      "category": "Design & Art",
+      "location": "New York, USA",
+      "experience_level": "Senior",
+      "technologies": "Figma",
+      "work_type": "hybrid",
+      "salary_range": "5000-9000",
+      "benefits": "Remote options, Equipment",
+      "deadline": "2025-06-15",
+      "status": "approved",
+      "created_at": "2025-05-03T14:00:00Z",
+      "updated_at": "2025-05-03T14:00:00Z"
+    },
+    {
+      "id": "4",
+      "employer_id": 4,
+      "title": "Marketing Specialist",
+      "description": "Run campaigns and analyze data.",
+      "responsibilities": "Manage digital marketing efforts.",
+      "skills": "SEO, Google Ads",
+      "category": "Sales & Marketing",
+      "location": "Remote",
+      "experience_level": "Entry",
+      "technologies": "Google Analytics",
+      "work_type": "remote",
+      "salary_range": "1500-3000",
+      "benefits": "Bonuses, Learning budget",
+      "deadline": "2025-05-30",
+      "status": "approved",
+      "created_at": "2025-04-28T10:00:00Z",
+      "updated_at": "2025-04-28T10:00:00Z"
+    },
+    {
+      "id": "5",
+      "employer_id": 5,
+      "title": "Financial Analyst",
+      "description": "Prepare reports and track KPIs.",
+      "responsibilities": "Analyze financial data.",
+      "skills": "Excel, SQL",
+      "category": "Finance",
+      "location": "California, USA",
+      "experience_level": "Mid",
+      "technologies": "Power BI",
+      "work_type": "onsite",
+      "salary_range": "4000-8000",
+      "benefits": "Medical, 401k",
+      "deadline": "2025-06-10",
+      "status": "approved",
+      "created_at": "2025-05-02T16:00:00Z",
+      "updated_at": "2025-05-02T16:00:00Z"
+    },
+    {
+      "id": "6",
+      "employer_id": 5,
+      "title": "Financial Analyst",
+      "description": "Prepare reports and track KPIs.",
+      "responsibilities": "Analyze financial data.",
+      "skills": "Excel, SQL",
+      "category": "Finance",
+      "location": "California, USA",
+      "experience_level": "Mid",
+      "technologies": "Power BI",
+      "work_type": "onsite",
+      "salary_range": "4000-8000",
+      "benefits": "Medical, 401k",
+      "deadline": "2025-06-10",
+      "status": "approved",
+      "created_at": "2025-05-02T16:00:00Z",
+      "updated_at": "2025-05-02T16:00:00Z"
+    },
+    {
+      "id": "7",
+      "employer_id": 5,
+      "title": "Financial Analyst",
+      "description": "Prepare reports and track KPIs.",
+      "responsibilities": "Analyze financial data.",
+      "skills": "Excel, SQL",
+      "category": "Finance",
+      "location": "California, USA",
+      "experience_level": "Mid",
+      "technologies": "Power BI",
+      "work_type": "onsite",
+      "salary_range": "4000-8000",
+      "benefits": "Medical, 401k",
+      "deadline": "2025-06-10",
+      "status": "approved",
+      "created_at": "2025-05-02T16:00:00Z",
+      "updated_at": "2025-05-02T16:00:00Z"
+    }
+  ],
+  "applications": [
+    {
+      "id": "1",
+      "job_id": 1,
+      "candidate_id": 1,
+      "resume_snapshot": "/resumes/candidate-a.pdf",
+      "contact_email": "candidate@example.com",
+      "contact_phone": "01000000000",
+      "status": "pending",
+      "created_at": "2025-05-02T09:00:00Z",
+      "updated_at": "2025-05-02T09:00:00Z"
+    },
+    {
+      "id": "1",
+      "job_id": 1,
+      "candidate_id": 1,
+      "resume_snapshot": "/resumes/candidate-a.pdf",
+      "contact_email": "candidate@example.com",
+      "contact_phone": "01000000000",
+      "status": "pending",
+      "created_at": "2025-05-02T09:00:00Z",
+      "updated_at": "2025-05-02T09:00:00Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "1",
+      "job_id": 1,
+      "user_id": 3,
+      "comment_text": "Is this position still open?",
+      "created_at": "2025-05-02T10:00:00Z",
+      "updated_at": "2025-05-02T10:00:00Z"
+    }
+  ],
+  "job_analytics": [
+    {
+      "id": "1",
+      "job_id": 1,
+      "views_count": 150,
+      "applications_count": 12,
+      "created_at": "2025-05-01T12:00:00Z",
+      "updated_at": "2025-05-03T12:00:00Z"
+    }
+  ],
+  "payments": [
+    {
+      "id": "1",
+      "application_id": 1,
+      "employer_id": 1,
+      "amount": 50,
+      "payment_method": "paypal",
+      "status": "paid",
+      "created_at": "2025-05-03T12:00:00Z",
+      "updated_at": "2025-05-03T12:00:00Z"
+    }
+  ],
+  "job_filters": [
+    {
+      "id": "1",
+      "user_id": 3,
+      "filters_json": "{\"category\": \"programming\", \"location\": \"Remote\"}",
+      "created_at": "2025-05-02T10:00:00Z"
+    }
+  ]
+}

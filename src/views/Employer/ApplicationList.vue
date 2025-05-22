@@ -73,7 +73,11 @@
       <p>No applications received yet.</p>
     </div>
 
+<<<<<<< HEAD
     <!-- Modals -->
+=======
+    <!-- Reject Modal -->
+>>>>>>> 166b415f949eff676f1df599c224f14efb6c5749
     <div v-for="app in applications" :key="'modal-' + app.id">
       <div class="modal fade" :id="'rejectModal' + app.id" tabindex="-1">
         <div class="modal-dialog">
@@ -113,7 +117,10 @@ const currUser = JSON.parse(localStorage.getItem('user'))
 const token = localStorage.getItem('token')
 
 if (!currUser) {
-  router.push('/login')
+  router.push('/login');
+}
+if (localStorage.getItem('role') !== 'employer') {
+  router.push({ path: '/' });
 }
 if (currUser.role !== 'employer') {
   router.push({ path: '/' })
@@ -122,6 +129,25 @@ if (currUser.role !== 'employer') {
 onMounted(() => {
   fetchApplications()
 })
+
+async function fetchApps() {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/employer/applications/${currUser.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    if (response.data.message === 'No applications found for this employer.') {
+      applications.value = [];
+    } else {
+      applications.value = response.data.data; // pagination: data موجودة جوا key اسمه data
+    }
+
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+  }
+}
 
 async function updateStatus(id, newStatus) {
   try {
@@ -136,8 +162,8 @@ async function updateStatus(id, newStatus) {
     })
     fetchApplications()
   } catch (error) {
-    console.error('Failed to update status:', error)
-    alert('Failed to update status. Please try again.')
+    console.error('Failed to update status:', error);
+    alert('Failed to update status. Please try again.');
   }
 }
 

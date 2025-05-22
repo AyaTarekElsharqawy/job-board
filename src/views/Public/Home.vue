@@ -1,18 +1,16 @@
 <template>
   <div>
-   
     <Transition name="fade-slide" appear>
       <div class="hero-section">
         <div class="hero-content">
           <div class="hero-text">
             <h1><strong>Find Your Dream Job Today!</strong></h1>
             <p class="subtitle"><strong>Join thousands of companies hiring right now</strong></p>
-            <div class="stats">4536+ Jobs listed</div>
+            <div class="stats">{{ filteredJobs.length }}+ Jobs listed</div>
             <p class="description">
               <strong>We connect top talent with leading companies worldwide. 
               Start your career journey with us today!</strong>
             </p>
-           
           </div>
           <div class="hero-image">
             <img src="@/assets/illustration.png" alt="People working">
@@ -24,28 +22,23 @@
     <Transition name="fade-up" appear>
       <div class="search-container">
         <JobFilters 
-  :locations="locations"
-  :categories="categories"
-  :experienceLevels="experienceLevels"
-  :salaryRanges="salaryRanges"
-  :timeFilters="timeFilters"
-  @filterChanged="applyFilter"
-/>
-
-
+          :locations="locations"
+          :categories="categories"
+          :experienceLevels="experienceLevels"
+          :salaryRanges="salaryRanges"
+          :timeFilters="timeFilters"
+          @filterChanged="applyFilter"
+        />
       </div>
     </Transition>
-
 
     <div class="job-listings">
       <Transition name="fade" appear>
         <h2>Job Listing</h2>
       </Transition>
       
-     
       <div v-if="isLoading" class="loading">Loading jobs...</div>
       
-   
       <div v-if="error" class="error">{{ error }}</div>
      
       <div v-if="!isLoading && !error && filteredJobs.length === 0" class="empty">
@@ -60,7 +53,6 @@
         />
       </TransitionGroup>
      
-    
       <Transition name="fade" appear>
         <div v-if="filteredJobs.length > 0" class="pagination-controls">
           <button 
@@ -96,7 +88,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
@@ -119,29 +110,26 @@ const salaryRanges = ref([
   '< 5000',
   '5000 - 10000',
   '> 10000'
-]);
+])
 
 const timeFilters = ref([
   'Any',
   'Last 24 Hours',
   'Last 7 Days',
   'Last 30 Days'
-]);
-
-
+])
 
 const fetchInitialData = async () => {
   isLoading.value = true
   try {
     const [jobsRes, categoriesRes] = await Promise.all([
-      axios.get('http://localhost:8000/api/jobs'),
+      axios.get('http://localhost:8000/api/jobs/published'),
       axios.get('http://localhost:8000/api/categories')
     ])
     
     jobs.value = jobsRes.data.data || []
     categories.value = categoriesRes.data.data || []
     
-   
     locations.value = [...new Set(jobs.value.map(job => job.location))]
   } catch (err) {
     console.error('Error fetching data:', err)
@@ -155,7 +143,7 @@ const fetchJobs = async () => {
   isLoading.value = true
   error.value = null
   try {
-    const response = await axios.get('http://localhost:8000/api/jobs')
+    const response = await axios.get('http://localhost:8000/api/jobs/published')
     jobs.value = response.data.data || []
   } catch (err) {
     console.error('Error fetching jobs:', err)
@@ -166,12 +154,10 @@ const fetchJobs = async () => {
   }
 }
 
-
 const applyFilter = async (filters) => {
   isLoading.value = true
   error.value = null
   try {
-  
     const params = {
       keyword: filters.keyword || undefined,
       location: filters.location || undefined,
@@ -191,8 +177,8 @@ const applyFilter = async (filters) => {
 
     Object.keys(params).forEach(key => params[key] === undefined && delete params[key])
 
-    const response = await axios.get('http://localhost:8000/api/jobs', { params })
-    jobs.value = response.data.data || []
+    const response = await axios.get('http://localhost:8000/api/jobs/filter', { params })
+    jobs.value = response.data.jobs || []
     filterCriteria.value = filters
     currentPage.value = 1
   } catch (err) {
@@ -204,29 +190,22 @@ const applyFilter = async (filters) => {
   }
 }
 
-
 const filteredJobs = computed(() => {
-  if (!jobs.value.length) return []
-  
   return jobs.value.filter(job => {
     const f = filterCriteria.value
-
     
     const matchKeyword = !f.keyword || 
       (job.title?.toLowerCase().includes(f.keyword.toLowerCase()) || 
       job.description?.toLowerCase().includes(f.keyword.toLowerCase()))
     
- 
     const matchLocation = !f.location || 
       job.location?.toLowerCase().includes(f.location.toLowerCase())
     
- 
     const matchCategory = !f.category || 
       job.category_id?.toString() === f.category.toString()
  
     const matchExperience = !f.experience || 
       job.experience_level?.toLowerCase() === f.experience.toLowerCase()
-    
     
     const matchSalary = !f.salary || (() => {
       if (!job.salary) return false
@@ -239,7 +218,6 @@ const filteredJobs = computed(() => {
       return true
     })()
     
-   
     const matchDate = !f.datePosted || (() => {
       if (!job.created_at) return false
       const days = Number(f.datePosted)
@@ -252,6 +230,7 @@ const filteredJobs = computed(() => {
            matchExperience && matchSalary && matchDate
   })
 })
+
 const totalPages = computed(() => {
   return Math.ceil(filteredJobs.value.length / itemsPerPage.value)
 })
@@ -261,7 +240,6 @@ const paginatedJobs = computed(() => {
   const end = start + itemsPerPage.value
   return filteredJobs.value.slice(start, end)
 })
-
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
@@ -282,13 +260,14 @@ const goToPage = (page) => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-
 onMounted(() => {
   fetchInitialData()
 })
-
 </script>
 
+<style scoped>
+/* أضف أنماطك هنا */
+</style>
 <style scoped>
 .hero-section {
   background: #047fec; 

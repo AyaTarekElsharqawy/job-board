@@ -51,11 +51,11 @@
               <label for="experience_level" class="form-label">Experience Level</label>
               <select id="experience_level" v-model="job.experience_level" class="form-select">
                 <option disabled value="">Select experience level</option>
-                <option>Entry-level</option>
-                <option>Mid-level</option>
-                <option>Senior</option>
-                <option>Lead</option>
-                <option>Executive</option>
+                <option>entry</option>
+                <option>juniorl</option>
+                <option>mid</option>
+                <option>senior</option>
+               
               </select>
             </div>
             <div v-if="errors.experience_level" class="text-danger">

@@ -35,8 +35,17 @@
               </span>
             </td>
             <td>
-              <button class="btn btn-sm btn-outline-success me-2" @click="updateStatus(index, 'accepted')">Accept</button>
-              <button class="btn btn-sm btn-outline-danger" @click="updateStatus(index, 'rejected')">Reject</button>
+              <button class="btn btn-sm btn-outline-success me-2" 
+                      @click="updateStatus(app.id, 'accepted')"
+                      :disabled="['accepted'].includes(app.status)">
+                      Accept
+              </button>
+              <button class="btn btn-sm btn-outline-danger"
+                      @click="updateStatus(app.id, 'rejected')"
+                      :disabled="['rejected'].includes(app.status)"        
+              >
+              Reject
+              </button>
             </td>
           </tr>
         </tbody>
@@ -67,25 +76,16 @@ if (!currUser) {
 }
 
 onMounted(() => {
-  axios.get(`http://localhost:8000/api/employer/applcations/${currUser.id}`, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  })
-  .then(response => {
-    applications.value = response.data.data
-    console.log('Applications:', applications.value)
-  })
-  .catch(error => {
-    console.error('Error fetching applications:', error)
-  })
+  fetchApps(); 
+
+  return () => clearInterval(interval)
 })
 
-async function updateStatus(index, newStatus) {
-  const application = applications.value[index]
+async function updateStatus(id, newStatus) {
+  
 
   try {
-    await axios.put(`http://localhost:8000/api/applications/${application.id}/status`, {
+    await axios.put(`http://localhost:8000/api/applications/${id}/status`, {
       status: newStatus
     }, {
       headers: {
@@ -93,12 +93,30 @@ async function updateStatus(index, newStatus) {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
+    }).then(() => {
+      fetchApps() 
     })
 
-    applications.value[index].status = newStatus
   } catch (error) {
     console.error('Failed to update status:', error)
     alert('Failed to update status. Please try again.')
+  }
+}
+
+const fetchApps = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/employer/applcations/${currUser.id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    if(response.data.message === 'No applications found for this employer.'){
+      applications.value = []
+    }else{
+      applications.value = response.data.data
+    }
+  } catch (error) {
+    console.error('Error fetching applications:', error)
   }
 }
 </script>

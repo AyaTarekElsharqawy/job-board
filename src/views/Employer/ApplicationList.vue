@@ -17,12 +17,15 @@
         </thead>
         <tbody>
           <tr v-for="(app, index) in applications" :key="app.id">
-            <td>{{ index + 1 }}</td>
+            <td>{{ getGlobalIndex(index) }}</td>
             <td>{{ app.user.name }}</td>
             <td>{{ app.user.email }}</td>
             <td>{{ app.job.title }}</td>
             <td>
-              <a :href="getResumeUrl(app.resume_snapshot)" target="_blank" download>View Resume</a>
+              <a v-if="app.resume_snapshot" :href="getResumeUrl(app.resume_snapshot)" target="_blank" download>
+                View Resume
+              </a>
+              <span v-else class="text-muted">No resume</span>
             </td>
             <td>
               <span class="badge"
@@ -38,7 +41,7 @@
               <button class="btn btn-sm btn-outline-success me-2" 
                       @click="updateStatus(app.id, 'accepted')"
                       :disabled="['accepted'].includes(app.status)">
-                      Accept
+                Accept
               </button>
               <button class="btn btn-sm btn-outline-danger"
                       :disabled="['rejected'].includes(app.status)"
@@ -49,12 +52,28 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Pagination -->
+      <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="goToPage(currentPage - 1)">Previous</button>
+          </li>
+          <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: page === currentPage }">
+            <button class="page-link" @click="goToPage(page)">{{ page }}</button>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === lastPage }">
+            <button class="page-link" @click="goToPage(currentPage + 1)">Next</button>
+          </li>
+        </ul>
+      </nav>
     </div>
 
     <div v-else class="text-center">
       <p>No applications received yet.</p>
     </div>
 
+    <!-- Modals -->
     <div v-for="app in applications" :key="'modal-' + app.id">
       <div class="modal fade" :id="'rejectModal' + app.id" tabindex="-1">
         <div class="modal-dialog">
@@ -78,24 +97,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
-if (localStorage.getItem('role') !== 'employer') {
-  router.push({ path: '/' });
-}
-
+const userRole = localStorage.getItem('role')
 const applications = ref([])
-const currUser = JSON.parse(localStorage.getItem('user'));
+const currentPage = ref(1)
+const lastPage = ref(1)
+const perPage = ref(10)
+const totalApplications = ref(0)
+
+const currUser = JSON.parse(localStorage.getItem('user'))
+const token = localStorage.getItem('token')
 
 if (!currUser) {
   router.push('/login')
 }
+if (currUser.role !== 'employer') {
+  router.push({ path: '/' })
+}
 
 onMounted(() => {
-  fetchApps(); 
+  fetchApplications()
 })
 
 async function updateStatus(id, newStatus) {
@@ -104,41 +129,62 @@ async function updateStatus(id, newStatus) {
       status: newStatus
     }, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
-    }).then(() => {
-      fetchApps() 
     })
-
+    fetchApplications()
   } catch (error) {
     console.error('Failed to update status:', error)
     alert('Failed to update status. Please try again.')
   }
 }
 
-const fetchApps = async () => {
+async function fetchApplications() {
   try {
-    const response = await axios.get(`http://localhost:8000/api/employer/applcations/${currUser.id}`, {
+    const response = await axios.get(`http://localhost:8000/api/employer/applications/${currUser.id}?page=${currentPage.value}&per_page=${perPage.value}`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${token}`
       }
     })
-    if(response.data.message === 'No applications found for this employer.'){
+
+    if (response.data.message === 'No applications found for this employer.') {
       applications.value = []
     } else {
       applications.value = response.data.data
+      currentPage.value = response.data.current_page
+      lastPage.value = response.data.last_page
+      perPage.value = response.data.per_page
+      totalApplications.value = response.data.total_applications
     }
   } catch (error) {
     console.error('Error fetching applications:', error)
   }
 }
 
+// Pagination logic
+const getGlobalIndex = (i) => (currentPage.value - 1) * perPage.value + i + 1
+
+const goToPage = (page) => {
+  if (page >= 1 && page <= lastPage.value) {
+    currentPage.value = page
+    fetchApplications()
+  }
+}
+
+const visiblePages = computed(() => {
+  const pages = []
+  const start = Math.max(1, currentPage.value - 2)
+  const end = Math.min(lastPage.value, currentPage.value + 2)
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  return pages
+})
 
 function getResumeUrl(filename) {
   return `http://localhost:8000/storage/${filename}`
- 
 }
 </script>
 

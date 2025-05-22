@@ -85,6 +85,27 @@
         
         
       </div>
+
+          <div class="pagination-controls mt-4 text-center">
+            <button 
+              class="btn btn-sm btn-outline-primary mx-1"
+              :disabled="currentPage === 1"
+              @click="goToPage(currentPage - 1)"
+            >
+              Previous
+            </button>
+
+            <span class="mx-2">Page {{ currentPage }} of {{ lastPage }}</span>
+
+            <button 
+              class="btn btn-sm btn-outline-primary mx-1"
+              :disabled="currentPage === lastPage"
+              @click="goToPage(currentPage + 1)"
+            >
+              Next
+            </button>
+          </div>
+
     </div>
   </template>
 
@@ -98,6 +119,9 @@
   const jobs = ref([])
   const message = ref('')
   const user = ref({})
+  const currentPage = ref(1)
+  const lastPage = ref(1)
+
 
   // const navItems = [
   //   { path: '/admin/dashboard', title: 'Dashboard', icon: 'tachometer-alt' },
@@ -109,21 +133,30 @@
   // ]
 
   const fetchJobs = async () => {
-    axios.get('http://localhost:8000/api/jobs', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    }).then(response => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/jobs?page=${currentPage.value}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+
       if (response.data.message === "No Jobs at the time!") {
         jobs.value = []
       } else {
         jobs.value = response.data.data
-        console.log(jobs.value)
+        lastPage.value = response.data.last_page
       }
-    }).catch(error => {
+    } catch (error) {
       console.error('Error fetching jobs:', error)
       message.value = 'Error fetching jobs'
-    })
+    }
+  }
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= lastPage.value) {
+      currentPage.value = page
+      fetchJobs()
+    }
   }
 
   const fetchUserData = async () => {
@@ -174,11 +207,6 @@
 }
 
 
-  const logout = () => {
-    localStorage.removeItem('token')
-    window.location.href = '/login'
-  }
-
   onMounted(() => {
     fetchJobs()
     fetchUserData()
@@ -186,6 +214,11 @@
   </script>
     
     <style scoped>
+    .pagination-controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     /* Reuse the navbar styles from payments page */
     .main-navbar {
       display: flex;

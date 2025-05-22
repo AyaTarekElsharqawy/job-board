@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="bg-gray-100 font-sans min-h-screen">
     <!-- Applications Section -->
@@ -48,10 +47,8 @@
                             </button>
                             <button
                               v-if="application.status.toLowerCase() === 'pending'"
-                              @click="cancelApplication(application.id)"
+                              @click="openCancelModal(application.id)"
                               class="btn btn-sm btn-outline-danger"
-                              data-bs-toggle="modal"
-                              data-bs-target="#cancelModal"
                             >
                               Cancel
                             </button>
@@ -63,7 +60,7 @@
                 </div>
 
                 <!-- Cancel Confirmation Modal -->
-                <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true" ref="cancelModal">
+                <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -92,10 +89,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { Modal } from 'bootstrap'; // Import Bootstrap Modal
 import { useApplicationStore } from '@/stores/applicationStore';
 import Sidebar from '@/components/Sidebar.vue';
-
-let bootstrapModal = null;
 
 const router = useRouter();
 const applicationStore = useApplicationStore();
@@ -105,6 +101,7 @@ const loading = ref(false);
 const error = ref(null);
 const selectedAppId = ref(null);
 const cancelModal = ref(null);
+let modalInstance = null;
 const currentUserId = 'c7a6'; // Ideally, fetch this from auth store
 
 onMounted(async () => {
@@ -112,6 +109,9 @@ onMounted(async () => {
   try {
     await applicationStore.fetchByCandidate(currentUserId);
     applications.value = applicationStore.applications;
+    // Initialize modal after component is mounted
+    cancelModal.value = document.getElementById('cancelModal');
+    modalInstance = new Modal(cancelModal.value);
   } catch (err) {
     error.value = 'Failed to load applications';
     console.error(err);
@@ -124,20 +124,21 @@ const viewJobDetails = (jobId) => {
   router.push({ name: 'JobDetails', params: { id: jobId } });
 };
 
-const cancelApplication = (applicationId) => {
+const openCancelModal = (applicationId) => {
   selectedAppId.value = applicationId;
-  bootstrapModal = new bootstrap.Modal(cancelModal.value);
-  bootstrapModal.show();
+  modalInstance.show();
 };
 
 const confirmCancel = async () => {
   try {
     await applicationStore.deleteApplication(selectedAppId.value);
     applications.value = applications.value.filter(app => app.id !== selectedAppId.value);
-    bootstrapModal.hide();
+    modalInstance.hide();
   } catch (err) {
     error.value = 'Failed to cancel application';
     console.error(err);
+  } finally {
+    selectedAppId.value = null;
   }
 };
 
@@ -327,12 +328,12 @@ body {
 
 .btn-danger {
   background-color: var(--danger-color);
-  color: white;
+  color: rgb(221, 54, 54);
   border: none;
 }
 
 .btn-danger:hover {
-  background-color: #c62828;
+  background-color: #948989;
 }
 </style>
 ```

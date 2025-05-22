@@ -16,6 +16,6 @@ const route = useRoute()
 
 const showNavbarAndFooter = computed(() => {
  
-  return !['login', 'register'].includes(route.name)
+  return !['Login', 'Register'].includes(route.name)
 })
 </script>

@@ -53,14 +53,10 @@
 </template>
 
 <script setup>
-
 import { ref, onMounted } from 'vue'
 import axios from 'axios';
 import { useRouter } from 'vue-router'
 const router = useRouter()
-if (localStorage.getItem('role') !== 'employer') {
-        router.push({ path: '/' });
-}
 
 const jobs = ref([])
 

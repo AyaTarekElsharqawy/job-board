@@ -32,16 +32,8 @@
 </template>
 
 <script setup>
-
-import SideBar from './SideBar.vue';
-import { RouterLink } from 'vue-router';
-
-import {useRouter} from 'vue-router';
-
-const router = useRouter();
-if (localStorage.getItem('role') !== 'employer') {
-    router.push({ path: '/' });
-}
+    import SideBar from './SideBar.vue';
+    import { RouterLink } from 'vue-router';
 </script>
 
 <style>

@@ -51,6 +51,13 @@ import { onMounted } from 'vue';
 const successMessage = ref('');
 const errorMessage = ref('');
 const router = useRouter();
+const currUser = JSON.parse(localStorage.getItem('user'))
+const token = localStorage.getItem('token')
+
+if (!currUser || currUser.role !== 'employer') {
+  router.push('/login')
+}
+
 const errors = reactive({
     company_name: '',
     company_website: '',

@@ -1,49 +1,41 @@
 <template>
-  <div class="bg-gray-100 font-sans min-h-screen">
-    <!-- Employer Profile Section -->
-    <section class="profile">
-      <div class="container px-4">
-        <div class="main-content">
-          <div class="dashboard-block p-6 bg-white rounded-lg shadow">
-            <div class="space-y-6">
-              <div class="flex items-center space-x-6 mb-6">
-                <div class="w-24 h-24 rounded-full overflow-hidden border border-gray-300">
-                  <img
-                    :src="employer.company_logo || fallbackLogo"
-                    alt="Company Logo"
-                    class="w-full h-full object-cover"
-                    @error="onLogoError"
-                  />
-                </div>
-                <div>
-                  <h3 class="text-2xl font-bold text-gray-800">{{ employer.company_name }}</h3>
-                  <p class="text-gray-500">{{ employer.user.email }}</p>
-                </div>
-              </div>
+  <div class="bg-light min-vh-100 py-5">
+    <div class="container">
+      <div class="card shadow-lg p-4">
+        <div class="d-flex align-items-center mb-4">
+          <div class="me-4">
+            <img
+              :src="employer.company_logo || defaultLogo"
+              @error="onLogoError"
+              alt="Company Logo"
+              class="rounded-circle border"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+          </div>
+          <div>
+            <h3 class="mb-1">{{ employer.company_name }}</h3>
+            <p class="text-muted mb-0">{{ employer.user.email }}</p>
+          </div>
+        </div>
 
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p class="text-gray-500">Bio</p>
-                  <p class="text-gray-800 font-medium">{{ employer.bio || 'N/A' }}</p>
-                </div>
-                <div>
-                  <p class="text-gray-500">Website</p>
-                  <a
-                    :href="employer.company_website"
-                    class="text-blue-600 hover:underline"
-                    target="_blank"
-                  >
-                    {{ employer.company_website || 'N/A' }}
-                  </a>
-                </div>
-              </div>
-            </div>
-            <!-- Optional edit button or other actions -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="text-muted">Bio</h6>
+            <p class="fw-medium">{{ employer.bio || 'N/A' }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="text-muted">Website</h6>
+            <a
+              :href="employer.company_website"
+              class="text-primary text-decoration-none"
+              target="_blank"
+            >
+              {{ employer.company_website || 'N/A' }}
+            </a>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   </div>
 </template>
 
@@ -61,59 +53,48 @@ export default {
         user_id: '',
         created_at: '',
         updated_at: '',
-        user: {}
+        user: {},
       },
-      defaultLogo: 'https://placeholder.com/150?text=No+Logo'
+      defaultLogo: 'https://via.placeholder.com/150?text=No+Logo',
+      currUser: JSON.parse(localStorage.getItem('user')),
     };
   },
   mounted() {
-    axios
-      .get('http://localhost:8000/api/employer-profile', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-      .then((response) => {
-        this.employer = response.data.data;
-        console.log(this.employer);
-      })
-      .catch((error) => {
-        console.error('Error fetching profile:', error);
-      });
+    if (!this.currUser || this.currUser.role !== 'employer') {
+      this.$router.push('/login');
+    } else {
+      this.fetchProfile();
+    }
   },
   methods: {
-    // onLogoError(event) {
-    //   event.target.src = this.defaultLogo;
-    // },
-  }
+    fetchProfile() {
+      axios
+        .get('http://localhost:8000/api/employer-profile', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.employer = response.data.data;
+        })
+        .catch((error) => {
+          console.error('Error fetching profile:', error);
+        });
+    },
+    onLogoError(event) {
+      event.target.src = this.defaultLogo;
+    },
+  },
 };
 </script>
 
 <style scoped>
-.profile {
-  padding: 30px 0;
-  background-color: #f5f7fa;
-}
-
-.dashboard-block {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-  padding: 25px;
-  margin-bottom: 30px;
-  border: 1px solid #eaeaea;
-  transition: all 0.3s;
-}
-
-.dashboard-block:hover {
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-}
-
 img {
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 img:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 </style>

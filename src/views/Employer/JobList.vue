@@ -135,14 +135,12 @@
     function getStatusBadgeClass(status) {
       const statusLower = (status || 'active').toLowerCase();
       switch (statusLower) {
-        case 'active':
+        case 'published':
           return 'bg-success';
-        case 'closed':
+        case 'rejected':
           return 'bg-danger';
-        case 'paused':
+        case 'pending':
           return 'bg-warning';
-        case 'draft':
-          return 'bg-secondary';
         default:
           return 'bg-primary';
       }
@@ -164,23 +162,44 @@
 
   <style scoped>
   .table {
-    border-radius: 10px;
-    overflow: hidden;
-  }
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-  .table th {
-    border-top: none;
-    font-weight: 600;
-  }
+thead th {
+  background-color: #007bff;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+}
 
-  .badge {
-    font-size: 0.75em;
-  }
+tbody td {
+  vertical-align: middle;
+  text-align: center;
+}
 
-  .btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-  }
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.75em;
+  border-radius: 0.75rem;
+}
+
+button.btn {
+  min-width: 80px;
+}
+
+.table td, .table th {
+  padding: 1rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.modal-title {
+  font-weight: bold;
+} 
 
   @media (max-width: 768px) {
     .table-responsive {

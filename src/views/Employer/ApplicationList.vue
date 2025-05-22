@@ -73,11 +73,7 @@
       <p>No applications received yet.</p>
     </div>
 
-<<<<<<< HEAD
     <!-- Modals -->
-=======
-    <!-- Reject Modal -->
->>>>>>> 166b415f949eff676f1df599c224f14efb6c5749
     <div v-for="app in applications" :key="'modal-' + app.id">
       <div class="modal fade" :id="'rejectModal' + app.id" tabindex="-1">
         <div class="modal-dialog">

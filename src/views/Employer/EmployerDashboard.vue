@@ -14,17 +14,5 @@ import SideBar from './SideBar.vue';
 </script>
 
 <style>
-    .navbar, .navbar-nav .nav-link, .navbar-brand {
-        background-color: #007bff !important;
-        color: #fff !important;
-    }
-
-    .navbar-nav .nav-link.active {
-        color: #fff !important;
-    }
-
-    .main-section {
-        min-height: 80vh;
-    }
-
+   
 </style>

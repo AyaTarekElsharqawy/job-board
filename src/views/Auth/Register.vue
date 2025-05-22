@@ -81,7 +81,22 @@ export default {
 
           if (response.status === 201) {
             this.successMessage = 'Registration successful! Redirecting…';
-            setTimeout(() => this.$router.push('/login'), 1500);
+            setTimeout(() => {
+              const { token, user } = response.data;
+
+              // Save token and user data
+              localStorage.setItem('token', token);
+              localStorage.setItem('role', user.role);
+              localStorage.setItem('user', JSON.stringify(user));
+
+              // Redirect to appropriate dashboard
+              if (user.role === 'employer') {
+                this.$router.push('/employer/add-employer-profile');
+              } else if (user.role === 'candidate') {
+                this.$router.push('/candidate/add-profile');
+              }
+            });
+
           } else {
             this.errorMessage = 'Registration failed.';
           }

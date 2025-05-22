@@ -23,6 +23,10 @@
         <RouterLink to="/employer">Dashboard</RouterLink>
       </template>
 
+      <template v-else-if="userRole === 'admin'">
+        <RouterLink to="/admin/dashboard">Dashboard</RouterLink>
+      </template>
+
       <template v-else>
         <RouterLink to="/">Home</RouterLink>
       </template>
@@ -57,7 +61,9 @@ const handleLogout = () => {
   isMenuOpen.value = false
 }
 </script>
+
 <style scoped>
+/* باقي الستايل يبقى كما هو بدون تغيير */
 .navbar {
   background: #047fec;
   color: white;
@@ -75,7 +81,6 @@ const handleLogout = () => {
 .logo {
   height: 110px;
   width: auto;
-  
 }
 
 .logo-link {
@@ -112,73 +117,44 @@ const handleLogout = () => {
 
 .auth-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   margin-left: 1rem;
+  align-items: center;
 }
 
 .login-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  color: white;
-}
-
-.post-job-btn {
-  background: #00e56c;
+  background: transparent;
   color: white;
   padding: 0.5rem 1.5rem;
   border-radius: 0.25rem;
-  transition: background 0.3s;
-}
-
-.post-job-btn:hover {
-  background: #00c45a;
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropbtn {
-  color: white;
-  background: none;
-  border: none;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0.5rem 0;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-  border-radius: 0.25rem;
-  top: 100%;
-  left: 0;
-}
-
-.dropdown-content a {
-  color: #333;
-  padding: 12px 16px;
+  border: 2px solid white;
   text-decoration: none;
-  display: block;
-  transition: background-color 0.3s;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.dropdown-content a:hover {
-  background-color: #f1f1f1;
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.dropdown:hover .dropdown-content {
-  display: block;
+.logout-btn {
+  background: transparent;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.25rem;
+  border: 2px solid white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.dropdown:hover .dropbtn {
-  opacity: 0.8;
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 992px) {
@@ -227,30 +203,10 @@ const handleLogout = () => {
     width: 100%;
   }
   
-  .login-btn, .post-job-btn {
+  .login-btn, .logout-btn {
     width: 80%;
     margin: 0 auto;
     text-align: center;
-  }
-  
-  .dropdown {
-    width: 100%;
-    text-align: center;
-  }
-  
-  .dropdown-content {
-    position: static;
-    display: none;
-    width: 100%;
-    box-shadow: none;
-  }
-  
-  .dropdown:hover .dropdown-content {
-    display: none;
-  }
-  
-  .dropdown.active .dropdown-content {
-    display: block;
   }
 }
 
@@ -262,44 +218,5 @@ const handleLogout = () => {
   .nav-links {
     width: 80%;
   }
-}
-.login-btn {
-  background: transparent;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.25rem;
-  border: 2px solid white;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.login-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-.logout-btn {
-  background: transparent;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.25rem;
-  border: 2px solid white;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.logout-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-.auth-buttons {
-  display: flex;
-  gap: 1.5rem;
-  margin-left: 1rem;
-  align-items: center;
 }
 </style>

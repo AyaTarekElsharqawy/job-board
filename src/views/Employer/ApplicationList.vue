@@ -38,7 +38,7 @@
               <button class="btn btn-sm btn-outline-success me-2" 
                       @click="updateStatus(app.id, 'accepted')"
                       :disabled="['accepted'].includes(app.status)">
-                      Accept
+                Accept
               </button>
               <button class="btn btn-sm btn-outline-danger"
                       :disabled="['rejected'].includes(app.status)"
@@ -55,6 +55,7 @@
       <p>No applications received yet.</p>
     </div>
 
+    <!-- Reject Modal -->
     <div v-for="app in applications" :key="'modal-' + app.id">
       <div class="modal fade" :id="'rejectModal' + app.id" tabindex="-1">
         <div class="modal-dialog">
@@ -83,20 +84,38 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
-if (localStorage.getItem('role') !== 'employer') {
-  router.push({ path: '/' });
-}
-
-const applications = ref([])
+const applications = ref([]);
 const currUser = JSON.parse(localStorage.getItem('user'));
 
 if (!currUser) {
-  router.push('/login')
+  router.push('/login');
+}
+if (localStorage.getItem('role') !== 'employer') {
+  router.push({ path: '/' });
 }
 
 onMounted(() => {
   fetchApps(); 
 })
+
+async function fetchApps() {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/employer/applications/${currUser.id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    if (response.data.message === 'No applications found for this employer.') {
+      applications.value = [];
+    } else {
+      applications.value = response.data.data; // pagination: data موجودة جوا key اسمه data
+    }
+
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+  }
+}
 
 async function updateStatus(id, newStatus) {
   try {
@@ -108,37 +127,16 @@ async function updateStatus(id, newStatus) {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
-    }).then(() => {
-      fetchApps() 
-    })
-
+    });
+    fetchApps(); // refresh
   } catch (error) {
-    console.error('Failed to update status:', error)
-    alert('Failed to update status. Please try again.')
+    console.error('Failed to update status:', error);
+    alert('Failed to update status. Please try again.');
   }
 }
-
-const fetchApps = async () => {
-  try {
-    const response = await axios.get(`http://localhost:8000/api/employer/applcations/${currUser.id}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    if(response.data.message === 'No applications found for this employer.'){
-      applications.value = []
-    } else {
-      applications.value = response.data.data
-    }
-  } catch (error) {
-    console.error('Error fetching applications:', error)
-  }
-}
-
 
 function getResumeUrl(filename) {
-  return `http://localhost:8000/storage/${filename}`
- 
+  return `http://localhost:8000/storage/${filename}`;
 }
 </script>
 

@@ -59,10 +59,10 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const jobs = ref([])
-
+const currUser = JSON.parse(localStorage.getItem('user'))
 onMounted(() => {
   const user = localStorage.getItem('user');
-  axios.get('http://localhost:8000/api/employers/jobs/4',{
+  axios.get(`http://localhost:8000/api/employers/jobs/${currUser.id}`,{
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }

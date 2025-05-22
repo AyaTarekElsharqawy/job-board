@@ -10,8 +10,8 @@
             <th>Applicant Name</th>
             <th>Email</th>
             <th>Job Title</th>
-            <th>Status</th>
             <th>Resume</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
